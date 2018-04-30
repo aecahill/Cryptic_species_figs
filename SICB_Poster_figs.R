@@ -1,5 +1,9 @@
 ##graphs for CS poster
 
+library(ggplot2)
+
+#what phyla are the CS in?
+
 cs_species<-read.table("C:/Users/acahill/Desktop/cs_species.txt",header=T)
 
 #reorder factors
@@ -19,6 +23,7 @@ ggplot(cs_species, aes(x = Phylum, y = total, fill=Phylum)) +
   theme(legend.position="none")+
   scale_fill_hue(c=100, l=45)
 
+#what habitat are the CS in?
 
 cs_habitat<-read.table("C:/Users/acahill/Desktop/cs_habitat.txt",header=T)
 
@@ -35,6 +40,8 @@ ggplot(cs_habitat, aes(x = Habitat, y = Total, fill=Habitat)) +
   theme(legend.position="none")+
   scale_fill_hue(c=100, l=45)
 
+#do the CS have morphological differences?
+
 morphodiff<-read.table("C:/Users/acahill/Desktop/morphodiff.txt",header=T)
 
 #reorder factors
@@ -49,6 +56,77 @@ ggplot(morphodiff, aes(x = Difference, y = Number, fill=Difference)) +
   geom_bar(stat = "identity")+
   ylab("Total number of studies\n")+
   xlab("\nMorphological differentiation?")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14))+
+  theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.text.y = element_text(size = 14))+
+  theme(legend.position="none")+
+  scale_fill_hue(c=100, l=45)
+
+#in molluscs, what are the larval types of CS?
+
+moll_larvae<-read.table("C:/Users/acahill/Desktop/cs_larvae.txt",header=F)
+
+#reorder factors
+
+moll_larvae$V2 <- factor(moll_larvae$V2, levels = moll_larvae$V2[order(-moll_larvae$V1)])
+moll_larvae$V2   # notice the changed order of factor levels
+
+
+ggplot(moll_larvae, aes(x = V2, y = V1, fill=V2)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Total number of studies\n")+
+  xlab("\nLarval Type")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14))+
+  theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.text.y = element_text(size = 14))+
+  theme(legend.position="none")+
+  scale_fill_hue(c=100, l=45)
+
+
+#in molluscs, what is the geography of CS?
+
+moll_geo<-read.table("C:/Users/acahill/Desktop/mollusc_geo.txt",header=F)
+
+#reorder factors
+
+moll_geo$V2 <- factor(moll_geo$V2, levels = moll_geo$V2[order(-moll_geo$V1)])
+moll_geo$V2   # notice the changed order of factor levels
+
+
+ggplot(moll_geo, aes(x = V2, y = V1, fill=V2)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Total number of studies\n")+
+  xlab("\nGeographic Distribution")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14))+
+  theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.text.y = element_text(size = 14))+
+  theme(legend.position="none")+
+  scale_fill_hue(c=100, l=45)
+
+
+#marker type overall
+
+markers<-read.table("C:/Users/acahill/Desktop/markers.txt",header=F)
+
+#reorder factors
+
+markers$V1 <- factor(markers$V1, levels = markers$V1[order(-markers$V2)])
+markers$V1   # notice the changed order of factor levels
+
+
+ggplot(markers, aes(x = V1, y = V2, fill=V1)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Total number of studies\n")+
+  xlab("\nData used")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14))+
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+

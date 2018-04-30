@@ -1,0 +1,7 @@
+51	Planktotroph
+21	Lecithotroph
+25	Direct_development
+4	PT+LT
+7	PT+DD
+1	DD+LT
+4	PT+DD+LT

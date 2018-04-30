@@ -1,0 +1,5 @@
+39	Allopatric
+33	Sympatric
+23	Allopatric+sympatric
+
+
