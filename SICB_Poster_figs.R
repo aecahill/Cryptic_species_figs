@@ -77,7 +77,7 @@ ggplot(moll_larvae, aes(x = V2, y = V1, fill=V2)) +
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
-  ylab("Total number of studies\n")+
+  ylab("Total number of species\n")+
   xlab("\nLarval Type")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14))+
   theme(axis.title.x = element_text(size = 16))+
@@ -101,7 +101,7 @@ ggplot(moll_geo, aes(x = V2, y = V1, fill=V2)) +
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
-  ylab("Total number of studies\n")+
+  ylab("Total number of species\n")+
   xlab("\nGeographic Distribution")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14))+
   theme(axis.title.x = element_text(size = 16))+
