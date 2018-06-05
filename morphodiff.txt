@@ -1,4 +1,4 @@
 Difference	Number
-No_difference	33
+No_difference	85
 Statistical_difference	233
 Diagnostic_difference	132

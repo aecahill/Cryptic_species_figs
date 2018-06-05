@@ -82,7 +82,7 @@ ggplot(cs_habitat, aes(x = Habitat, y = Total, fill=Habitat)) +
 
 #do the CS have morphological differences?
 
-morphodiff<-read.table("C:/Users/acahill/Desktop/morphodiff.txt",header=T)
+morphodiff<-read.table("C:/Users/Abigail/Desktop/morphodiff.txt",header=T)
 
 #reorder factors
 
