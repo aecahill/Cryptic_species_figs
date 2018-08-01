@@ -1,22 +1,25 @@
 ##graphs for CS poster
 
 library(ggplot2)
+library(cowplot)
+library(reshape2)
+library(wesanderson)
 
 #what phyla are the CS in?
 
-cs_species<-read.table("C:/Users/Abigail/Desktop/cs_species.txt",header=T)
+cs_species<-read.table("C:/Users/acahill/Desktop/cs_species.txt",header=T)
 
 #reorder factors
 
 cs_species$Phylum <- factor(cs_species$Phylum, levels = cs_species$Phylum[order(-cs_species$total)])
 cs_species$Phylum  # notice the changed order of factor levels
 
-ggplot(cs_species, aes(x = Phylum, y = total, fill=Phylum)) + 
+a<-ggplot(cs_species, aes(x = Phylum, y = total, fill=Phylum)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
   ylab("Total number of studies\n")+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 14))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 10))+
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
@@ -45,22 +48,24 @@ ggplot(cs_species, aes(x = Phylum, y = total, fill=Phylum)) +
 
 #corrected for expected values
 
-cs_correct<-read.table("C:/Users/Abigail/Desktop/CS_phylum_corrected.txt",header=T)
+cs_correct<-read.table("C:/Users/acahill/Desktop/CS_phylum_corrected.txt",header=T)
 
 cs_correct$Phylum <- factor(cs_correct$Phylum, levels = cs_correct$Phylum[order(-cs_correct$Difference)])
 cs_correct$Phylum  # notice the changed order of factor levels
 
-ggplot(cs_correct, aes(x = Phylum, y = Difference, fill=Phylum)) + 
+b<-ggplot(cs_correct, aes(x = Phylum, y = Difference, fill=Phylum)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
   ylab("Difference from Expected\n")+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 14))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 10))+
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
   theme(legend.position="none")+
   scale_fill_hue(c=100, l=45)
+
+plot_grid(a,b,labels=c("a","b"))
 
 
 #what habitat are the CS in?
@@ -161,15 +166,65 @@ markers$V1 <- factor(markers$V1, levels = markers$V1[order(-markers$V2)])
 markers$V1   # notice the changed order of factor levels
 
 
-ggplot(markers, aes(x = V1, y = V2, fill=V1)) + 
+c<-ggplot(markers, aes(x = V1, y = V2, fill=V1)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
-  ylab("Total number of studies\n")+
+  ylab("Number of studies\n")+
   xlab("\nData used")+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14))+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
   theme(legend.position="none")+
   scale_fill_hue(c=100, l=45)
+
+
+#non genetic differences
+
+nongen<-read.table("C:/Users/acahill/Desktop/nongendiffs.txt",header=F)
+
+#reorder factors
+
+nongen$V1 <- factor(nongen$V1, levels = nongen$V1[order(-nongen$V2)])
+nongen$V1   # notice the changed order of factor levels
+
+
+d<-ggplot(nongen, aes(x = V1, y = V2, fill=V1)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Number of studies\n")+
+  xlab("\nData used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
+  theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.text.y = element_text(size = 14))+
+  theme(legend.position="none")+
+  scale_fill_hue(c=100, l=45)
+
+plot_grid(c,d,labels=c("a","b"))
+
+##graphing change in markertype through time
+
+throughtime<-read.table("C:/users/acahill/Desktop/throughtime.txt",header=T)
+
+#change dataformat to group by year
+
+byyear<-melt(throughtime,id.vars=c("Year"))
+
+colnames(byyear)<-c("Year","Marker","value")
+
+ggplot(byyear, aes(x = Year, y = value, fill=Marker)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity")+
+  scale_fill_manual(values = wes_palette("Zissou1",5,type="continuous"))+
+  ylab("Number of studies\n")+
+  xlab("\nYear")
+  #theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
+  #theme(axis.title.x = element_text(size = 16))+
+  #theme(axis.title.y = element_text(size = 16))+
+  #theme(axis.text.y = element_text(size = 14))+
+  #theme(legend.position="none")+
+  
