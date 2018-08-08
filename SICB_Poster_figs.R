@@ -72,7 +72,7 @@ plot_grid(a,b,labels=c("a","b"))
 
 cs_habitat<-read.table("C:/Users/acahill/Desktop/cs_habitat.txt",header=T)
 
-ggplot(cs_habitat, aes(x = Habitat, y = Total, fill=Habitat)) + 
+ggplot(cs_habitat, aes(x = Habitat, y = Total)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
@@ -82,8 +82,8 @@ ggplot(cs_habitat, aes(x = Habitat, y = Total, fill=Habitat)) +
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
-  theme(legend.position="none")+
-  scale_fill_hue(c=100, l=45)
+  theme(legend.position="none")
+  #scale_fill_hue(c=100, l=45)
 
 #do the CS have morphological differences?
 
@@ -95,7 +95,7 @@ morphodiff$Difference <- factor(morphodiff$Difference, levels = morphodiff$Diffe
 morphodiff$Difference   # notice the changed order of factor levels
 
 
-ggplot(morphodiff, aes(x = Difference, y = Number, fill=Difference)) + 
+ggplot(morphodiff, aes(x = Difference, y = Number)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
@@ -105,8 +105,8 @@ ggplot(morphodiff, aes(x = Difference, y = Number, fill=Difference)) +
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
-  theme(legend.position="none")+
-  scale_fill_hue(c=100, l=45)
+  theme(legend.position="none")
+  #scale_fill_hue(c=100, l=45)
 
 #in molluscs, what are the larval types of CS?
 
@@ -166,7 +166,7 @@ markers$V1 <- factor(markers$V1, levels = markers$V1[order(-markers$V2)])
 markers$V1   # notice the changed order of factor levels
 
 
-c<-ggplot(markers, aes(x = V1, y = V2, fill=V1)) + 
+c<-ggplot(markers, aes(x = V1, y = V2)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
@@ -176,8 +176,8 @@ c<-ggplot(markers, aes(x = V1, y = V2, fill=V1)) +
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
-  theme(legend.position="none")+
-  scale_fill_hue(c=100, l=45)
+  theme(legend.position="none")
+  #scale_fill_hue(c=100, l=45)
 
 
 #non genetic differences
@@ -190,7 +190,7 @@ nongen$V1 <- factor(nongen$V1, levels = nongen$V1[order(-nongen$V2)])
 nongen$V1   # notice the changed order of factor levels
 
 
-d<-ggplot(nongen, aes(x = V1, y = V2, fill=V1)) + 
+d<-ggplot(nongen, aes(x = V1, y = V2)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
@@ -200,8 +200,8 @@ d<-ggplot(nongen, aes(x = V1, y = V2, fill=V1)) +
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
-  theme(legend.position="none")+
-  scale_fill_hue(c=100, l=45)
+  theme(legend.position="none")
+  #scale_fill_hue(c=100, l=45)
 
 plot_grid(c,d,labels=c("a","b"))
 
@@ -227,4 +227,34 @@ ggplot(byyear, aes(x = Year, y = value, fill=Marker)) +
   #theme(axis.title.y = element_text(size = 16))+
   #theme(axis.text.y = element_text(size = 14))+
   #theme(legend.position="none")+
-  
+
+
+#devtype figure
+
+devtype<-read.table("C:/Users/acahill/Desktop/devtype.txt",header=T)
+
+molluscs<-devtype[1:3,]
+echinos<-devtype[4:6,]
+annelid<-devtype[7:9,]
+
+mol<-ggplot(molluscs, aes(x = Larval_type, y = Difference)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x = element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Difference\n")
+  #xlab("\nYear")
+
+ech<-ggplot(echinos, aes(x = Larval_type, y = Difference)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x = element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Difference\n")
+
+ann<-ggplot(annelid, aes(x = Larval_type, y = Difference)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Difference\n")+
+  xlab("\nLarval Type")
+
+plot_grid(mol,ech,ann,labels=c("a","b","c"),ncol=1)
