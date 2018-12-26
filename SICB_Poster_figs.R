@@ -85,6 +85,25 @@ ggplot(cs_habitat, aes(x = Habitat, y = Total)) +
   theme(legend.position="none")
   #scale_fill_hue(c=100, l=45)
 
+#graphing habitat fragmentation
+
+cs_frag<-read.table("C:/Users/Abigail/Desktop/hab_frag.txt",header=T)
+
+ggplot(cs_frag, aes(x = Code, y = Number_CS)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity")+
+  ylab("Total number of studies\n")+
+  xlab("\nDegree of Fragmentation")+
+  #scale_x_discrete(labels=c("large pelagic","small pelagic", "abyssal","coastal","estuary","coral reef","caves"))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 14))+
+  theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.text.y = element_text(size = 14))+
+  theme(legend.position="none")+
+  scale_fill_hue(c=100, l=45)
+
+
 #do the CS have morphological differences?
 
 morphodiff<-read.table("C:/Users/Abigail/Desktop/morphodiff.txt",header=T)
