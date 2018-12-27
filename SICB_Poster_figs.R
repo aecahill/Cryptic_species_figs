@@ -277,3 +277,38 @@ ann<-ggplot(annelid, aes(x = Larval_type, y = Difference)) +
   xlab("\nLarval Type")
 
 plot_grid(mol,ech,ann,labels=c("a","b","c"),ncol=1)
+
+#graphing eco differences
+
+ecodiffs<-read.table("C:/Users/Abigail/Desktop/ecodiff.txt",header=T)
+
+ecoplot<-ggplot(ecodiffs, aes(x = Sympatric, y = Number, fill=Difference)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank(),axis.title.x = element_blank(),axis.text.x=element_blank())+
+  geom_bar(stat = "identity",position="dodge")+
+  ylab("Number of studies\n")+
+ # xlab("\nAre CS sympatric?")+
+  #theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
+ # theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.text.y = element_text(size = 14))+
+  theme(legend.text=element_text(size=10))+
+  scale_fill_manual(values=c("black","dark grey"))
+
+#graphing diagnostic morpho differences in allo vs sympatry
+
+morphodiffs<-read.table("C:/Users/Abigail/Desktop/diagmorphodiff.txt",header=T)
+
+morphoplot<-ggplot(morphodiffs, aes(x = Sympatric, y = Number, fill=Difference)) + 
+  theme_bw() + 
+  theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
+  geom_bar(stat = "identity",position="dodge")+
+  ylab("Number of studies\n")+
+  xlab("\nAre CS sympatric?")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
+  theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.text.y = element_text(size = 14))+
+  scale_fill_manual(values=c("black","dark grey"))
+
+plot_grid(ecoplot,morphoplot,labels=c("a","b"),ncol=1)
