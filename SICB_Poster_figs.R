@@ -7,14 +7,19 @@ library(wesanderson)
 
 #what phyla are the CS in?
 
-cs_species<-read.table("C:/Users/acahill/Desktop/cs_species.txt",header=T)
+#cs_species<-read.table("C:/Users/acahill/Desktop/cs_species.txt",header=T)
+cs_correct<-read.table("C:/Users/acahill/Desktop/CS_phylum_corrected.txt",header=T)
 
 #reorder factors
 
-cs_species$Phylum <- factor(cs_species$Phylum, levels = cs_species$Phylum[order(-cs_species$total)])
-cs_species$Phylum  # notice the changed order of factor levels
+cs_correct$Phylum <- factor(cs_correct$Phylum, levels = cs_correct$Phylum[order(-cs_correct$total_CS)])
+cs_correct$Phylum  # notice the changed order of factor levels
 
-a<-ggplot(cs_species, aes(x = Phylum, y = total, fill=Phylum)) + 
+colorscale<-c("#FF0033","#FF3366","#FF6633","#FFCC00","#FFF333","#99FF33","#66FF66","#33FF33","#339966","#66CC99","#009999","#003333","#003366","#0000FF","#330099","#330066","#660066","#330033","#FF00CC","#990066")
+
+cs_wcolor<-cbind(cs_correct,colorscale)
+
+a<-ggplot(cs_wcolor, aes(x = Phylum, y = total_CS, fill=colorscale)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
@@ -24,7 +29,7 @@ a<-ggplot(cs_species, aes(x = Phylum, y = total, fill=Phylum)) +
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
   theme(legend.position="none")+
-  scale_fill_hue(c=100, l=45)
+  scale_fill_manual(values=colorscale)
 
 #corrected for the percentage of species in worms
 
@@ -48,12 +53,12 @@ a<-ggplot(cs_species, aes(x = Phylum, y = total, fill=Phylum)) +
 
 #corrected for expected values
 
-cs_correct<-read.table("C:/Users/acahill/Desktop/CS_phylum_corrected.txt",header=T)
+#cs_correct<-read.table("C:/Users/acahill/Desktop/CS_phylum_corrected.txt",header=T)
 
 cs_correct$Phylum <- factor(cs_correct$Phylum, levels = cs_correct$Phylum[order(-cs_correct$Difference)])
 cs_correct$Phylum  # notice the changed order of factor levels
 
-b<-ggplot(cs_correct, aes(x = Phylum, y = Difference, fill=Phylum)) + 
+b<-ggplot(cs_correct, aes(x = Phylum, y = Difference, fill=colorscale)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
@@ -63,7 +68,7 @@ b<-ggplot(cs_correct, aes(x = Phylum, y = Difference, fill=Phylum)) +
   theme(axis.title.y = element_text(size = 16))+
   theme(axis.text.y = element_text(size = 14))+
   theme(legend.position="none")+
-  scale_fill_hue(c=100, l=45)
+  scale_fill_manual(values=colorscale)
 
 plot_grid(a,b,labels=c("a","b"))
 
@@ -226,7 +231,7 @@ plot_grid(c,d,labels=c("a","b"))
 
 ##graphing change in markertype through time
 
-throughtime<-read.table("C:/users/acahill/Desktop/throughtime.txt",header=T)
+throughtime<-read.table("C:/Users/Abigail/Desktop/throughtime.txt",header=T)
 
 #change dataformat to group by year
 
@@ -234,11 +239,14 @@ byyear<-melt(throughtime,id.vars=c("Year"))
 
 colnames(byyear)<-c("Year","Marker","value")
 
+timecolors<-c("#3399FF","#FF3300","#000099","#FFFF00","#FF0000","#330066","#FF00CC","#990066")
+
 ggplot(byyear, aes(x = Year, y = value, fill=Marker)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
-  scale_fill_manual(values = wes_palette("Zissou1",5,type="continuous"))+
+  #scale_fill_manual(values = wes_palette("Zissou1",5,type="continuous"))+
+  scale_fill_manual(values=timecolors)+
   ylab("Number of studies\n")+
   xlab("\nYear")
   #theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
