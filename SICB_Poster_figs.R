@@ -8,14 +8,14 @@ library(wesanderson)
 #what phyla are the CS in?
 
 #cs_species<-read.table("C:/Users/acahill/Desktop/cs_species.txt",header=T)
-cs_correct<-read.table("C:/Users/acahill/Desktop/CS_phylum_corrected.txt",header=T)
+cs_correct<-read.table("C:/Users/aecsk/Desktop/cs_phylum_corrected_nodups.txt",header=T)
 
 #reorder factors
 
 cs_correct$Phylum <- factor(cs_correct$Phylum, levels = cs_correct$Phylum[order(-cs_correct$total_CS)])
 cs_correct$Phylum  # notice the changed order of factor levels
 
-colorscale<-c("#FF0033","#FF3366","#FF6633","#FFCC00","#FFF333","#99FF33","#66FF66","#33FF33","#339966","#66CC99","#009999","#003333","#003366","#0000FF","#330099","#330066","#660066","#330033","#FF00CC","#990066")
+colorscale<-c("#FF0033","#FF3366","#FF6633","#FFCC00","#FFF333","#99FF33","#66FF66","black","#33FF33","#339966","#66CC99","#009999","#003333","#003366","#0000FF","#330099","#330066","#660066","#330033","#FF00CC","#990066")
 
 cs_wcolor<-cbind(cs_correct,colorscale)
 
@@ -23,7 +23,7 @@ a<-ggplot(cs_wcolor, aes(x = Phylum, y = total_CS, fill=colorscale)) +
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity")+
-  ylab("Total number of studies\n")+
+  ylab("Number of nominal species\n")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 10))+
   theme(axis.title.x = element_text(size = 16))+
   theme(axis.title.y = element_text(size = 16))+
@@ -258,7 +258,7 @@ ggplot(byyear, aes(x = Year, y = value, fill=Marker)) +
 
 #devtype figure
 
-devtype<-read.table("C:/Users/acahill/Desktop/devtype.txt",header=T)
+devtype<-read.table("C:/Users/aecsk/Desktop/devtype.txt",header=T)
 
 molluscs<-devtype[1:3,]
 echinos<-devtype[4:6,]

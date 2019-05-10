@@ -1,0 +1,10 @@
+Phylum	Larval_type	Difference
+Mollusc	pt	-18.05763689
+Mollusc	lt	5.783861671
+Mollusc	dd	12.27377522
+Echinoderm	pt	8.651685393
+Echinoderm	lt	-6.02247191
+Echinoderm	dd	-2.629213483
+Annelid	pt	7.915254237
+Annelid	lt	-14.20338983
+Annelid	dd	6.288135593
