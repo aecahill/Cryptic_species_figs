@@ -1,0 +1,5 @@
+Morpho_Difference	Sympatric	Number
+Y	Y	92
+Y	N	37
+N	Y	156
+N	N	117

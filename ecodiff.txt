@@ -1,0 +1,5 @@
+Eco_Difference	Sympatric	Number
+Y	Y	59
+Y	N	29
+N	Y	5
+N	N	7

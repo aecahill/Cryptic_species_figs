@@ -8,14 +8,16 @@ library(wesanderson)
 #what phyla are the CS in?
 
 #cs_species<-read.table("C:/Users/acahill/Desktop/cs_species.txt",header=T)
-cs_correct<-read.table("C:/Users/aecsk/Desktop/cs_phylum_corrected_nodups.txt",header=T)
+cs_correct<-read.table("C:/Users/aecsk/Desktop/cs_phylum_corrected_nodups2.txt",header=T)
 
 #reorder factors
 
 cs_correct$Phylum <- factor(cs_correct$Phylum, levels = cs_correct$Phylum[order(-cs_correct$total_CS)])
 cs_correct$Phylum  # notice the changed order of factor levels
 
-colorscale<-c("#FF0033","#FF3366","#FF6633","#FFCC00","#FFF333","#99FF33","#66FF66","black","#33FF33","#339966","#66CC99","#009999","#003333","#003366","#0000FF","#330099","#330066","#660066","#330033","#FF00CC","#990066")
+#colorscale<-c("#FF0033","#FF3366","#FF6633","#FFCC00","#FFF333","#99FF33","#66FF66","black","#33FF33","#339966","#66CC99","#009999","#003333","#003366","#0000FF","#330099","#330066","#660066","#330033","#FF00CC","#990066")
+colorscale<-rainbow(21)
+
 
 cs_wcolor<-cbind(cs_correct,colorscale)
 
@@ -182,7 +184,7 @@ ggplot(moll_geo, aes(x = V2, y = V1, fill=V2)) +
 
 #marker type overall
 
-markers<-read.table("C:/Users/acahill/Desktop/markers.txt",header=F)
+markers<-read.table("C:/Users/aecsk/Desktop/markers.txt",header=F)
 
 #reorder factors
 
@@ -198,7 +200,7 @@ c<-ggplot(markers, aes(x = V1, y = V2)) +
   xlab("\nData used")+
   theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
   theme(axis.title.x = element_text(size = 16))+
-  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 12))+
   theme(axis.text.y = element_text(size = 14))+
   theme(legend.position="none")
   #scale_fill_hue(c=100, l=45)
@@ -206,7 +208,7 @@ c<-ggplot(markers, aes(x = V1, y = V2)) +
 
 #non genetic differences
 
-nongen<-read.table("C:/Users/acahill/Desktop/nongendiffs.txt",header=F)
+nongen<-read.table("C:/Users/aecsk/Desktop/nongendiffs.txt",header=F)
 
 #reorder factors
 
@@ -222,7 +224,7 @@ d<-ggplot(nongen, aes(x = V1, y = V2)) +
   xlab("\nData used")+
   theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
   theme(axis.title.x = element_text(size = 16))+
-  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 12))+
   theme(axis.text.y = element_text(size = 14))+
   theme(legend.position="none")
   #scale_fill_hue(c=100, l=45)
@@ -231,7 +233,7 @@ plot_grid(c,d,labels=c("a","b"))
 
 ##graphing change in markertype through time
 
-throughtime<-read.table("C:/Users/Abigail/Desktop/throughtime.txt",header=T)
+throughtime<-read.table("C:/Users/aecsk/Desktop/throughtime.txt",header=T)
 
 #change dataformat to group by year
 
@@ -239,7 +241,8 @@ byyear<-melt(throughtime,id.vars=c("Year"))
 
 colnames(byyear)<-c("Year","Marker","value")
 
-timecolors<-c("#3399FF","#FF3300","#000099","#FFFF00","#FF0000","#330066","#FF00CC","#990066")
+#timecolors<-c("#3399FF","#FF3300","#000099","#FFFF00","#FF0000","#330066","#FF00CC","#990066")
+timecolors<-rainbow(5)
 
 ggplot(byyear, aes(x = Year, y = value, fill=Marker)) + 
   theme_bw() + 
@@ -288,34 +291,40 @@ plot_grid(mol,ech,ann,labels=c("a","b","c"),ncol=1)
 
 #graphing eco differences
 
-ecodiffs<-read.table("C:/Users/Abigail/Desktop/ecodiff.txt",header=T)
+ecodiffs<-read.table("C:/Users/aecsk/Desktop/ecodiff.txt",header=T)
 
-ecoplot<-ggplot(ecodiffs, aes(x = Sympatric, y = Number, fill=Difference)) + 
+ecoplot<-ggplot(ecodiffs, aes(x = Sympatric, y = Number, fill=Eco_Difference)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank(),axis.title.x = element_blank(),axis.text.x=element_blank())+
   geom_bar(stat = "identity",position="dodge")+
   ylab("Number of studies\n")+
- # xlab("\nAre CS sympatric?")+
+  ylim(0,62)+
+  #xlab("\nAre CS sympatric?")+
   #theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
- # theme(axis.title.x = element_text(size = 16))+
-  theme(axis.title.y = element_text(size = 16))+
+  #theme(axis.title.x = element_text(size = 16))+
+  theme(axis.title.y = element_text(size = 12))+
+  geom_text(aes(label = Number, group = Eco_Difference), position = position_dodge(0.8),
+    vjust = -0.3, size = 3.5)+
   theme(axis.text.y = element_text(size = 14))+
   theme(legend.text=element_text(size=10))+
   scale_fill_manual(values=c("black","dark grey"))
 
 #graphing diagnostic morpho differences in allo vs sympatry
 
-morphodiffs<-read.table("C:/Users/Abigail/Desktop/diagmorphodiff.txt",header=T)
+morphodiffs<-read.table("C:/Users/aecsk/Desktop/diagmorphodiff.txt",header=T)
 
-morphoplot<-ggplot(morphodiffs, aes(x = Sympatric, y = Number, fill=Difference)) + 
+morphoplot<-ggplot(morphodiffs, aes(x = Sympatric, y = Number, fill=Morpho_Difference)) + 
   theme_bw() + 
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+
   geom_bar(stat = "identity",position="dodge")+
   ylab("Number of studies\n")+
   xlab("\nAre CS sympatric?")+
+  ylim(0,165)+
   theme(axis.text.x = element_text(angle = 60, hjust = 1, size = 14))+
-  theme(axis.title.x = element_text(size = 16))+
-  theme(axis.title.y = element_text(size = 16))+
+  theme(axis.title.x = element_text(size = 12))+
+  geom_text(aes(label = Number, group = Morpho_Difference), position = position_dodge(0.8),
+            vjust = -0.3, size = 3.5)+
+  theme(axis.title.y = element_text(size = 12))+
   theme(axis.text.y = element_text(size = 14))+
   scale_fill_manual(values=c("black","dark grey"))
 
