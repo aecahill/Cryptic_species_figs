@@ -1,0 +1,4 @@
+Non-genetic_differences	374
+Codominant_markers	52
+Other_markers_used	113
+mtDNA_only	116

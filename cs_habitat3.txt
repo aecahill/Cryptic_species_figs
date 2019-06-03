@@ -1,0 +1,6 @@
+Habitat	Total
+Coastal	345
+Coral_reef	99
+Deep_sea	31
+Other	54
+Pelagic	59

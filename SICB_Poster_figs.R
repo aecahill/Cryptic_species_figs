@@ -77,7 +77,7 @@ plot_grid(a,b,labels=c("a","b"))
 
 #what habitat are the CS in?
 
-cs_habitat<-read.table("C:/Users/acahill/Desktop/cs_habitat.txt",header=T)
+cs_habitat<-read.table("C:/Users/acahill/Desktop/cs_habitat3.txt",header=T)
 
 ggplot(cs_habitat, aes(x = Habitat, y = Total)) + 
   theme_bw() + 
@@ -113,7 +113,7 @@ ggplot(cs_frag, aes(x = Code, y = Number_CS)) +
 
 #do the CS have morphological differences?
 
-morphodiff<-read.table("C:/Users/Abigail/Desktop/morphodiff.txt",header=T)
+morphodiff<-read.table("C:/Users/acahill/Desktop/morphodiff3.txt",header=T)
 
 #reorder factors
 
@@ -184,7 +184,7 @@ ggplot(moll_geo, aes(x = V2, y = V1, fill=V2)) +
 
 #marker type overall
 
-markers<-read.table("C:/Users/aecsk/Desktop/markers.txt",header=F)
+markers<-read.table("C:/Users/acahill/Desktop/markers3.txt",header=F)
 
 #reorder factors
 
@@ -208,7 +208,7 @@ c<-ggplot(markers, aes(x = V1, y = V2)) +
 
 #non genetic differences
 
-nongen<-read.table("C:/Users/aecsk/Desktop/nongendiffs.txt",header=F)
+nongen<-read.table("C:/Users/acahill/Desktop/nongendiffs3.txt",header=F)
 
 #reorder factors
 
@@ -233,7 +233,7 @@ plot_grid(c,d,labels=c("a","b"))
 
 ##graphing change in markertype through time
 
-throughtime<-read.table("C:/Users/aecsk/Desktop/throughtime.txt",header=T)
+throughtime<-read.table("C:/Users/acahill/Desktop/throughtime3.txt",header=T)
 
 #change dataformat to group by year
 
@@ -291,7 +291,7 @@ plot_grid(mol,ech,ann,labels=c("a","b","c"),ncol=1)
 
 #graphing eco differences
 
-ecodiffs<-read.table("C:/Users/aecsk/Desktop/ecodiff.txt",header=T)
+ecodiffs<-read.table("C:/Users/acahill/Desktop/ecodiff2.txt",header=T)
 
 ecoplot<-ggplot(ecodiffs, aes(x = Sympatric, y = Number, fill=Eco_Difference)) + 
   theme_bw() + 
@@ -311,7 +311,7 @@ ecoplot<-ggplot(ecodiffs, aes(x = Sympatric, y = Number, fill=Eco_Difference)) +
 
 #graphing diagnostic morpho differences in allo vs sympatry
 
-morphodiffs<-read.table("C:/Users/aecsk/Desktop/diagmorphodiff.txt",header=T)
+morphodiffs<-read.table("C:/Users/acahill/Desktop/diagmorphodiff3.txt",header=T)
 
 morphoplot<-ggplot(morphodiffs, aes(x = Sympatric, y = Number, fill=Morpho_Difference)) + 
   theme_bw() + 
