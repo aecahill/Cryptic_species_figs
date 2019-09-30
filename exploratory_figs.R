@@ -69,3 +69,25 @@ ggplot(csdata,aes(One_mito,Num_CS))+
   ylim(0,120)+
   xlim(0,10000)+
   xlab("\nNumber with one mito seq")+ylab("Number CS\n")
+
+
+#read in file with vision information
+
+vision<-read.table("C:/Users/acahill/Desktop/CS_vision.txt",header=TRUE)
+
+ggplot(vision,aes(One_mito,Num_CS))+
+  geom_smooth(method='lm',se=F)+
+  geom_point(aes(color=Repro_mode), size = 4)+
+  theme_bw()+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  #scale_colour_manual(values=c("green","darkorange2","gold","black","purple","red"))+
+  theme(axis.text.x= element_text(size=16))+
+  theme(axis.text.y= element_text(size=16))+
+  theme(axis.title.x=element_text(size=16))+
+  theme(axis.title.y=element_text(size=16))+
+  ylim(0,120)+
+  xlim(0,2500)+
+  xlab("\nNumber with one mito seq")+ylab("Number CS\n")
