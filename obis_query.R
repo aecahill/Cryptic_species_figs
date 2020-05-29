@@ -6,35 +6,46 @@ library(robis)
 specieslist<-read.csv("C:/Users/aecsk/Desktop/specieslist.csv")
 
 #initate blank dataframe
-outdata = NULL
+occ = NULL
 
-for (i in specieslist$SpeciesName[1:10]) { #currently set to only do first 10 in the list
-  sp <- try(occurrence(i), silent=FALSE) #looking for species in OBIS, pull occurrence data
+nums = NULL
+
+for (i in specieslist$SpeciesName) { 
+  sp <- try(occurrence(i), silent=TRUE) #looking for species in OBIS, pull occurrence data
  
-  trop<-try(between(sp$decimalLatitude,-23.5,23.5)) #check if each obs is in the tropics
-  istrop<-length(trop[trop== TRUE])>0 #see if there are any obs in the tropics
+  trop<-try(between(sp$decimalLatitude,-23.5,23.5),silent=TRUE) #check if each obs is in the tropics
+  istropocc<-length(trop[trop== TRUE])>0 #see if there are any obs in the tropics
+  istropnums<-length(trop[trop== TRUE])
   
   #same for northern temp zone
-  ntemp<-try(between(sp$decimalLatitude,23.5,66.5))
-  isntemp<-length(ntemp[ntemp== TRUE])>0
+  ntemp<-try(between(sp$decimalLatitude,23.5,66.5),silent=TRUE)
+  isntempocc<-length(ntemp[ntemp== TRUE])>0
+  isntempnums<-length(ntemp[ntemp== TRUE])
   
   #same for northern polar zone
-  npol<-try(between(sp$decimalLatitude,66.5,90))
-  isnpol<-length(npol[npol== TRUE])>0
+  npol<-try(between(sp$decimalLatitude,66.5,90),silent=TRUE)
+  isnpolocc<-length(npol[npol== TRUE])>0
+  isnpolnums<-length(npol[npol== TRUE])
   
   #same for southern temperate zone
-  stemp<-try(between(sp$decimalLatitude,-66.5,-23.5))
-  isstemp<-length(stemp[stemp == TRUE])>0
+  stemp<-try(between(sp$decimalLatitude,-66.5,-23.5),silent=TRUE)
+  isstempocc<-length(stemp[stemp == TRUE])>0
+  isstempnums<-length(stemp[stemp == TRUE])
   
   #same for southern polar zone
-  spol<-try(between(sp$decimalLatitude,-90,-66.5))
-  isspol<-length(spol[spol == TRUE])>0
+  spol<-try(between(sp$decimalLatitude,-90,-66.5),silent=TRUE)
+  isspolocc<-length(spol[spol == TRUE])>0
+  isspolnums<-length(spol[spol == TRUE])
   
-  sprow<-c(i,istrop,isntemp,isnpol,isstemp,isspol) #bind all T/F values for a species together
+  sprowocc<-c(i,istropocc,isntempocc,isnpolocc,isstempocc,isspolocc) #bind all T/F values for a species together
+  sprownums<-c(i,istropnums,isntempnums,isnpolnums,isstempnums,isspolnums) 
   
-  outdata<-rbind(outdata,sprow) #add to dataset
+  occ<-rbind(occ,sprowocc) #add to dataset
+  nums<-rbind(nums,sprownums)
 }
 
-colnames(outdata)<-c("Name","Trop","NTemp","NPol","STemp","SPol")
+colnames(occ)<-c("Name","Trop","NTemp","NPol","STemp","SPol")
+colnames(nums)<-c("Name","Trop","NTemp","NPol","STemp","SPol")
 
-outdata
+occ
+nums
