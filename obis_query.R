@@ -11,7 +11,7 @@ occ = NULL
 nums = NULL
 
 for (i in specieslist$SpeciesName) { 
-  sp <- try(occurrence(i), silent=TRUE) #looking for species in OBIS, pull occurrence data
+  sp <- try(occurrence("Armatoglyptes habei"), silent=TRUE) #looking for species in OBIS, pull occurrence data
  
   trop<-try(between(sp$decimalLatitude,-23.5,23.5),silent=TRUE) #check if each obs is in the tropics
   istropocc<-length(trop[trop== TRUE])>0 #see if there are any obs in the tropics
@@ -49,3 +49,30 @@ colnames(nums)<-c("Name","Trop","NTemp","NPol","STemp","SPol")
 
 occ
 nums
+
+#Getting the number of species in overall latitudinal bands out of obis
+
+taxanpol <- checklist(taxonid=2, geometry = "POLYGON ((-150 66.5, 150 66.5, 150 90, -150 90, -150 66.5))")
+taxaspol<- checklist(taxonid=2, geometry = "POLYGON ((-150 -66.5, 150 -66.5, 150 -90, -150 -90, -150 -66.5))")
+taxantemp<-checklist(taxonid=2, geometry = "POLYGON ((-150 66.5, 150 66.5, 150 23.5, -150 23.5, -150 66.5))")
+taxastemp<-checklist(taxonid=2, geometry = "POLYGON ((-150 -23.5, 150 -23.5, 150 -66.5, -150 -66.5, -150 -23.5))")
+taxatrop<-checklist(taxonid=2, geometry = "POLYGON ((-150 23.5, 150 23.5, 150 -23.5, -150 -23.5, -150 23.5))")
+
+NorthPolar<-length(taxanpol$scientificName)
+SouthPolar<-length(taxaspol$scientificName)
+NorthTemperate<-length(taxantemp$scientificName)
+SouthTemperate<-length(taxastemp$scientificName)
+Tropical<-length(taxatrop$scientificName)
+
+f<-length(taxanpol$taxonRank[taxanpol$taxonRank=="Species"])
+g<-length(taxaspol$taxonRank[taxaspol$taxonRank=="Species"])
+h<-length(taxantemp$taxonRank[taxantemp$taxonRank=="Species"])
+i<-length(taxastemp$taxonRank[taxastemp$taxonRank=="Species"])
+j<-length(taxatrop$taxonRank[taxatrop$taxonRank=="Species"])
+
+alltaxa<-rbind(NorthPolar,NorthTemperate,Tropical,SouthTemperate,SouthPolar)
+justspp<-rbind(f,h,j,i,g)
+
+resultstab<-cbind(alltaxa, justspp)
+
+colnames(resultstab)<-c("All Taxa","Species Only")

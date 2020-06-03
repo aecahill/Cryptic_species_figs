@@ -1,96 +1,191 @@
-"","Name","Trop","NTemp","NPol","STemp","SPol"
-"sprowocc","Grania occulta","FALSE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Ophelia bicornis","FALSE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Ophryotrocha batillus","FALSE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Scoloplos armiger","TRUE","TRUE","TRUE","TRUE","FALSE"
-"sprowocc","Spirobranchus polycerus","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Eucalanus hyalinus","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Ochthebius quadricollis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Abyssorchomene","TRUE","TRUE","FALSE","TRUE","TRUE"
-"sprowocc","Alpheus buckupi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Alpheus soror","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Alpheus wonkimi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Ampelisca eschrichti","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Hemimysis margalefi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Leptochelia Africana","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Munida mendagnai","TRUE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Platorchestia parapacifica","FALSE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Sesarma reticulatum","TRUE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Auritoglyptes bicornis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Balanodytes habei","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Chthamalus proteus","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Savignium dentatum","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Savignium milleporum","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Abudefduf declivifron","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Albula gilberti","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Albula vulpes","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Atherina lagunae","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Dascyllus abudafur","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Ditrema jordani","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Odontamblyopus lacepedii","TRUE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Pomacentrus micronesicus","TRUE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Rypticus saponaceous","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Symphurus leucochilus","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Trimma flammeum","TRUE","FALSE","FALSE","TRUE","FALSE"
-"sprowocc","Trimma hayashi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Trimma tevegae","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Pycnoclavella brava","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Pycnoclavella communis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Pyura doppelgangera","FALSE","FALSE","FALSE","TRUE","FALSE"
-"sprowocc","Aetobatus narutobiei","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Actinia ebhayiensis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Incrustatus niarchosi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Mussismilia hartii","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Palythoa mizigama","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Hydractinia serrata","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Stylactis carcinicola","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Stylactis serrata","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Cyanea tzetlinii","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Symbion americanus","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Cryptasterina hystera","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Parvulastra exigua","TRUE","FALSE","FALSE","TRUE","FALSE"
-"sprowocc","Echinoderes sensibilis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Atrina assimilis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Atrina exusta","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Bathymodiolus","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Calyptogena phaseoliformis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Carditamera bajaensis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Thyasira gould","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Tridacna ningaloo","TRUE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Xylophaga brava","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Doryteuthis plei","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Sepioteuthis lessoniana","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Alderia willowi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Bathytoma","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Bostrycapulus","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Crepipatella fecunda","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Crepipatella occulta","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Echinolittorina trochoides","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Gemmula cosmoi","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Gemmula hombroni","TRUE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Gemmula monolifera","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Gemmula rarimaculata","TRUE","FALSE","FALSE","TRUE","FALSE"
-"sprowocc","Gemmula sogodensis","TRUE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Lophiotoma acuta","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Lophiotoma friedrichbonhoefferi","TRUE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Lophiotoma indica","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Lophiotoma panglaoensis","TRUE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Melanochlamys lorrainae","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Nassarius festina","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Okenia harastii","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Turridrupa bijubata","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Lepidochitona pseudoliozonis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Ototyphlonemertes erneba","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Ototyphlonemertes lactea","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Ototyphlonemertes macintoshi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Ototyphlonemertes parmula","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Ototyphlonemertes santacruzensis","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Tetrastemma roseocephalum","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Cephalothrix alba","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Cephalothrix simula","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Pseudomicrura afzelii","FALSE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Chondrilla nucula","TRUE","TRUE","FALSE","TRUE","FALSE"
-"sprowocc","Spirastrella mollis","TRUE","TRUE","FALSE","FALSE","FALSE"
-"sprowocc","Apionsoma misakianum","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Phascolosoma agassizi","FALSE","FALSE","FALSE","FALSE","FALSE"
-"sprowocc","Themiste pyroides","FALSE","FALSE","FALSE","FALSE","FALSE"
+,Name,Trop,NTemp,NPol,STemp,SPol,
+sprowocc,Spirobranchus polycerus,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Ochthebius quadricollis,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Alpheus buckupi,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Alpheus soror,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Alpheus wonkimi,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Ampelisca eschrichti,TRUE,TRUE,TRUE,TRUE,TRUE,
+sprowocc,Hemimysis margalefi,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Leptochelia Africana,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Auritoglyptes bicornis,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Balanodytes habei,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Savignium dentatum,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Savignium milleporum,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Abudefduf declivifron,TRUE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Albula gilberti,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Atherina lagunae,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Dascyllus abudafur,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Ditrema jordani,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Rypticus saponaceous,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Symphurus leucochilus,TRUE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Trimma hayashi,TRUE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Pycnoclavella brava,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Pycnoclavella communis,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Aetobatus narutobiei,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Actinia ebhayiensis,FALSE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Incrustatus niarchosi,FALSE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Mussismilia hartii,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Palythoa mizigama,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Hydractinia serrata,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Stylactis carcinicola,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Stylactis serrata,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Cyanea tzetlinii,FALSE,FALSE,TRUE,FALSE,FALSE,
+sprowocc,Symbion americanus,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Cryptasterina hystera,FALSE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Echinoderes sensibilis,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Atrina assimilis,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Atrina exusta,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Calyptogena phaseoliformis,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Carditamera bajaensis,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Thyasira gould,TRUE,TRUE,TRUE,FALSE,FALSE,
+sprowocc,Xylophaga brava,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Doryteuthis plei,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Alderia willowi,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Crepipatella fecunda,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Crepipatella occulta,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Echinolittorina trochoides,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Gemmula monolifera,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Melanochlamys lorrainae,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Nassarius festina,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Okenia harastii,FALSE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Lepidochitona pseudoliozonis,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Ototyphlonemertes erneba,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Ototyphlonemertes lactea,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Ototyphlonemertes macintoshi,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Ototyphlonemertes parmula,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Ototyphlonemertes santacruzensis,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Tetrastemma roseocephalum,TRUE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Cephalothrix alba,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Cephalothrix simula,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Apionsoma misakianum,TRUE,TRUE,TRUE,FALSE,FALSE,
+sprowocc,Phascolosoma agassizi,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Themiste pyroides,FALSE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Grania occulta,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Ophelia bicornis,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Ophryotrocha batillus,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Munida mendagnai,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Platorchestia parapacifica,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Pomacentrus micronesicus,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Pyura doppelgangera,FALSE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Tridacna ningaloo,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Gemmula hombroni,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Gemmula sogodensis,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Lophiotoma friedrichbonhoefferi,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Lophiotoma panglaoensis,TRUE,FALSE,FALSE,FALSE,FALSE,
+sprowocc,Pseudomicrura afzelii,FALSE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Sesarma reticulatum,TRUE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Odontamblyopus lacepedii,TRUE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Trimma flammeum,TRUE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Parvulastra exigua,TRUE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Gemmula rarimaculata,TRUE,FALSE,FALSE,TRUE,FALSE,
+sprowocc,Spirastrella mollis,TRUE,TRUE,FALSE,FALSE,FALSE,
+sprowocc,Eucalanus hyalinus,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Chthamalus proteus,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Albula vulpes,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Trimma tevegae,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Bathymodiolus,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Sepioteuthis lessoniana,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Bathytoma,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Bostrycapulus,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Gemmula cosmoi,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Lophiotoma acuta,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Lophiotoma indica,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Turridrupa bijubata,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Chondrilla nucula,TRUE,TRUE,FALSE,TRUE,FALSE,
+sprowocc,Scoloplos armiger,TRUE,TRUE,TRUE,TRUE,FALSE,
+sprowocc,Abyssorchomene,TRUE,TRUE,FALSE,TRUE,TRUE,
+,Marionina,TRUE,TRUE,TRUE,TRUE,TRUE,
+,Dipolydora,TRUE,TRUE,TRUE,TRUE,TRUE,
+,Eunice,FALSE,FALSE,FALSE,FALSE,FALSE,
+,Marphysa,TRUE,TRUE,TRUE,TRUE,FALSE,
+,Oasisia,TRUE,TRUE,FALSE,TRUE,FALSE,
+,Paranaitis,TRUE,TRUE,TRUE,TRUE,TRUE,
+,Polydora,TRUE,FALSE,FALSE,TRUE,FALSE,
+,Sabellastarte,TRUE,TRUE,TRUE,TRUE,FALSE,
+,Vrijenhoekia,TRUE,TRUE,FALSE,FALSE,FALSE,
+,Acartia,TRUE,TRUE,TRUE,TRUE,TRUE,
+,Pareucalanus,TRUE,TRUE,FALSE,TRUE,FALSE,
+,Pseudocyclops,TRUE,TRUE,FALSE,TRUE,TRUE,
+,Abyssorchomene,TRUE,TRUE,FALSE,TRUE,TRUE,
+,Allogalathea,TRUE,TRUE,FALSE,TRUE,FALSE,
+,Alpheus,FALSE,FALSE,FALSE,FALSE,FALSE,
+,Calcinus,TRUE,TRUE,FALSE,TRUE,FALSE,
+,Carcinus,,,,,,
+,Gammarus,,,,,,
+,Jassa,,,,,,
+,Liopetrolisthes,,,,,,
+,Munida,,,,,,
+,Panopeus,,,,,,
+,Paratanais,,,,,,
+,Pseudodromia,,,,,,
+,Raymunida,,,,,,
+,Sadayoshia,,,,,,
+,Synalpheus,,,,,,
+,Thenus,,,,,,
+,Chthamalus,,,,,,
+,Discoporella,,,,,,
+,Rhynchozoon,,,,,,
+,Akkonov,,,,,,
+,Albula,,,,,,
+,Amphiprion,,,,,,
+,Bollmannia,,,,,,
+,Gobiosoma,,,,,,
+,Halichoeres,,,,,,
+,Macrourus,,,,,,
+,Taenioides,,,,,,
+,Trimma,,,,,,
+,Myliobatis,,,,,,
+,Orectolobus,,,,,,
+,Squatina,,,,,,
+,Eubalaena,,,,,,
+,Neophocaena,,,,,,
+,Sotalia,,,,,,
+,Tursiops,,,,,,
+,Acropora,,,,,,
+,Metridium,,,,,,
+,Paramuricea,,,,,,
+,Clytia,,,,,,
+,Cordylophora,,,,,,
+,Eugymnanthea,,,,,,
+,Hydractinia,,,,,,
+,Millepora,,,,,,
+,Aurelia,,,,,,
+,Cassiopea,,,,,,
+,Drymonema,,,,,,
+,Echinaster,,,,,,
+,Leptasterias,,,,,,
+,Cenolia,,,,,,
+,Echinometra,,,,,,
+,Mellita,,,,,,
+,Holothuria,,,,,,
+,Acrocnida,,,,,,
+,Clarkcoma,,,,,,
+,Ophiothrix,,,,,,
+,Saccoglossus,,,,,,
+,Acar,,,,,,
+,Bathymodiolus,,,,,,
+,Crassostrea,,,,,,
+,Geukensia,,,,,,
+,Lithophaga,,,,,,
+,Meretrix,,,,,,
+,Nautilus,,,,,,
+,Ascorhis,,,,,,
+,Bathytoma,,,,,,
+,Bostrycapulus,,,,,,
+,Cerithidea,,,,,,
+,Chicoreus,,,,,,
+,Crepidula,,,,,,
+,Dendronotus,,,,,,
+,Doto,,,,,,
+,Flabellina,,,,,,
+,Hydrobia,,,,,,
+,Lunella,,,,,,
+,Pontohedyle,,,,,,
+,Pseudunela,,,,,,
+,Ototyphlonemertes,,,,,,
+,Lineus,,,,,,
+,Clathrina,,,,,,
+,Hexadella,,,,,,
+,Latrunculia,,,,,,
+,Placospongia,,,,,,
+,Oscarella,,,,,,
