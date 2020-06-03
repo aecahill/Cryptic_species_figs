@@ -76,3 +76,39 @@ justspp<-rbind(f,h,j,i,g)
 resultstab<-cbind(alltaxa, justspp)
 
 colnames(resultstab)<-c("All Taxa","Species Only")
+
+#Pulling the species and finding the phyla
+
+npolspecies<-taxanpol[taxanpol$taxonRank=="Species",]
+ntempspecies<-taxantemp[taxantemp$taxonRank=="Species",]
+tropspecies<-taxatrop[taxatrop$taxonRank=="Species",]
+stempspecies<-taxastemp[taxastemp$taxonRank=="Species",]
+spolspecies<-taxaspol[taxaspol$taxonRank=="Species",]
+
+npolbyphylum<-as.data.frame(cbind(npolspecies$scientificName,npolspecies$phylum))
+ntempbyphylum<-as.data.frame(cbind(ntempspecies$scientificName,ntempspecies$phylum))
+tropbyphylum<-as.data.frame(cbind(tropspecies$scientificName,tropspecies$phylum))
+stempbyphylum<-as.data.frame(cbind(stempspecies$scientificName,stempspecies$phylum))
+spolbyphylum<-as.data.frame(cbind(spolspecies$scientificName,spolspecies$phylum))
+
+#making a frequency table for each zone
+
+npolfreqs<-table(npolbyphylum$V2)
+ntempfreqs<-table(ntempbyphylum$V2)
+tropfreqs<-table(tropbyphylum$V2)
+stempfreqs<-table(stempbyphylum$V2)
+spolfreqs<-table(spolbyphylum$V2)
+
+#extract files
+
+write.csv(npolbyphylum,"C:/Users/aecsk/Desktop/npolbyphylum.csv")
+write.csv(ntempbyphylum,"C:/Users/aecsk/Desktop/ntempbyphylum.csv")
+write.csv(tropbyphylum,"C:/Users/aecsk/Desktop/tropbyphylum.csv")
+write.csv(stempbyphylum,"C:/Users/aecsk/Desktop/stempbyphylum.csv")
+write.csv(spolbyphylum,"C:/Users/aecsk/Desktop/spolbyphylum.csv")
+
+write.csv(npolfreqs,"C:/Users/aecsk/Desktop/npolfreqs.csv")
+write.csv(ntempfreqs,"C:/Users/aecsk/Desktop/ntempfreqs.csv")
+write.csv(tropfreqs,"C:/Users/aecsk/Desktop/tropfreqs.csv")
+write.csv(stempfreqs,"C:/Users/aecsk/Desktop/stempfreqs.csv")
+write.csv(spolfreqs,"C:/Users/aecsk/Desktop/spolfreqs.csv")
