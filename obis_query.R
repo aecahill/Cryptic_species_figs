@@ -11,7 +11,7 @@ occ = NULL
 nums = NULL
 
 for (i in specieslist$SpeciesName) { 
-  sp <- try(occurrence("Armatoglyptes habei"), silent=TRUE) #looking for species in OBIS, pull occurrence data
+  sp <- try(occurrence(i), silent=TRUE) #looking for species in OBIS, pull occurrence data
  
   trop<-try(between(sp$decimalLatitude,-23.5,23.5),silent=TRUE) #check if each obs is in the tropics
   istropocc<-length(trop[trop== TRUE])>0 #see if there are any obs in the tropics
@@ -53,10 +53,10 @@ nums
 #Getting the number of species in overall latitudinal bands out of obis
 
 taxanpol <- checklist(taxonid=2, geometry = "POLYGON ((-150 66.5, 150 66.5, 150 90, -150 90, -150 66.5))")
-taxaspol<- checklist(taxonid=2, geometry = "POLYGON ((-150 -66.5, 150 -66.5, 150 -90, -150 -90, -150 -66.5))")
-taxantemp<-checklist(taxonid=2, geometry = "POLYGON ((-150 66.5, 150 66.5, 150 23.5, -150 23.5, -150 66.5))")
-taxastemp<-checklist(taxonid=2, geometry = "POLYGON ((-150 -23.5, 150 -23.5, 150 -66.5, -150 -66.5, -150 -23.5))")
-taxatrop<-checklist(taxonid=2, geometry = "POLYGON ((-150 23.5, 150 23.5, 150 -23.5, -150 -23.5, -150 23.5))")
+taxaspol<- checklist(taxonid=2, geometry = "POLYGON ((-150 -90, 150 -90, 150 -66.5, -150 -66.5, -150 -90))")
+taxantemp<-checklist(taxonid=2, geometry = "POLYGON ((-150 23.5, 150 23.5, 150 66.5, -150 66.5, -150 23.5))")
+taxastemp<-checklist(taxonid=2, geometry = "POLYGON ((-150 -66.5, 150 -66.5, 150 -23.5, -150 -23.5, -150 -66.5))")
+taxatrop<-checklist(taxonid=2, geometry = "POLYGON ((-150 -23.5, 150 -23.5, 150 23.5, -150 23.5, -150 -23.5))")
 
 NorthPolar<-length(taxanpol$scientificName)
 SouthPolar<-length(taxaspol$scientificName)
@@ -112,3 +112,69 @@ write.csv(ntempfreqs,"C:/Users/aecsk/Desktop/ntempfreqs.csv")
 write.csv(tropfreqs,"C:/Users/aecsk/Desktop/tropfreqs.csv")
 write.csv(stempfreqs,"C:/Users/aecsk/Desktop/stempfreqs.csv")
 write.csv(spolfreqs,"C:/Users/aecsk/Desktop/spolfreqs.csv")
+
+##pulling all species from OBIS to then run the code above
+
+animalia<-checklist(taxonid=2)
+animalspp<-animalia[animalia$taxonRank=="Species",]
+animals<-cbind(animalspp$scientificName,animalspp$phylum)
+write.csv(animals,"C:/Users/aecsk/Desktop/speciesnames.csv")
+
+
+#reading back in the file? not sure why i spit it out
+animals<-(read.csv("C:/Users/aecsk/Desktop/speciesnames.csv"))
+
+# OK this loop was working but taking FOREVER.
+
+occani<-NULL
+
+for (i in animals$V1) { 
+  npolani <- try(occurrence(i,geometry="POLYGON ((-150 66.5, 150 66.5, 150 90, -150 90, -150 66.5))"), silent=TRUE) #looking for species in OBIS, pull occurrence data
+  ntempani<- try(occurrence(i,geometry="POLYGON ((-150 23.5, 150 23.5, 150 66.5, -150 66.5, -150 23.5))"), silent=TRUE) #looking for species in OBIS, pull occurrence data
+  tropani<-try(occurrence(i,geometry = "POLYGON ((-150 -23.5, 150 -23.5, 150 23.5, -150 23.5, -150 -23.5))"), silent=TRUE)
+  stempani<-try(occurrence(i,geometry = "POLYGON ((-150 -66.5, 150 -66.5, 150 -23.5, -150 -23.5, -150 -66.5))"), silent=TRUE)
+  spolani<-try(occurrence(i,geometry = "POLYGON ((-150 -90, 150 -90, 150 -66.5, -150 -66.5, -150 -90))"), silent=TRUE)
+
+  occzones<-c(i,length(npolani),length(ntempani),length(tropani),length(stempani),length(spolani))
+  occani<-rbind(occani,occzones)
+  }
+
+colnames(occani)<-c("Name","NPol","NTemp","Trop","STemp","SPol")
+
+dim(occani)
+head(occani)
+
+
+#Trying a different different loop that depends on both the animal readin and the lists of species per zone that were generated earlier.
+
+allzonesphyla = NULL
+
+for (i in animals$V1){
+  npol_present<-match(i,npolbyphylum$V1)
+  ntemp_present<-match(i,ntempbyphylum$V1)
+  trop_present<-match(i,tropbyphylum$V1)
+  stemp_present<-match(i,stempbyphylum$V1)
+  spol_present<-match(i,spolbyphylum$V1)
+  
+ speciesname<-cbind(i, npol_present, ntemp_present, trop_present, stemp_present, spol_present)
+ allzonesphyla<-rbind(allzonesphyla,speciesname)
+ 
+ 
+}
+
+colnames(allzonesphyla)<-c("Species","Npol","Ntemp","Trop","Stemp","Spol")
+
+#ask if number is NA or not and then 
+
+allzonesphyla2<-allzonesphyla>0
+allzonesphyla3<-cbind(allzonesphyla[,1],allzonesphyla2[,2:6])
+
+#add phylum names using join, rename columns
+
+allzonesphyla4<-cbind(allzonesphyla3,as.character(animals$V2))
+colnames(allzonesphyla4)<-c("Species","Npol","Ntemp","Trop","Stemp","Spol","Phylum")
+
+#output the file
+
+write.csv(allzonesphyla4,"C:/Users/aecsk/Desktop/allspecies_by_zone.csv")
+
