@@ -101,11 +101,11 @@ spolfreqs<-table(spolbyphylum$V2)
 
 #extract files
 
-write.csv(npolbyphylum,"C:/Users/aecsk/Desktop/npolbyphylum.csv")
-write.csv(ntempbyphylum,"C:/Users/aecsk/Desktop/ntempbyphylum.csv")
-write.csv(tropbyphylum,"C:/Users/aecsk/Desktop/tropbyphylum.csv")
-write.csv(stempbyphylum,"C:/Users/aecsk/Desktop/stempbyphylum.csv")
-write.csv(spolbyphylum,"C:/Users/aecsk/Desktop/spolbyphylum.csv")
+write.csv(npolbyphylum,"C:/Users/aecsk/OneDrive/Desktop/npolbyphylum.csv")
+write.csv(ntempbyphylum,"C:/Users/aecsk/OneDrive/Desktop/ntempbyphylum.csv")
+write.csv(tropbyphylum,"C:/Users/aecsk/OneDrive/Desktop/tropbyphylum.csv")
+write.csv(stempbyphylum,"C:/Users/aecsk/OneDrive/Desktop/stempbyphylum.csv")
+write.csv(spolbyphylum,"C:/Users/aecsk/OneDrive/Desktop/spolbyphylum.csv")
 
 write.csv(npolfreqs,"C:/Users/aecsk/Desktop/npolfreqs.csv")
 write.csv(ntempfreqs,"C:/Users/aecsk/Desktop/ntempfreqs.csv")
@@ -176,5 +176,5 @@ colnames(allzonesphyla4)<-c("Species","Npol","Ntemp","Trop","Stemp","Spol","Phyl
 
 #output the file
 
-write.csv(allzonesphyla4,"C:/Users/aecsk/Desktop/allspecies_by_zone.csv")
+write.csv(allzonesphyla4,"C:/Users/aecsk/OneDrive/Desktop/allspecies_by_zone.csv")
 
