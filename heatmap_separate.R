@@ -4,7 +4,10 @@ library(cowplot)
 library(ggtree)
 
 
-traits<-read.table("C:/Users/aecsk/OneDrive/Desktop/traits_by_phylum.txt",header=T)
+#traits2<-read.table("C:/Users/aecsk/OneDrive/Desktop/traits_by_phylum.txt",header=T)
+
+#changing input file to fixed values from Jan 2021
+traits<-read.table("C:/Users/aecsk/OneDrive/Desktop/traits_jan12.txt",header=T)
 
 heatmap<-ggplot(data = traits, mapping = aes(x = Variable,
                                        y = Class_num,
