@@ -43,3 +43,45 @@ tree<- ggtree(tree51data, branch.length = 'none')
   #geom_tiplab(size=3)
 
 plot_grid(tree,heatmap)
+
+
+## doing this again with 58 taxa
+
+tree58data<-read.tree("C:/Users/aecsk/OneDrive/Desktop/tree58.tre")
+traits<-read.table("C:/Users/aecsk/OneDrive/Desktop/traits58_jan14.txt",header=T)
+
+heatmap<-ggplot(data = traits, mapping = aes(x = Variable,
+                                             y = Class_num,
+                                             fill = z_score)) +
+  geom_tile() +
+  scale_fill_gradient2(low = 'blue', mid = 'white', high = 'red')+
+  theme_bw()+
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(), 
+        panel.background = element_blank(), 
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        plot.background = element_blank(),)+
+  theme(legend.position="none") +
+  theme(axis.text.x=element_blank(),axis.text.y=element_blank())+
+  geom_hline(yintercept=4.5)+
+  geom_hline(yintercept=9.5)+
+  geom_hline(yintercept=16.5)+
+  geom_hline(yintercept=17.5)+
+  geom_hline(yintercept=18.5)+
+  geom_hline(yintercept=23.5)+
+  geom_hline(yintercept=24.5)+
+  geom_hline(yintercept=25.5)+
+  geom_hline(yintercept=27.5)+
+  geom_hline(yintercept=28.5)+
+  geom_hline(yintercept=31.5)+
+  geom_hline(yintercept=39.5)+
+  geom_hline(yintercept=41.5)+
+  geom_hline(yintercept=43.5)+
+  facet_grid(~Variable,switch = "x", scales = "free_x", space = "free_x")
+
+
+tree<- ggtree(tree58data, branch.length = 'none')
+#geom_tiplab(size=3)
+
+plot_grid(tree,heatmap)
