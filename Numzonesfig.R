@@ -5,8 +5,9 @@ library(ggplot2)
 numzones<-read.table("C:/Users/aecsk/OneDrive/Desktop/num_zones.txt",header=T)
 
 ggplot(data=numzones, aes(x=Number_zones, y=Proportion, fill=IsInSurvey)) +
-  geom_bar(stat="identity", position=position_dodge())+
-  xlab("\nNumber of Zones")+ylab("Proportion of Studies\n")+
+  geom_bar(stat="identity", colour=c("black"), position=position_dodge())+
+  scale_fill_manual(values=c("#CCCCCC","black"))+
+  xlab("\nNumber of Zones")+ylab("Proportion of Species\n")+
   theme_bw()+
   theme(axis.title.x = element_text(size=16), # remove x-axis labels
         axis.title.y = element_text(size=16), # remove y-axis labels

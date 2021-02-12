@@ -6,10 +6,10 @@ years<-read.table("C:/Users/aecsk/OneDrive/Desktop/years.txt",header=T)
 
 ggplot(data=years, aes(x=Year, y=Proportion, fill=IsInSurvey)) +
   geom_bar(stat="identity", colour=c("black"), position=position_dodge())+
-  scale_fill_manual(values=c("black","#CCCCCC"))+
-  xlab("\nYear of Description")+ylab("Proportion of Studies\n")+
-  annotate("segment", x = 1974, xend = 1974, y = 0.149, yend = 0.13, colour = "black", size=2,  arrow=arrow())+
-  annotate("segment", x = 1888, xend = 1888, y = 0.149, yend = 0.13, colour = "#cccccc", size=2,  arrow=arrow())+
+  scale_fill_manual(values=c("#CCCCCC", "black"))+
+  xlab("\nYear of Description")+ylab("Proportion of Species\n")+
+  annotate("segment", x = 1974, xend = 1974, y = 0.149, yend = 0.13, colour = "#cccccc", size=2,  arrow=arrow())+
+  annotate("segment", x = 1888, xend = 1888, y = 0.149, yend = 0.13, colour = "black", size=2,  arrow=arrow())+
   theme_bw()+
   theme(axis.title.x = element_text(size=16), # remove x-axis labels
         axis.title.y = element_text(size=16), # remove y-axis labels
