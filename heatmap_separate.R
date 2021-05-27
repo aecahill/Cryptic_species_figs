@@ -7,7 +7,9 @@ library(ggtree)
 #traits2<-read.table("C:/Users/aecsk/OneDrive/Desktop/traits_by_phylum.txt",header=T)
 
 #changing input file to fixed values from Jan 2021
-traits<-read.table("C:/Users/aecsk/OneDrive/Desktop/traits_jan12.txt",header=T)
+traits<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/traits_jan12.txt",header=T)
+tree51data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/tree51.tre")
+
 
 heatmap<-ggplot(data = traits, mapping = aes(x = Variable,
                                        y = Class_num,
@@ -39,7 +41,7 @@ heatmap<-ggplot(data = traits, mapping = aes(x = Variable,
   facet_grid(~Variable,switch = "x", scales = "free_x", space = "free_x")
   
 
-tree<- ggtree(tree51data, branch.length = 'none')
+tree<-ggtree(tree51data, branch.length = 'none')
   #geom_tiplab(size=3)
 
 plot_grid(tree,heatmap)

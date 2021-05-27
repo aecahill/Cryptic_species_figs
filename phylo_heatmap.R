@@ -25,7 +25,7 @@ phylo.heatmap(tree58data,traits58,standardize=T,fsize=c(0.45,1,1),colors=colors)
 #For 51 classes, ie only css
 
 #read in tree, newick format
-tree51data<-read.tree("C:/Users/aecsk/OneDrive/Desktop/tree51.tre")
+tree51data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/tree51.tre")
 
 #read in matrix of continuous traits
 traits51<-as.matrix(read.table("C:/Users/aecsk/OneDrive/Desktop/traits51.txt"))
