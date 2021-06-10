@@ -2,7 +2,7 @@
 
 library(ggplot2)
 
-numzones<-read.table("C:/Users/aecsk/OneDrive/Desktop/num_zones.txt",header=T)
+numzones<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/num_zones.txt",header=T)
 
 ggplot(data=numzones, aes(x=Number_zones, y=Proportion, fill=IsInSurvey)) +
   geom_bar(stat="identity", colour=c("black"), position=position_dodge())+
