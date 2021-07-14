@@ -10,7 +10,7 @@ library(robis)
 animalia<-checklist(taxonid=2)   #pulls list of all animals from OBIS
 animalspp<-animalia[animalia$taxonRank=="Species",]   #ONLY use those that are ID'd to the species level
 animals<-as.data.frame(cbind(animalspp$scientificName,animalspp$phylum))  #create table of names and phyla
-
+animals2<-na.omit(animals)
 
 ## Part 2: get occurrences
 
@@ -18,17 +18,16 @@ diffs = NULL
 colname<- c("scientificName", "decimalLatitude", "decimalLongitude")
 species_diffs = NULL
 
-for (i in animals$V1) { 
+for (i in animals2$V1[5603:120780]) { 
   occ<-try(occurrence(i,fields=colname),silent=TRUE)
-  colnames(occ)<-c("Name","Longitude","Latitude")
-  range_long<-max(occ$Longitude, na.rm=TRUE) - min(occ$Longitude, na.rm=TRUE)
-  range_lat<-max(occ$Latitude, na.rm=TRUE) - min(occ$Latitude, na.rm=TRUE)
-  diffs<-cbind(i,range_long,range_lat)
-  species_diffs = as.data.frame(rbind(species_diffs,diffs))
+  try(colnames(occ)<-c("Name","Longitude","Latitude"),silent = TRUE)
+  range_long<-try(max(occ$Longitude, na.rm=TRUE) - min(occ$Longitude, na.rm=TRUE),silent=TRUE)
+  range_lat<-try(max(occ$Latitude, na.rm=TRUE) - min(occ$Latitude, na.rm=TRUE),silent=TRUE)
+  diffs<-try(cbind(i,range_long,range_lat),silent=TRUE)
+  species_diffs = try(as.data.frame(rbind(species_diffs,diffs)),silent=TRUE)
 
   }
 
-# Find max and min latitude, max and min longitude
 # Find difference; convert to km
 # End goal: A table with species name, diff lat, diff long, which is bigger (lat or long)
 
