@@ -18,7 +18,7 @@ diffs = NULL
 colname<- c("scientificName", "decimalLatitude", "decimalLongitude")
 species_diffs = NULL
 
-for (i in animals2$V1[5603:120780]) { 
+for (i in animals2$V1) { 
   occ<-try(occurrence(i,fields=colname),silent=TRUE)
   try(colnames(occ)<-c("Name","Longitude","Latitude"),silent = TRUE)
   range_long<-try(max(occ$Longitude, na.rm=TRUE) - min(occ$Longitude, na.rm=TRUE),silent=TRUE)
@@ -26,8 +26,22 @@ for (i in animals2$V1[5603:120780]) {
   diffs<-try(cbind(i,range_long,range_lat),silent=TRUE)
   species_diffs = try(as.data.frame(rbind(species_diffs,diffs)),silent=TRUE)
 
-  }
+}
 
-# Find difference; convert to km
+specieslist<-read.csv("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/specieslist.csv")
+
+species_diffstable = NULL
+in_survey = NULL
+
+for (i in species_diffs$i) {
+  b <- i %in% specieslist$SpeciesName
+  in_survey <- rbind(in_survey,b)
+  
+}
+
+species_diffstable = cbind(species_diffs,is_in_survey)
+
+write.csv(species_diffs,"C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/species_diffs.csv")
+
 # End goal: A table with species name, diff lat, diff long, which is bigger (lat or long)
 
