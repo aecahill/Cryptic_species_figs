@@ -22,7 +22,16 @@ species_diffs = NULL
 for (i in animals2$V1) { 
   occ<-try(occurrence(i,fields=colname),silent=TRUE)
   try(colnames(occ)<-c("Name","Longitude","Latitude"),silent = TRUE)
-  range_long<-try(max(occ$Longitude, na.rm=TRUE) - min(occ$Longitude, na.rm=TRUE),silent=TRUE)
+  #range_long<-try(max(occ$Longitude, na.rm=TRUE) - min(occ$Longitude, na.rm=TRUE),silent=TRUE)
+  #The below code is the new longitude code
+  if ((max(occ$decimalLongitude)>27) & (min(occ$decimalLongitude)<(-67))) {  #I got these numbers from marine regions
+    #27 is the western edge of the Indian Ocean and -67 is the eastern edge of the Pacific
+    range_long<-(180-max(occ$decimalLongitude))+(180-abs(min(occ$decimalLongitude)))  
+  } else {
+    range_long<-max(occ$decimalLongitude) - min(occ$decimalLongitude) #this is the original line and will pick up any species not purely indo-Pacific
+    #a species must be TRANS-pacific (across the 180 mark) to meet the first statement
+  }
+  
   range_lat<-try(max(occ$Latitude, na.rm=TRUE) - min(occ$Latitude, na.rm=TRUE),silent=TRUE)
   diffs<-try(cbind(i,range_long,range_lat),silent=TRUE)
   species_diffs = try(as.data.frame(rbind(species_diffs,diffs)),silent=TRUE)
