@@ -19,19 +19,19 @@ diffs = NULL
 colname<- c("scientificName", "decimalLatitude", "decimalLongitude")
 species_diffs = NULL
 
-for (i in animals2$V1) { 
+for (i in animals2$V1[1000:1003]) { 
   occ<-try(occurrence(i,fields=colname),silent=TRUE)
   try(colnames(occ)<-c("Name","Longitude","Latitude"),silent = TRUE)
   #range_long<-try(max(occ$Longitude, na.rm=TRUE) - min(occ$Longitude, na.rm=TRUE),silent=TRUE)
   #The below code is the new longitude code
-  if ((max(occ$decimalLongitude)>27) & (min(occ$decimalLongitude)<(-67))) {  #I got these numbers from marine regions
-    #27 is the western edge of the Indian Ocean and -67 is the eastern edge of the Pacific
-    east<-occ[occ$decimalLongitude > 0,]
-    west<-occ[occ$decimalLongitude < 0,]
-    range_long<-(180-min(east$decimalLongitude))+(180-abs(max(west$decimalLongitude)))  
+  range_long1<-max(occ$Longitude) - min(occ$Longitude) #this is the original line and will pick up any species not purely indo-Pacific
+  east<-occ[occ$Longitude > 0,]
+  west<-occ[occ$Longitude < 0,]
+  range_long2<-(180-min(east$Longitude))+(180-abs(max(west$Longitude)))  
+  if (range_long1 < range_long2) {
+    range_long<-range_long1
   } else {
-    range_long<-max(occ$decimalLongitude) - min(occ$decimalLongitude) #this is the original line and will pick up any species not purely indo-Pacific
-    #a species must be TRANS-pacific (across the 180 mark) to meet the first statement
+    range_long<-range_long2
   }
   
   range_lat<-try(max(occ$Latitude, na.rm=TRUE) - min(occ$Latitude, na.rm=TRUE),silent=TRUE)
@@ -40,7 +40,7 @@ for (i in animals2$V1) {
 
 }
 
-write.csv(species_diffs,"C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/species_diffs.csv")
+write.csv(species_diffs,"C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/species_diffs_July30.csv")
 
 
 ## Here is where I checked to see if the species contain CS based on the survey
