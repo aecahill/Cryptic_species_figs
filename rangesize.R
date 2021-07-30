@@ -26,7 +26,9 @@ for (i in animals2$V1) {
   #The below code is the new longitude code
   if ((max(occ$decimalLongitude)>27) & (min(occ$decimalLongitude)<(-67))) {  #I got these numbers from marine regions
     #27 is the western edge of the Indian Ocean and -67 is the eastern edge of the Pacific
-    range_long<-(180-max(occ$decimalLongitude))+(180-abs(min(occ$decimalLongitude)))  
+    east<-occ[occ$decimalLongitude > 0,]
+    west<-occ[occ$decimalLongitude < 0,]
+    range_long<-(180-min(east$decimalLongitude))+(180-abs(max(west$decimalLongitude)))  
   } else {
     range_long<-max(occ$decimalLongitude) - min(occ$decimalLongitude) #this is the original line and will pick up any species not purely indo-Pacific
     #a species must be TRANS-pacific (across the 180 mark) to meet the first statement
