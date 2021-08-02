@@ -28,7 +28,11 @@ for (i in animals2$V1) {
   east<-occ[occ$Longitude > 0,]
   west<-occ[occ$Longitude < 0,]
   range_long2<-(180-try(min(east$Longitude,na.rm=TRUE),silent=TRUE))+(180-abs(try(max(west$Longitude,na.rm=TRUE),silent=TRUE)))  
-  if (range_long1 < range_long2) {
+  if (range_long1 == -Inf) {
+    range_long<-range_long2
+    } else if (range_long2 == -Inf)  {
+    range_long<-range_long1
+  } else if (range_long1 < range_long2) {
     range_long<-range_long1
   } else {
     range_long<-range_long2
