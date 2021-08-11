@@ -2,10 +2,10 @@
 
 library(ggplot2)
 
-years<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/years.txt",header=T)
+years<-read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/years.txt",header=T)
 
 #adding ratios to plot
-yearratios<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/year_ratios.txt",header=T)
+yearratios<-read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/year_ratios.txt",header=T)
 
 #With year ratios, where ratio is of the NUMBERS of species in CS over NS
 ggplot() +
@@ -15,7 +15,9 @@ ggplot() +
   xlab("\nYear of Description")+ylab("Proportion of Species\n")+
   annotate("segment", x = 1974, xend = 1974, y = 0.149, yend = 0.13, colour = "#cccccc", size=2,  arrow=arrow())+
   annotate("segment", x = 1888, xend = 1888, y = 0.149, yend = 0.13, colour = "black", size=2,  arrow=arrow())+
-  theme_bw()+
+  annotate("segment", x = 1859, xend = 1859, y = 0.149, yend = 0.13, colour = "black", size=1, linetype="dashed",  arrow=arrow())+
+  annotate("segment", x = 1942, xend = 1942, y = 0.149, yend = 0.13, colour = "#cccccc", size=1,  linetype="dashed", arrow=arrow())+
+    theme_bw()+
   theme(axis.title.x = element_text(size=16), # remove x-axis labels
         axis.title.y = element_text(size=16), # remove y-axis labels
         panel.background = element_blank(), 
@@ -43,7 +45,7 @@ ggplot() +
 
 #plot looking at correlation btwn number of zones and year
 
-zonesandyear<-na.omit(read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/zonesandyear.txt",header=T))
+zonesandyear<-na.omit(read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/zonesandyear.txt",header=T))
 
 ggplot(data=zonesandyear, aes(x=as.character(nb_zones), y=year)) +
   #geom_point(alpha=0.1,cex=0.1)+
