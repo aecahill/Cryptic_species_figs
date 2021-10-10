@@ -2,12 +2,12 @@
 
 library(ggplot2)
 
-yearphyla<-na.omit(read.table("C:/Users/aecsk/OneDrive/Desktop/year_all_spp.txt",header=T))
+yearphyla<-na.omit(read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/year_all_spp.txt",header=T))
 
-ggplot(data=yearphyla, aes(x=Phylum, y=year,fill=isInSurvey)) +
+year_phylum<-ggplot(data=yearphyla, aes(x=Phylum, y=year,fill=isInSurvey)) +
   #geom_point(alpha=0.1,cex=0.1)+
   #geom_jitter(alpha=0.1,cex=0.1,width=0.1)+
-  geom_boxplot(alpha=0.6)+
+  geom_boxplot(alpha=0.6, width=0.65)+
   scale_fill_manual(values=c("black","#CCCCCC"))+
   coord_flip()+
   ylab("\nYear of Description")+xlab("Phylum\n")+

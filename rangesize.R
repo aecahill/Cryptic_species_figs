@@ -60,6 +60,7 @@ species_diffstable = cbind(species_diffs,in_survey)
 
 write.csv(species_diffstable,"C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/species_diffstable.csv")
 
+species_diffstable2<-read.csv("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/species_diffstable.csv")
 
 #Attempting some stats
 
@@ -67,7 +68,7 @@ write.csv(species_diffstable,"C:/Users/aecsk/Documents/GitHub/Cryptic_species_fi
 #AND removing data with no longitude variation (range = 0)
 
 #sort on longitude
-specieslong<-species_diffstable[order(species_diffstable$range_long),]
+specieslong<-species_diffstable2[order(species_diffstable2$range_long),]
 
 #remove -INF and zero values
 #Note: I just did this by figuring out where they were in the sorted data frame; did not write code for it.
@@ -81,11 +82,43 @@ tapply(as.numeric(specieslong_noNA$range_long),specieslong_noNA$in_survey,sd)
 
 #repeat for latitude
 
-specieslat<-species_diffstable[order(species_diffstable$range_lat),]
+specieslat<-species_diffstable2[order(species_diffstable2$range_lat),]
 specieslat_noNA<-specieslat[30801:120772,]
 
 tapply(as.numeric(specieslat_noNA$range_lat),specieslat_noNA$in_survey,mean)
 tapply(as.numeric(specieslat_noNA$range_lat),specieslat_noNA$in_survey,sd)
 
 
+long<-ggplot(specieslong_noNA,aes(y=as.numeric(as.character(range_long)),x=in_survey))+
+  #geom_jitter(position=position_jitter(0.2),alpha=0.75, cex=1)+
+  geom_boxplot(alpha=0.75)+
+  stat_summary(fun=mean, geom="point", shape=18,
+               size=5, color="black")+
+  #stat_summary(fun.data=data_summary, color="black", size=1)+
+  labs(x ="Is In Survey", y = "Longitudinal Range (degrees)")+
+  theme_bw()+
+  theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
 
+lat<-ggplot(specieslat_noNA,aes(y=as.numeric(as.character(range_lat)),x=in_survey))+
+  #geom_jitter(position=position_jitter(0.2),alpha=0.75, cex=1)+
+  geom_boxplot(alpha=0.75)+
+  stat_summary(fun=mean, geom="point", shape=18,
+               size=5, color="black")+
+  #stat_summary(fun.data=data_summary, color="black", size=1)+
+  labs(x ="Is In Survey", y = "Latitudinal Range (degrees)")+
+  theme_bw()+
+  theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+library(cowplot)
+
+plot_grid(lat,long,labels=c("A","B"),ncol=2)
