@@ -4,7 +4,7 @@ library(ggplot2)
 
 numzones<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/num_zones.txt",header=T)
 
-ggplot(data=numzones, aes(x=Number_zones, y=Proportion, fill=IsInSurvey)) +
+ggplot(data=numzones, aes(x=Number_zones, y=Proportion, fill=CS)) +
   geom_bar(stat="identity", colour=c("black"), position=position_dodge())+
   scale_fill_manual(values=c("#CCCCCC","black"))+
   xlab("\nNumber of Zones")+ylab("Proportion of Species\n")+

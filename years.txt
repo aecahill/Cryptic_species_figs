@@ -1,4 +1,4 @@
-Year	IsInSurvey	Proportion
+Year	CS	Proportion
 1760	No	0.005133929
 1770	No	0.001116071
 1780	No	0.001587302

@@ -2,14 +2,14 @@
 
 library(ggplot2)
 
-years<-read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/years.txt",header=T)
+years<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/years.txt",header=T)
 
 #adding ratios to plot
-yearratios<-read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/year_ratios.txt",header=T)
+yearratios<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/year_ratios.txt",header=T)
 
 #With year ratios, where ratio is of the NUMBERS of species in CS over NS
 years<-ggplot() +
-  geom_bar(data=years, aes(x=Year, y=Proportion, fill=IsInSurvey),stat="identity", colour=c("black"), position=position_dodge())+
+  geom_bar(data=years, aes(x=Year, y=Proportion, fill=CS),stat="identity", colour=c("black"), position=position_dodge())+
   scale_fill_manual(values=c("#CCCCCC", "black"))+
   geom_point(data=yearratios,aes(x=Year, y=Ratio),shape = 21, colour = "blue", fill = "white", size = 1, stroke = 2)+
   xlab("\nYear of Description")+ylab("Proportion of Species\n")+
@@ -63,7 +63,7 @@ ggplot(data=zonesandyear, aes(x=as.character(nb_zones), y=year)) +
 
 yearphyla<-na.omit(read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/year_all_spp.txt",header=T))
 
-year_phylum<-ggplot(data=yearphyla, aes(x=Phylum, y=year,fill=IsInSurvey)) +
+year_phylum<-ggplot(data=yearphyla, aes(x=Phylum, y=year,fill=CS)) +
   #geom_point(alpha=0.1,cex=0.1)+
   #geom_jitter(alpha=0.1,cex=0.1,width=0.1)+
   geom_boxplot(alpha=0.6, width=0.65)+
@@ -71,6 +71,7 @@ year_phylum<-ggplot(data=yearphyla, aes(x=Phylum, y=year,fill=IsInSurvey)) +
   coord_flip()+
   ylab("\nYear of Description")+xlab("Phylum\n")+
   theme_bw()+
+  theme(legend.position="none")+
   theme(axis.title.x = element_text(size=16), # remove x-axis labels
         axis.title.y = element_text(size=16), # remove y-axis labels
         panel.background = element_blank(), 
@@ -78,4 +79,4 @@ year_phylum<-ggplot(data=yearphyla, aes(x=Phylum, y=year,fill=IsInSurvey)) +
         panel.grid.minor = element_blank(),  #remove minor-grid labels
         plot.background = element_blank())
 
-plot_grid(years,year_phylum,labels=c("A","B"),ncol=2)
+plot_grid(year_phylum,years,labels=c("A","B"),ncol=2)

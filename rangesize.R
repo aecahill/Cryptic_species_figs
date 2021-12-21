@@ -101,7 +101,7 @@ long<-ggplot(specieslong_noNA,aes(y=as.numeric(as.character(range_long)),x=in_su
   stat_summary(fun=mean, geom="point", shape=18,
                size=5, color="black")+
   #stat_summary(fun.data=data_summary, color="black", size=1)+
-  labs(x ="Is In Survey", y = "Longitudinal Range (degrees)")+
+  labs(x ="Contains CS", y = "Longitudinal Range (degrees)")+
   theme_bw()+
   theme(legend.position="none")+
   theme(panel.background = element_blank(), 
@@ -116,7 +116,7 @@ lat<-ggplot(specieslat_noNA,aes(y=as.numeric(as.character(range_lat)),x=in_surve
   stat_summary(fun=mean, geom="point", shape=18,
                size=5, color="black")+
   #stat_summary(fun.data=data_summary, color="black", size=1)+
-  labs(x ="Is In Survey", y = "Latitudinal Range (degrees)")+
+  labs(x ="Contains CS", y = "Latitudinal Range (degrees)")+
   theme_bw()+
   theme(legend.position="none")+
   theme(panel.background = element_blank(), 

@@ -1,4 +1,4 @@
-Number_zones	IsInSurvey	Number	Proportion
+Number_zones	CS Number	Proportion
 1	Yes	125	0.254582485
 2	Yes	159	0.323828921
 3	Yes	159	0.323828921
