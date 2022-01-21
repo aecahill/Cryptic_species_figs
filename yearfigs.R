@@ -2,14 +2,14 @@
 
 library(ggplot2)
 
-years<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/years.txt",header=T)
+yearsdata<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/years.txt",header=T)
 
 #adding ratios to plot
 yearratios<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/year_ratios.txt",header=T)
 
 #With year ratios, where ratio is of the NUMBERS of species in CS over NS
 years<-ggplot() +
-  geom_bar(data=years, aes(x=Year, y=Proportion, fill=CS),stat="identity", colour=c("black"), position=position_dodge())+
+  geom_bar(data=yearsdata, aes(x=Year, y=Proportion, fill=CS),stat="identity", colour=c("black"), position=position_dodge())+
   scale_fill_manual(values=c("#CCCCCC", "black"))+
   geom_point(data=yearratios,aes(x=Year, y=Ratio),shape = 21, colour = "blue", fill = "white", size = 1, stroke = 2)+
   xlab("\nYear of Description")+ylab("Proportion of Species\n")+
@@ -45,7 +45,7 @@ ggplot() +
 
 #plot looking at correlation btwn number of zones and year
 
-zonesandyear<-na.omit(read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/zonesandyear.txt",header=T))
+zonesandyear<-na.omit(read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/zonesandyear.txt",header=T))
 
 ggplot(data=zonesandyear, aes(x=as.character(nb_zones), y=year)) +
   #geom_point(alpha=0.1,cex=0.1)+

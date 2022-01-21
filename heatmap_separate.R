@@ -130,11 +130,11 @@ heatmap<-ggplot(data = traits57, mapping = aes(x = Variable,
 
 ## 58 classes, new results, July 2021
 
-tree58data<-read.tree("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/tree58.tre")
+tree58data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/tree58.tre")
 
 tree58<-ggtree(tree58data)
 
-traits58<-read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/traits_58_July27.txt",header=T)
+traits58<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/traits_58_Jan20.txt",header=T)
 
 heatmap<-ggplot(data = traits58, mapping = aes(x = Variable,
                                                y = Class_num,
