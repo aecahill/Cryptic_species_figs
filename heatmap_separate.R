@@ -134,7 +134,7 @@ tree58data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/tree
 
 tree58<-ggtree(tree58data)
 
-traits58<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/traits_58_Jan20.txt",header=T)
+traits58<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/traits_58_Feb62022.txt",header=T)
 
 heatmap<-ggplot(data = traits58, mapping = aes(x = Variable,
                                                y = Class_num,
