@@ -44,11 +44,15 @@ ggplot() +
         plot.background = element_blank())
 
 
-#plot looking at correlation btwn number of zones and year
+#plot looking at correlation btwn number of zones and year, edited JUNE 21 2022
 
 zonesandyear<-na.omit(read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/zonesandyear.txt",header=T))
 
-ggplot(data=zonesandyear, aes(x=as.character(nb_zones), y=year)) +
+nomsppzones<-cbind(nomspp$scientificName,as.numeric(nomspp$nb_zones),nomspp$yearb,nomspp$has_CS)
+colnames(nomsppzones)<-c("Name","nb_zones","year","has_CS")
+nomsppzonesnona<-as.data.frame(na.omit(nomsppzones))
+
+ggplot(data=nomsppzonesnona, aes(x=as.character(nb_zones), y=as.numeric(year))) +
   #geom_point(alpha=0.1,cex=0.1)+
   geom_jitter(alpha=0.1,cex=0.1,width=0.1)+
   geom_boxplot(alpha=0.6)+
