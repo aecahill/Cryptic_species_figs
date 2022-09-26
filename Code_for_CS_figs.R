@@ -4,6 +4,7 @@ library(ggplot2)
 library(cowplot)
 library(dplyr)
 library(ggtree)
+library(forcats)
 
 # Figure 2: Boxplots through time
 yearsdata<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/years.txt",header=T)
@@ -14,7 +15,7 @@ nomspp<-read.csv("C:/Users/aecsk/Desktop/nomspp.csv",header=TRUE,sep=";")
 
 years<-ggplot() +
   geom_bar(data=yearsdata, aes(x=Year, y=Proportion, fill=has_CS),stat="identity", colour=c("black"), position=position_dodge())+
-  scale_fill_manual(values=c("#CCCCCC", "black"))+
+  scale_fill_manual(values=c("#CCCCCC", "#00000099"))+
   geom_point(data=yearratios,aes(x=Year, y=Ratio),shape = 21, colour = "#FF3300", fill = "#FF3300", size = 1, stroke = 2)+
   xlab("\nYear of Description")+ylab("Proportion of Species\n")+
   theme_bw()+
@@ -48,7 +49,7 @@ year_reduced2<-rbind(year_annelid2,year_arthropod2,year_bryozoa2,year_chordata2,
 
 year_phylum_reduced2<-year_reduced2 %>%
   mutate(phylum = fct_relevel(phylum, "Nemertea","Platyhelminthes","Nematoda","Bryozoa","Echinodermata","Porifera","Cnidaria","Annelida","Chordata","Mollusca","Arthropoda")) %>%
-  ggplot( aes(x=phylum, y=yearb,fill=has_CS)) +
+  ggplot(aes(x=phylum, y=yearb,fill=has_CS)) +
   geom_boxplot(alpha=0.6, width=0.65)+
   scale_fill_manual(values=c("#CCCCCC","black"))+
   coord_flip()+
