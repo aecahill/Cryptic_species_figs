@@ -83,13 +83,13 @@ ggplot(data=numzones, aes(x=Number_zones, y=Proportion, fill=has_CS)) +
 
 ## Figure 5 -- Phylogenetic tree and heatmap
 
-tree58data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/tree58.tre")
-traits58<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/traits_58_Feb62022.txt",header=T)
+tree57data<-read.tree("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/57_tree.tre")
+traits57<-read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/traits_57_aug2023.txt",header=T)
 
 
-tree58<-ggtree(tree58data)
+tree57<-ggtree(tree57data)
 
-heatmap<-ggplot(data = traits58, mapping = aes(x = Variable,
+heatmap<-ggplot(data = traits57, mapping = aes(x = Variable,
                                                y = Class_num,
                                                fill = z_score)) +
   geom_tile() +
