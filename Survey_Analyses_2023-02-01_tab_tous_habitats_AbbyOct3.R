@@ -1,6 +1,5 @@
 # Statistical explorations of the survey dataset (each line is a cryptic species complex, some of which idetified at species level, others at genus.
 # Notes for Oct 3 from Abby:
-# The Eco Differentiation input needs some cleaning (one weirdo value)
 # Still unclear if I need to rerun the OBIS code, and I'm not sure how to check that - think about
 # I would like to also do these analyses with a version of WORMS that considers Copepods/Thecostraca, but again, not sure how to do this
 
@@ -14,7 +13,7 @@ list.files()
 
 survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
 #survey <- read.csv2(file="670spp_65var_HKKv3_2023-01-17.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
-nomsp <-read.csv2(file="C:/Users/aecsk/Downloads/file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
 
 # cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
@@ -263,7 +262,7 @@ colnames(tab1) <-c("Diag_morphoDiff","No_morphoDiff","Statistic_morphoDiff")
 tab2<-table(survey$phylum_worms,survey$Geo_dif3)
 colnames(tab2)
 tab3<-table(survey$phylum_worms,survey$Eco_diff)
-colnames(tab3)<-c("Eco_diff_F","Eco_diff_T","Eco_diff_T_SST")  #FIX THIS!
+colnames(tab3)<-c("Eco_diff_F","Eco_diff_T")  
 tab4<-table(survey$phylum_worms,survey$larv.pktro)
 colnames(tab4)<-c("larv.pktro_F","larv.pktro_T")
 tab5<-table(survey$phylum_worms,survey$larv.leci)
