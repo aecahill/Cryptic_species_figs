@@ -1,0 +1,184 @@
+---
+title: "Testing Morphological Differentiation against HKK and reproductive investment"
+
+output: html_document
+date: "2023-10-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+```
+
+```{r}
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(vioplot)
+library(bestglm)
+library(tidyr)
+
+survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
+#survey <- read.csv2(file="670spp_65var_HKKv3_2023-01-17.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
+nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+bio<-read.csv2(file="input_BIOLOGY_classes.csv")
+
+# cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
+#survey <-select(survey, -c(2:9))  # <- Abby commented this out because the old and new versions of 'survey' do not have the same number of columns in the same order. WORK WITH NAMES.
+# reintroduce genus but several possibilities: solution below not OK for CS at genus level (no data), can also use NameBoforeCor instead of acceptedName
+survey$genus <-word(survey$acceptedName_wormsV1,1)
+survey$genusBC <-word(survey$NameBeforeCor,1) # see if this genusBC changes results / genus.
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
+survey$Geo_dif3 <-survey$Geo_diff
+levels(survey$Geo_dif3)<-c("","Allopatric", "Allopatric", "Allopatric","Sympatric","Sympatric, Allopatric", "Sympatric, Allopatric", "Sympatric, Allopatric")
+levels(survey$Geo_dif3)<-c(NA, "Allopatric","Sympatric","Sympatric, Allopatric")
+# add booleans for geographical differentiation and morphological differentiation variables
+survey$symp    <- str_detect(survey$Geo_diff,"Sympatric")
+survey$sympara <- str_detect(survey$Geo_diff,"Sympatric") | str_detect(survey$Geo_diff,"Parapatric")
+survey$allop   <- str_detect(survey$Geo_diff,"Allopatric")
+survey$NoMorphoDiff    <- survey$Morpho_diff=="No differentiation"
+survey$StatMorphoDiff  <- survey$Morpho_diff=="Statistic"
+survey$DiagMorphoDiff  <- survey$Morpho_diff=="Diagnostic"
+# add biological traits of the class to which the CScpx belongs
+survey$phylum_class <-paste0(survey$phylum_worms,"_",survey$class_worms)
+survey$hard_skeleton  <- factor(bio$hard_skeleton[match(survey$phylum_class,bio$phylum_class)])
+survey$ferti          <- factor(bio$ferti[match(survey$phylum_class,bio$phylum_class)])
+survey$image          <- factor(bio$image[match(survey$phylum_class,bio$phylum_class)])
+survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylum_class)])
+
+
+```
+
+#Question 1: We have three classes of CS: no difference (CSss), Stat difference, and Diag difference.
+Are these caused by different processes? (This is trying to get at neutral evolution in cases of high Ne)
+Anne's hypothesis: neutral morphological evolution (prediction: high Ne -> more diversity -> statistic differentiation but no diagnostic diff. in diverged species due to character overlap)
+Anne's other hypothesis: stabilizing selection : high Ne -> efficient sel° -> + cases with « no Morpho differentiation ». 
+
+# To test:
+
+1. Let's look at HKK3. HKK3 is a proxy for Ne, where habitats are more or less connected. 
+
+```{r cars}
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+Hkk_count<-table(surveymorpho$HKKv3)
+morphodiff<-table(surveymorpho$Morpho_diff,surveymorpho$HKKv3) 
+stat_diag<-morphodiff[3,]/morphodiff[1,]
+stat_anydiff<-morphodiff[3,]/(morphodiff[3,]+morphodiff[1,])
+stat_total<-morphodiff[3,]/Hkk_count
+diag_total<-morphodiff[1,]/Hkk_count
+nod_total<-morphodiff[2,]/Hkk_count
+HKKtable<-rbind(stat_total,diag_total,nod_total)
+morphodiff 
+HKKtable
+chisq.test(surveymorpho$Morpho_diff,surveymorpho$HKKv3)
+```
+
+Results:
+- I think we need to ignore the first column (too few cases)
+- Diagnostic characters show a decline as HKK increases - threshold between 25 and 100
+- At large HKK, very few diagnostic traits
+
+
+```{r}
+HKKtable2<-pivot_longer(as.data.frame(HKKtable), cols=1:6, names_to = "HKK",
+             values_to = "Percent", values_drop_na = FALSE)
+HKKtable2$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Statistical","Statistical","Diagnostic","Diagnostic","Diagnostic","Diagnostic","Diagnostic","Diagnostic","No_Difference","No_Difference","No_Difference","No_Difference","No_Difference","No_Difference")
+HKKtable2["HKK"][HKKtable2["HKK"] == "1"] <- "A1"
+HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "B2"
+HKKtable2["HKK"][HKKtable2["HKK"] == "10"] <- "C10"
+HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "D25"
+HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "E100"
+HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "F1000"
+
+ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+```
+
+2. Ok, now let's look at this by reproductive investment. (Idea from Romiguier et al. 2014, where genetic diversity is related to investment. They are looking at pi, but connect it verbally to Ne.)
+
+First, I need to group the larval types into "large" and "small" reproductive investments.
+(These data are still a mess, and I should clean them up before we do anything with the results, e.g. some are listed as 'viviparous'.) For now, if larvae are either planktotrophic or pelagic, I've classified as low investment. If lecithotrophic or dd, high.
+
+```{r}
+#Make dataframe of the species with larvae recorded
+surveylarva<-filter(survey, larv.pktro != "NA") #this works because if NA, there's nothing for any of the larval columns
+
+repro_invest<-c()
+
+for (i in 1:length(surveylarva$NameBeforeCor)) {
+  if (surveylarva[i,77] == TRUE)
+    b<-"low"
+  else if (surveylarva[i,80] == TRUE)
+    b<- "low"
+  else if (surveylarva[i,78] == TRUE)
+    b<-"high"
+  else if (surveylarva[i,79] == TRUE)
+    b<-"high"
+  else
+    b<-NA
+    
+repro_invest<-c(repro_invest,b)
+  
+}
+
+surveylarva<-cbind(surveylarva,repro_invest)
+
+```
+
+OK, let's do the tests now.
+
+```{r}
+table(surveylarva$repro_invest,surveylarva$Morpho_diff)
+chisq.test(surveylarva$repro_invest,surveylarva$Morpho_diff)
+
+
+```
+
+For now (Oct 5), result is not significant. But I want to clean up the data and try again.
+
+
+3. Trying Morpho and Geo with sym/allo column removed
+
+```{r}
+surveymorpho<-filter(survey, Morpho_diff != "NA")
+surveymorpho2<-filter(surveymorpho, Geo_dif3 != "Sympatric, Allopatric")
+#this removes cases where there are both options, n=12
+#285 cases remaining where there is morpho data AND spp are either sympatric or allopatric
+
+table(surveymorpho2$Morpho_diff,surveymorpho2$Geo_dif3)
+chisq.test(surveymorpho2$Morpho_diff,surveymorpho2$Geo_dif3)
+
+
+geomorpho<-table(as.numeric(surveymorpho2$Morpho_diff),as.numeric(surveymorpho2$Geo_dif3))
+geomorpho
+chisq.test(as.numeric(surveymorpho2$Morpho_diff),as.numeric(surveymorpho2$Geo_dif3))
+
+```
+
+Ok, the table makes it look like it's still considering the sym/allo cases, but the chisquare tests are the same in both cases. 
+
+SO -- there is an association between morpho diff and geo diff.
+
+```{r}
+library(ggmosaic)
+
+ggplot(data = surveymorpho2) +
+  geom_mosaic(aes(x = product(Morpho_diff,Geo_dif3), fill=Morpho_diff), na.rm=TRUE)+
+  labs(x ="Morpho Diff", y = "Geo Diff")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+
+```
+
+FOR SOME REASON I still need to get rid of that sym/allo.
+
+Seems like for species in sympatry, it's more likely that they will be statistically differentiated. Does this go in the large Ne direction?
+
+Should I be making mosaic plots or calculating percentages for stacked bars? Think this through. 
+
+4. HKK avec Geo_dif?
