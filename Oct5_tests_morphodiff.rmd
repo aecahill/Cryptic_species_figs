@@ -1,5 +1,5 @@
 ---
-title: "Testing Morphological Differentiation against HKK and reproductive investment"
+title: "Testing Morphological Differentiation against various factors"
 
 output: html_document
 date: "2023-10-05"
@@ -16,6 +16,7 @@ library(ggplot2)
 library(vioplot)
 library(bestglm)
 library(tidyr)
+library(ggmosaic)
 
 survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
 #survey <- read.csv2(file="670spp_65var_HKKv3_2023-01-17.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
@@ -48,7 +49,8 @@ survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylu
 
 ```
 
-#Question 1: We have three classes of CS: no difference (CSss), Stat difference, and Diag difference.
+## Big Question 1: Hypotheses of what causes CS (related to Ne)
+#1. We have three classes of CS: no difference (CSss), Stat difference, and Diag difference.
 Are these caused by different processes? (This is trying to get at neutral evolution in cases of high Ne)
 Anne's hypothesis: neutral morphological evolution (prediction: high Ne -> more diversity -> statistic differentiation but no diagnostic diff. in diverged species due to character overlap)
 Anne's other hypothesis: stabilizing selection : high Ne -> efficient sel° -> + cases with « no Morpho differentiation ». 
@@ -93,7 +95,8 @@ ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+geom_bar(s
 
 ```
 
-2. Ok, now let's look at this by reproductive investment. (Idea from Romiguier et al. 2014, where genetic diversity is related to investment. They are looking at pi, but connect it verbally to Ne.)
+#2. Let's look at this by reproductive investment. (Toujours pas refait 6 oct)
+(Idea from Romiguier et al. 2014, where genetic diversity is related to investment. They are looking at pi, but connect it verbally to Ne.)
 
 First, I need to group the larval types into "large" and "small" reproductive investments.
 (These data are still a mess, and I should clean them up before we do anything with the results, e.g. some are listed as 'viviparous'.) For now, if larvae are either planktotrophic or pelagic, I've classified as low investment. If lecithotrophic or dd, high.
@@ -136,11 +139,12 @@ chisq.test(surveylarva$repro_invest,surveylarva$Morpho_diff)
 For now (Oct 5), result is not significant. But I want to clean up the data and try again.
 
 
-3. Trying Morpho and Geo with sym/allo column removed
+#3. Trying Morpho and Geo with sym/allo column removed
 
 ```{r}
 surveymorpho<-filter(survey, Morpho_diff != "NA")
 surveymorpho2<-filter(surveymorpho, Geo_dif3 != "Sympatric, Allopatric")
+surveymorpho2<-droplevels(surveymorpho2)
 #this removes cases where there are both options, n=12
 #285 cases remaining where there is morpho data AND spp are either sympatric or allopatric
 
@@ -148,37 +152,213 @@ table(surveymorpho2$Morpho_diff,surveymorpho2$Geo_dif3)
 chisq.test(surveymorpho2$Morpho_diff,surveymorpho2$Geo_dif3)
 
 
-geomorpho<-table(as.numeric(surveymorpho2$Morpho_diff),as.numeric(surveymorpho2$Geo_dif3))
-geomorpho
-chisq.test(as.numeric(surveymorpho2$Morpho_diff),as.numeric(surveymorpho2$Geo_dif3))
-
 ```
-
-Ok, the table makes it look like it's still considering the sym/allo cases, but the chisquare tests are the same in both cases. 
 
 SO -- there is an association between morpho diff and geo diff.
 
 ```{r}
-library(ggmosaic)
+#and now a stacked bar
+morphogeo_count<-table(surveymorpho2$Geo_dif3)
+morphodiff<-table(surveymorpho2$Morpho_diff,surveymorpho2$Geo_dif3) 
+stat_diag<-morphodiff[3,]/morphodiff[1,]
+stat_anydiff<-morphodiff[3,]/(morphodiff[3,]+morphodiff[1,])
+stat_total<-morphodiff[3,]/morphogeo_count
+diag_total<-morphodiff[1,]/morphogeo_count
+nod_total<-morphodiff[2,]/morphogeo_count
+morphogeotable<-rbind(stat_total,diag_total,nod_total)
+morphogeotable #this should be the percentages for each, allo and sympatric
+#columns sum to 1
 
-ggplot(data = surveymorpho2) +
-  geom_mosaic(aes(x = product(Morpho_diff,Geo_dif3), fill=Morpho_diff), na.rm=TRUE)+
-  labs(x ="Morpho Diff", y = "Geo Diff")+
-  theme_bw()+
-  theme(legend.title=element_blank())+
-  theme(panel.background = element_blank(), 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        plot.background = element_blank())+
-  theme(axis.text.x = element_text(angle = 65,hjust=1))
+surveymorphogeotable<-pivot_longer(as.data.frame(morphogeotable), cols=1:2, names_to = "Geo_Diff",
+             values_to = "Percent", values_drop_na = FALSE)
+surveymorphogeotable$Diff_type<-c("Statistical","Statistical","Diagnostic","Diagnostic","No_Difference","No_Difference")
 
+ggplot(as.data.frame(surveymorphogeotable),aes(x=Geo_Diff,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
 
 ```
 
-FOR SOME REASON I still need to get rid of that sym/allo.
 
-Seems like for species in sympatry, it's more likely that they will be statistically differentiated. Does this go in the large Ne direction?
+For species in sympatry, it's more likely that they will be statistically differentiated. 
 
-Should I be making mosaic plots or calculating percentages for stacked bars? Think this through. 
+What about if I use NbCS per article = 1?
+```{r}
+surveymorpho3<-filter(surveymorpho2, Nb_CScomplex_inArticle == 1)
+#filtering to remove large barcoding studies (etc)
 
-4. HKK avec Geo_dif?
+table(surveymorpho3$Morpho_diff,surveymorpho3$Geo_dif3)
+chisq.test(surveymorpho3$Morpho_diff,surveymorpho3$Geo_dif3)
+
+
+```
+Interestingly, when those studies are removed the effect goes away??
+
+```{r}
+morphogeo_count2<-table(surveymorpho3$Geo_dif3)
+morphodiff2<-table(surveymorpho3$Morpho_diff,surveymorpho3$Geo_dif3) 
+stat_diag2<-morphodiff2[3,]/morphodiff2[1,]
+stat_anydiff2<-morphodiff2[3,]/(morphodiff2[3,]+morphodiff2[1,])
+stat_total2<-morphodiff2[3,]/morphogeo_count2
+diag_total2<-morphodiff2[1,]/morphogeo_count2
+nod_total2<-morphodiff2[2,]/morphogeo_count2
+morphogeotable2<-rbind(stat_total2,diag_total2,nod_total2)
+morphogeotable2 #this should be the percentages for each, allo and sympatric
+#columns sum to 1
+
+surveymorphogeotable2<-pivot_longer(as.data.frame(morphogeotable2), cols=1:2, names_to = "Geo_Diff",
+             values_to = "Percent", values_drop_na = FALSE)
+surveymorphogeotable2$Diff_type<-c("Statistical","Statistical","Diagnostic","Diagnostic","No_Difference","No_Difference")
+
+ggplot(as.data.frame(surveymorphogeotable2),aes(x=Geo_Diff,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+```
+The patterns look broadly similar when the larger articles are removed, but it's no longer significant. Perhaps this has to do with sample size.
+
+#4. Are there associations between Eco and Morpho diff if we only consider cases where RIOK?
+
+```{r}
+#First, start with cases where there is morphodiff
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+surveymorphoRIOK<-filter(surveymorpho, RIOK == TRUE) #make matrix where only the cases where RIOK = TRUE (good reproductive isolation)
+
+table(surveymorphoRIOK$Morpho_diff,surveymorphoRIOK$Eco_diff)
+chisq.test(surveymorphoRIOK$Morpho_diff,surveymorphoRIOK$Eco_diff)
+
+#and a graph
+
+morphoeco_count<-table(surveymorphoRIOK$Eco_diff)
+morphodiff<-table(surveymorphoRIOK$Morpho_diff,surveymorphoRIOK$Eco_diff) 
+stat_diag<-morphodiff[3,]/morphodiff[1,]
+stat_anydiff<-morphodiff[3,]/(morphodiff[3,]+morphodiff[1,])
+stat_total<-morphodiff[3,]/morphoeco_count
+diag_total<-morphodiff[1,]/morphoeco_count
+nod_total<-morphodiff[2,]/morphoeco_count
+morphoecotable<-rbind(stat_total,diag_total,nod_total)
+morphoecotable #this should be the percentages for each, eco and not
+#columns sum to 1
+
+surveymorphoecotable<-pivot_longer(as.data.frame(morphoecotable), cols=1:2, names_to = "Eco_Diff",
+             values_to = "Percent", values_drop_na = FALSE)
+surveymorphoecotable$Diff_type<-c("Statistical","Statistical","Diagnostic","Diagnostic","No_Difference","No_Difference")
+
+ggplot(as.data.frame(surveymorphoecotable),aes(x=Eco_Diff,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+```
+
+
+Result: No significant association between ecology and morphological differences when considering cases where RIOK = True. When there is ecological differentiation, a tendancy towards more diagnostic differences and fewer CSss, but not significant.
+
+## Another series of questions - what biological factors correspond with CS
+#6. Is skeleton type associated with morphological differentiation?
+
+```{r}
+#First, start with cases where there is morphodiff
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+
+
+table(surveymorpho$Morpho_diff,surveymorpho$hard_skeleton)
+chisq.test(surveymorpho$Morpho_diff,surveymorpho$hard_skeleton)
+
+#and a graph
+
+morphoskel_count<-table(surveymorpho$hard_skeleton)
+morphodiff<-table(surveymorpho$Morpho_diff,surveymorpho$hard_skeleton) 
+stat_diag<-morphodiff[3,]/morphodiff[1,]
+stat_anydiff<-morphodiff[3,]/(morphodiff[3,]+morphodiff[1,])
+stat_total<-morphodiff[3,]/morphoskel_count
+diag_total<-morphodiff[1,]/morphoskel_count
+nod_total<-morphodiff[2,]/morphoskel_count
+morphoskeltable<-rbind(stat_total,diag_total,nod_total)
+morphoskeltable #this should be the percentages for each, eco and not
+#columns sum to 1
+
+surveymorphoskeltable<-pivot_longer(as.data.frame(morphoskeltable), cols=1:2, names_to = "Hard_Skeleton",
+             values_to = "Percent", values_drop_na = FALSE)
+surveymorphoskeltable$Diff_type<-c("Statistical","Statistical","Diagnostic","Diagnostic","No_Difference","No_Difference")
+
+ggplot(as.data.frame(surveymorphoskeltable),aes(x=Hard_Skeleton,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+```
+
+Result: This is significant. More No_diff if there's no hard skeleton, which is what we expect.
+
+#7. Is image vision associated with morphological differentiation?
+
+```{r}
+#First, start with cases where there is morphodiff
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+
+
+table(surveymorpho$Morpho_diff,surveymorpho$image)
+chisq.test(surveymorpho$Morpho_diff,surveymorpho$image)
+
+```
+
+Result: No, not significant.
+
+#8. Are external genitals associated with morphological differentiation?
+
+```{r}
+#First, start with cases where there is morphodiff
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+
+
+table(surveymorpho$Morpho_diff,surveymorpho$genitals)
+chisq.test(surveymorpho$Morpho_diff,surveymorpho$genitals)
+
+#and a graph
+
+morphogen_count<-table(surveymorpho$genitals)
+morphodiff<-table(surveymorpho$Morpho_diff,surveymorpho$genitals) 
+stat_diag<-morphodiff[3,]/morphodiff[1,]
+stat_anydiff<-morphodiff[3,]/(morphodiff[3,]+morphodiff[1,])
+stat_total<-morphodiff[3,]/morphogen_count
+diag_total<-morphodiff[1,]/morphogen_count
+nod_total<-morphodiff[2,]/morphogen_count
+morphogentable<-rbind(stat_total,diag_total,nod_total)
+morphogentable #this should be the percentages for each, eco and not
+#columns sum to 1
+
+surveymorphogentable<-pivot_longer(as.data.frame(morphogentable), cols=1:3, names_to = "External_genitals",
+             values_to = "Percent", values_drop_na = FALSE)
+surveymorphogentable$Diff_type<-c("Statistical","Statistical","Statistical","Diagnostic","Diagnostic","Diagnostic","No_Difference","No_Difference","No_Difference")
+
+ggplot(as.data.frame(surveymorphogentable),aes(x=External_genitals,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+```
+
+Result: Significant. Less statistical differentiation for "both" and less diagnostic for "no external genitals." 
+
+Turns out that only gastropods are "both," so what happens if we remove them?
+
+```{r}
+#First, start with cases where there is morphodiff
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+surveymorphonob<-filter(surveymorpho, genitals != "B")
+surveymorphonob<-droplevels(surveymorphonob)
+
+
+table(surveymorphonob$Morpho_diff,surveymorphonob$genitals)
+chisq.test(surveymorphonob$Morpho_diff,surveymorphonob$genitals)
+
+#and a graph
+
+morphogen_count<-table(surveymorphonob$genitals)
+morphodiff<-table(surveymorphonob$Morpho_diff,surveymorphonob$genitals) 
+stat_diag<-morphodiff[3,]/morphodiff[1,]
+stat_anydiff<-morphodiff[3,]/(morphodiff[3,]+morphodiff[1,])
+stat_total<-morphodiff[3,]/morphogen_count
+diag_total<-morphodiff[1,]/morphogen_count
+nod_total<-morphodiff[2,]/morphogen_count
+morphogentable<-rbind(stat_total,diag_total,nod_total)
+morphogentable #this should be the percentages for each, eco and not
+#columns sum to 1
+
+surveymorphonobgentable<-pivot_longer(as.data.frame(morphogentable), cols=1:2, names_to = "External_genitals",
+             values_to = "Percent", values_drop_na = FALSE)
+surveymorphonobgentable$Diff_type<-c("Statistical","Statistical","Diagnostic","Diagnostic","No_Difference","No_Difference")
+
+ggplot(as.data.frame(surveymorphonobgentable),aes(x=External_genitals,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+```
+
+Result: Still significant: without external genitals, more likely to have CSss.
