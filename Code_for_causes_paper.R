@@ -220,17 +220,252 @@ HKKtable3<-rbind(CSss_total,CSsl_total)
 HKKtable3
 
 #Graph
-HKKtable4<-pivot_longer(as.data.frame(HKKtable3), cols=1:6, names_to = "HKK",
+HKK_NbCS<-pivot_longer(as.data.frame(HKKtable3), cols=1:6, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
-HKKtable4$Diff_type<-c("CSss","CSss","CSss","CSss","CSss","CSss","CSsl","CSsl","CSsl","CSsl","CSsl","CSsl")
-HKKtable4["HKK"][HKKtable4["HKK"] == "1"] <- "A1"
-HKKtable4["HKK"][HKKtable4["HKK"] == "5"] <- "B2"
-HKKtable4["HKK"][HKKtable4["HKK"] == "10"] <- "C10"
-HKKtable4["HKK"][HKKtable4["HKK"] == "25"] <- "D25"
-HKKtable4["HKK"][HKKtable4["HKK"] == "100"] <- "E100"
-HKKtable4["HKK"][HKKtable4["HKK"] == "1000"] <- "F1000"
+HKK_NbCS$Diff_type<-c("CSss","CSss","CSss","CSss","CSss","CSss","CSsl","CSsl","CSsl","CSsl","CSsl","CSsl")
+HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "1"] <- "A1"
+HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "5"] <- "B2"
+HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "10"] <- "C10"
+HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "25"] <- "D25"
+HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "100"] <- "E100"
+HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "1000"] <- "F1000"
 
-ggplot(as.data.frame(HKKtable4),aes(x=HKK,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+ggplot(as.data.frame(HKK_NbCS),aes(x=HKK,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
 
-#More diagnostic differences (=CSsl) at lower HKK values, both when considering 3 morpho classes AND just ss vs sl
+#Result: More diagnostic differences (=CSsl) at lower HKK values, both when considering 3 morpho classes AND just ss vs sl
 
+# Prediction: High HKK leads to more CS ss / statistical divergence
+# Test: Test of CS per NS based on HKK 
+
+#Not a chisquare test - need mean values
+# Data fail Bartlett's test, so use Kruskal Wallis
+
+HKK_NbCS<-cbind(survey$Nb_CS,survey$HKKv3)
+HKK_NbCS<-as.data.frame(na.omit(HKK_NbCS))
+colnames(HKK_NbCS)<-c("Nb_CS","HKKv3")
+
+tapply(HKK_NbCS$Nb_CS,HKK_NbCS$HKKv3,mean)
+tapply(HKK_NbCS$Nb_CS,HKK_NbCS$HKKv3,sd)
+kruskal.test(HKK_NbCS$Nb_CS,HKK_NbCS$HKKv3)
+
+#No difference in the number of CS per NS across HKK classes; the average for all is around 3. 
+#graph?
+data_summary <- function(x) {
+  m <- mean(x)
+  ymin <- m-sd(x)
+  ymax <- m+sd(x)
+  return(c(y=m,ymin=ymin,ymax=ymax))
+}
+HKK_NbCS["HKKv3"][HKK_NbCS["HKKv3"] == "1"] <- "A1"
+HKK_NbCS["HKKv3"][HKK_NbCS["HKKv3"] == "5"] <- "B2"
+HKK_NbCS["HKKv3"][HKK_NbCS["HKKv3"] == "10"] <- "C10"
+HKK_NbCS["HKKv3"][HKK_NbCS["HKKv3"] == "25"] <- "D25"
+HKK_NbCS["HKKv3"][HKK_NbCS["HKKv3"] == "100"] <- "E100"
+HKK_NbCS["HKKv3"][HKK_NbCS["HKKv3"] == "1000"] <- "F1000"
+
+ggplot(data=HKK_NbCS,aes(x=HKKv3, y=Nb_CS))+
+  geom_jitter()+
+  labs(x ="HKK", y = "Nb CS per NS")+
+  stat_summary(fun.data=data_summary, color="blue",size=0.5)+
+  theme_bw()
+
+
+# Moving on to hypotheses involving reproductive investment. I've altered the input file.
+# Planktotrophic = LOW
+# Lecithotrophic, Brooding, DD = HIGH
+# If a spp could be both low and high, have marked it NA (is usually bc the CS have different larval types)
+# Anything else got marked NA to be conservative
+
+surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
+
+#That file contains two new columns, one for reproductive investment (high/low) and one for larval type (pt/lt/dd)
+# 574 species remaining with larval info, not bad
+#Test CS per NS based on larval type
+#Prediction: Planktotrophic/pelagic larvae leads to less CS/NS
+
+larv_NbCS<-cbind(surveylarv$Nb_CS,surveylarv$Larv_type)
+larv_NbCS<-as.data.frame(na.omit(larv_NbCS))
+colnames(larv_NbCS)<-c("Nb_CS","Larv_type")
+
+#data fail Bartlett's test so kruskal-wallis it is
+
+tapply(as.numeric(larv_NbCS$Nb_CS),larv_NbCS$Larv_type,mean)
+tapply(as.numeric(larv_NbCS$Nb_CS),larv_NbCS$Larv_type,sd)
+kruskal.test(as.numeric(larv_NbCS$Nb_CS),larv_NbCS$Larv_type)
+
+#graph?
+data_summary <- function(x) {
+  m <- mean(x)
+  ymin <- m-sd(x)
+  ymax <- m+sd(x)
+  return(c(y=m,ymin=ymin,ymax=ymax))
+}
+ggplot(data=larv_NbCS,aes(x=Larv_type, y=as.numeric(Nb_CS)))+
+  geom_jitter()+
+  labs(x ="Larval type", y = "Nb CS per NS")+
+  stat_summary(fun.data=data_summary, color="blue",size=0.5)+
+  theme_bw()
+
+#How about prediction: More cases of statistical differentiation in Low RI species
+
+table(surveylarv$Morpho_diff,surveylarv$Repro_invest)
+chisq.test(surveylarv$Morpho_diff,surveylarv$Repro_invest)
+#Note that only 294 cases are considered here, meaning that is where we have morphological data AND larval type data
+
+#Nb_CS according to Number sites sampled (Nsg)
+geo_NbCS<-as.data.frame(cbind(survey$Nb_CS,survey$Sympatric,survey$Nsg))
+geo_NbCS<-(na.omit(geo_NbCS))
+colnames(geo_NbCS)<-c("Nb_CS","Sympatric","Nsg")
+geo_NbCS["Sympatric"][geo_NbCS["Sympatric"] == "1"] <- "TRUE"
+geo_NbCS["Sympatric"][geo_NbCS["Sympatric"] == "0"] <- "FALSE"
+
+
+ggplot(geo_NbCS,aes(x=Nsg,y=Nb_CS,colour=Sympatric))+geom_point()+geom_smooth(method=lm,se=T, fullrange=TRUE)
+
+#So this looks like it tracks with the assumption, but let's test with ANCOVA
+library(rstatix)
+res.aov <- geo_NbCS %>% anova_test(Nsg ~ Nb_CS + Sympatric)
+res.aov
+
+#Result not significant
+
+#What about "stable" habitats
+#stable = pelagic, deepsea, cave, coralreef
+#not stable = coastal, intertidal, estuarine, seagrass
+
+
+Hstable<-c()
+
+for (i in 1:length(survey$NameBeforeCor)) {
+  if (is.na(survey$Hcoralreef[i]))
+    b<-"NA"
+  else if (survey$Hpelagic[i] == TRUE)
+    b<-"TRUE"
+  else if (survey$Hdeepsea[i] == TRUE)
+    b<-"TRUE"
+  else if (survey$Hcave[i] == TRUE)
+    b<-"TRUE"
+  else if (survey$Hcoralreef[i]  == TRUE)
+    b<-"TRUE"
+    else
+    b<-"FALSE"
+  
+  Hstable<-c(Hstable,b)
+  
+}
+
+survey<-cbind(survey,Hstable)
+
+stable_hab<-cbind(survey$Hstable,survey$Morpho_diff,survey$CSss)
+stable_hab<-as.data.frame(na.omit(stable_hab)) #477 cases left
+colnames(stable_hab)<-c("Stable","Morpho_diff","CSss")
+
+table(stable_hab$CSss,stable_hab$Stable)
+chisq.test(stable_hab$CSss,stable_hab$Stable)
+
+stable_count<-table(stable_hab$Stable)
+stablediff<-table(stable_hab$CSss,stable_hab$Stable) 
+CSss_total<-stablediff[2,]/stable_count
+CSsl_total<-stablediff[1,]/stable_count
+stabletable<-rbind(CSss_total,CSsl_total)
+stabletable #this should be the percentages for each, sym and not, columns sum to 1
+
+surveystabletable<-pivot_longer(as.data.frame(stabletable), cols=1:2, names_to = "Stable",
+                               values_to = "Percent", values_drop_na = FALSE)
+surveystabletable$CSss_type<-c("CSss","CSss","CSsl","CSsl")
+
+ggplot(as.data.frame(surveystabletable),aes(x=Stable,y=Percent,fill=CSss_type,))+geom_bar(stat="identity")
+
+#Let's try to get the data into decade bins
+
+breaks=c(1750,1760,1770,1780,1790,1800,1810,1820,1830,1840,1850,1860,1870,1880,1890,1900,1910,
+         1920,1930,1940,1950,1960,1970,1980,1990,2000,2010,2020,2030)
+survey$decade<-cut(as.numeric(survey$yearb),breaks=breaks)
+levels(survey$decade)<-c("1750","1760","1770","1780","1790","1800","1810","1820","1830","1840",
+                       "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
+                       "1950","1960","1970","1980","1990","2000","2010","2020","2030")
+
+decademorpho<-cbind(as.character(survey$decade),as.character(survey$CSss))
+decademorpho<-(na.omit(decademorpho)) #400 cases left
+colnames(decademorpho)<-c("decade","CSss")
+decademorpho<-as.data.frame(decademorpho)
+
+table(decademorpho$decade,decademorpho$CSss)
+chisq.test(decademorpho$decade,decademorpho$CSss)
+
+decadetable<-table(decademorpho$decade,decademorpho$CSss)
+percent_sl<-c()
+
+for (i in 1:length(decadetable[,2])) {
+  b<-(decadetable[i,1]/(decadetable[i,1]+decadetable[i,2]))
+  percent_sl<-rbind(percent_sl,b)
+}
+
+decadetable<-as.data.frame(cbind(decadetable,percent_sl))
+colnames(decadetable)<-c("SL","SS","Percent_SL")
+
+decadetable$decade<-c("1750","1760","1770","1780","1790","1800","1810","1820","1830","1840",
+                      "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
+                      "1950","1960","1970","1980","1990","2000","2010")
+
+ggplot(decadetable,aes(x=decade,y=Percent_SL))+geom_point()+theme_bw()
+
+#Adding breakpoints around major works
+break3<-c(1756,1859,1980,2020) # periods limited / Darwin, Kimura, then end of survey
+survey$y3<-cut(as.numeric(survey$yearb),breaks=break3)
+levels(survey$y3)<-c("1756-1859","1860-1980","1981-2020")
+
+breaks_HKK<-cbind(as.character(survey$y3),survey$HKKv3)
+breaks_HKK<-(na.omit(breaks_HKK)) #754 cases left
+colnames(breaks_HKK)<-c("decade_bin","HKK")
+breaks_HKK<-as.data.frame(breaks_HKK)
+
+table(breaks_HKK$decade_bin,breaks_HKK$HKK)
+chisq.test(breaks_HKK$decade_bin,breaks_HKK$HKK)
+
+breaks_count<-table(breaks_HKK$decade_bin)
+HKKdiff<-table(breaks_HKK$decade_bin,breaks_HKK$HKK) 
+pre_Darwin<-HKKdiff[1,]/breaks_count[1]
+pre_Kimura<-HKKdiff[2,]/breaks_count[2]
+modern<-HKKdiff[3,]/breaks_count[3]
+decadebreakstable<-rbind(pre_Darwin,pre_Kimura,modern)
+decadebreakstable #this should be the percentages for each, sym and not, columns sum to 1
+
+HKK_decades<-pivot_longer(as.data.frame(decadebreakstable), cols=1:6, names_to = "HKK",
+                       values_to = "Percent", values_drop_na = FALSE)
+HKK_decades$Era<-c("1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","3Modern","3Modern","3Modern","3Modern","3Modern","3Modern")
+HKK_decades["HKK"][HKK_decades["HKK"] == "1"] <- "A1"
+HKK_decades["HKK"][HKK_decades["HKK"] == "5"] <- "B2"
+HKK_decades["HKK"][HKK_decades["HKK"] == "10"] <- "C10"
+HKK_decades["HKK"][HKK_decades["HKK"] == "25"] <- "D25"
+HKK_decades["HKK"][HKK_decades["HKK"] == "100"] <- "E100"
+HKK_decades["HKK"][HKK_decades["HKK"] == "1000"] <- "F1000"
+
+ggplot(as.data.frame(HKK_decades),aes(x=Era,y=Percent,fill=HKK))+geom_bar(stat="identity")
+
+
+#Habitat access?
+decadeAccess<-cbind(as.character(survey$decade),as.character(survey$HDifAccess))
+decadeAccess<-(na.omit(decadeAccess)) #832 cases left
+colnames(decadeAccess)<-c("decade","Access")
+decadeAccess<-as.data.frame(decadeAccess)
+
+table(decadeAccess$decade,decadeAccess$Access)
+chisq.test(decadeAccess$decade,decadeAccess$Access)
+
+decadetable<-table(decadeAccess$decade,decadeAccess$Access)
+percent_easy<-c()
+
+for (i in 1:length(decadetable[,2])) {
+  b<-(decadetable[i,2]/(decadetable[i,1]+decadetable[i,2]+decadetable[i,3]))
+  percent_easy<-rbind(percent_easy,b)
+}
+
+decadetable<-as.data.frame(cbind(decadetable,percent_easy))
+colnames(decadetable)<-c("Difficult","Easy","Normal","Percent_Easy")
+
+decadetable$decade<-c("1750","1760","1770","1780","1790","1800","1810","1820","1830","1840",
+                      "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
+                      "1950","1960","1970","1980","1990","2000","2010")
+
+ggplot(decadetable,aes(x=decade,y=Percent_Easy))+geom_point()+theme_bw()
