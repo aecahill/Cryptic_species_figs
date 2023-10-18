@@ -1,5 +1,5 @@
 ---
-title: "NbCS per article = 1"
+title: "Echinoderms only - 66 CS"
 output: html_document
 date: "2023-10-11"
 ---
@@ -50,11 +50,10 @@ survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylu
 survey$CSss     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"No differentiation") #need to combine stat + no_diff to make CSss
 survey$Sympatric <-str_detect(survey$Geo_dif3,"Sympatric") | str_detect(survey$Geo_dif3,"Sympatric, Allopatric") #This creates a vector that counts sym/allo as sympatric - that is, do spp exist in sympatry?
 
-#NEW FOR THIS SCRIPT: MAKE Nb CS complex per article = 1
-# 609 cases remaining
+#NEW FOR THIS SCRIPT: MAKE RIOK
 
-survey<-filter(survey, Nb_CScomplex_inArticle == 1) 
-surveylarv<-filter(surveylarv, Nb_CScomplex_inArticle == 1)
+survey<-filter(survey, phylum_wormsV1=="Echinodermata")
+surveylarv<-filter(surveylarv, phylum_wormsV1=="Echinodermata")
 
 
 ```
@@ -81,7 +80,7 @@ ggplot(data=CSssGraph,aes(x=CS_Type, y=as.numeric(Number)))+geom_bar(stat="ident
 
 ```
 
-More CSss than the 50% benchmark (significant), so reject the idea that most CS are just due to taxonomic oversight.
+More CSss than the 50% benchmark (but not significant), so reject the idea that most CS are just due to taxonomic oversight.
 
 
 # Available technology -- More diagnostic differences in species described earlier?
@@ -113,16 +112,15 @@ for (i in 1:length(decadetable[,2])) {
 decadetable<-as.data.frame(cbind(decadetable,percent_sl))
 colnames(decadetable)<-c("SL","SS","Percent_SL")
 
-decadetable$decade<-c("1750","1760","1770","1780","1790","1800","1810","1820","1830","1840",
-                      "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
-                      "1950","1960","1970","1980","1990","2000","2010")
+decadetable$decade<-c("1750","1770","1780","1800","1820","1830","1840",
+                      "1860","1870","1890","1970")
 
 ggplot(decadetable,aes(x=decade,y=Percent_SL))+geom_point()+theme_bw()
 
 
 ```
 
-There is no trend in the percent of CSsl (diagnostic differences) through time; hypothesis not supported.
+There is no trend in the percent of CSsl (diagnostic differences) through time; hypothesis not supported. Note VERY small sample size.
 
 # Prevailing theories of nature and species origins - More CS in fragmented habitats in species described before Darwin?
 
@@ -147,11 +145,11 @@ modern<-HKKdiff[3,]/breaks_count[3]
 decadebreakstable<-rbind(pre_Darwin,pre_Kimura,modern)
 decadebreakstable #this should be the percentages for each, sym and not, columns sum to 1
 
-HKK_decades<-pivot_longer(as.data.frame(decadebreakstable), cols=1:6, names_to = "HKK",
+HKK_decades<-pivot_longer(as.data.frame(decadebreakstable), cols=1:5, names_to = "HKK",
                        values_to = "Percent", values_drop_na = FALSE)
-HKK_decades$Era<-c("1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","3Modern","3Modern","3Modern","3Modern","3Modern","3Modern")
+HKK_decades$Era<-c("1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","1Pre_Darwin","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","2Pre_Kimura","3Modern","3Modern","3Modern","3Modern","3Modern")
 HKK_decades["HKK"][HKK_decades["HKK"] == "1"] <- "A1"
-HKK_decades["HKK"][HKK_decades["HKK"] == "5"] <- "B2"
+HKK_decades["HKK"][HKK_decades["HKK"] == "5"] <- "B5"
 HKK_decades["HKK"][HKK_decades["HKK"] == "10"] <- "C10"
 HKK_decades["HKK"][HKK_decades["HKK"] == "25"] <- "D25"
 HKK_decades["HKK"][HKK_decades["HKK"] == "100"] <- "E100"
@@ -162,7 +160,7 @@ ggplot(as.data.frame(HKK_decades),aes(x=Era,y=Percent,fill=HKK))+geom_bar(stat="
 
 ```
 
-NOT SIGNIFICANT with this data subset.
+There's marginal support here. Note that only one species is in the "modern" bin. So there's more HKK=5 and =10 in the early bin, and more HKK = 100 in the later one. Again, tiny sample sizes though.
 
 # Accessibility of habitat when species described - Percentage of CS in inaccessible habitats higher in earlier spp?
 
@@ -186,22 +184,21 @@ for (i in 1:length(decadetable[,2])) {
 decadetable<-as.data.frame(cbind(decadetable,percent_easy))
 colnames(decadetable)<-c("Difficult","Easy","Normal","Percent_Easy")
 
-decadetable$decade<-c("1750","1760","1770","1780","1790","1800","1810","1820","1830","1840",
-                      "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
-                      "1950","1960","1970","1980","1990","2000","2010")
+decadetable$decade<-c("1750","1770","1780","1800","1810","1820","1830","1840",
+                      "1850","1860","1870","1880","1890","1900","1910","1970","2000")
 
 ggplot(decadetable,aes(x=decade,y=Percent_Easy))+geom_point()+theme_bw()
 
 
 ```
 
-Hypothesis not supported. DIFFERENT FROM ALL SPECIES DATA but same as RIOK. Double check to see when I'm comparing all access categories vs just percent easy, but either way we don't see clear support. (Just need to be sure when reporting p-values.)
+So the result is not significant but the graph is very much in line with our predictions - easy species mostly described early. 
 
-## In sum, when we only look at species with CS (i.e. our database), the effect of taxonomic work goes away. This is interesting since that was the strongest effect in paper 1. THIS IS STILL TRUE WITH CS per article = 1.
+## In sum, when we only look at species with CS (i.e. our database), the effect of taxonomic work goes away. This is interesting since that was the strongest effect in paper 1. Seems to still be true with the echinoderms, and again note very very small sample sizes - only 17 species have both a date of description and morpho data.
 
 ## Effect of recent divergence - dispersal
 # Larval type -- Planktotrophic/pelagic larvae leads to less CS/NS)?
-Note1: for this I'm working with a separate surveylarv input file where I have corrected larval types to pt, lt, dd, and removed all others, including cases where there are multiple types checked. (Most of those cases are where the two CS have different larvae.) This left 410 CS with larval info.
+Note1: for this I'm working with a separate surveylarv input file where I have corrected larval types to pt, lt, dd, and removed all others, including cases where there are multiple types checked. (Most of those cases are where the two CS have different larvae.) This left 45 CS with larval info.
 
 Note2: the data fail the homoscedasticity test (Bartlett's) so I've used a nonparametric Kruskal-Wallis test to see if CS/NS is different among groups.
 
@@ -231,7 +228,7 @@ ggplot(data=larv_NbCS,aes(x=Larv_type, y=as.numeric(Nb_CS)))+
 
 ```
 
-Hypothesis supported, with DD having higher mean CS per nominal species. This is the same as all species and different from RIOK=TRUE. 
+Hypothesis not supported. 
 
 # High HKK leads to more CS ss -- testing this based on Nb_CS per HKK.
 Note: data again failed homoscedasticity, using Kruskal Wallis test
@@ -268,9 +265,9 @@ ggplot(data=HKK_NbCS,aes(x=HKKv3, y=Nb_CS))+
 
 ```
 
-Result: Ok, this looks like the whole dataset again. No clear / significant trend.
+Result: Hypothesis not supported.
 
-## In sum, again the support for the role of recent divergence as measured by a proxy of dispersal depends on what the proxy is. Support with larval type, not with HKK. Same as all_species dataset.
+## In sum, NO support for the role of recent divergence as measured by a proxy of dispersal when considering only echinoderms. 
 
 ## Stabilizing selection
 # More stable environments = more CSss or statistical differences
@@ -323,26 +320,46 @@ ggplot(as.data.frame(surveystabletable),aes(x=Stable,y=Percent,fill=CSss_type,))
 
 ```
 
-Result: More CSss found in stable environments, though p-value is marginal with this subset of data. Hypothesis supported. Weaker support than with whole dataset OR with RIOK=TRUE.
+Result: More CSss NOT found in stable environments. Hypothesis NOT supported. 
 
-# Note also that stabilizing selection predicts more CSss than CSsl, which is what we find (see above).
+# Note also that stabilizing selection predicts more CSss than CSsl, which is not what we find (see above; find no difference between groups). 
 
-## In sum, we generally have support for this idea.
+## In sum, we have no support for this idea within the echinoderms.
 
 ## High Ne (neutral hypotheses)
 # Reproductive investment - Low reproductive investment leads to more statistical divergence? (Repro. investment proxy for Ne)
 
 Note1: Again this uses the surveylarv dataset with hand cleaning.
 Note2: Planktotrophic = LOW; Lecithotrophic, Brooding, DD = HIGH; If a spp could be both low and high, have marked it NA (is usually bc the CS have different larval types). Anything else got marked NA to be conservative.
-Note3: Only 263 cases are considered here, meaning that is where we have morphological data AND larval type data AND NbCS/article = 1.
+Note3: Only 19 cases are considered here, meaning that is where we have morphological data AND larval type data AND echinoderms! Small sample size!
 
 ```{r}
-table(surveylarv$Morpho_diff,surveylarv$Repro_invest)
-chisq.test(surveylarv$Morpho_diff,surveylarv$Repro_invest)
+surveylarv2<-filter(surveylarv, Morpho_diff != "NA") #make matrix where only the 
+surveylarv2<-filter(surveylarv2, Repro_invest != "NA") #make matrix where only 
+table(surveylarv2$Morpho_diff,surveylarv2$Repro_invest)
+chisq.test(surveylarv2$Morpho_diff,surveylarv2$Repro_invest)
 
+#and a graph
+
+larvrepro_count<-table(surveylarv2$Repro_invest)
+larvdiff<-table(surveylarv2$Morpho_diff,surveylarv2$Repro_invest) 
+stat_diag<-larvdiff[3,]/larvdiff[1,]
+stat_anydiff<-larvdiff[3,]/(larvdiff[3,]+larvdiff[1,])
+stat_total<-larvdiff[3,]/larvrepro_count
+diag_total<-larvdiff[1,]/larvrepro_count
+nod_total<-larvdiff[2,]/larvrepro_count
+larvreprotable<-rbind(stat_total,diag_total,nod_total)
+larvreprotable #this should be the percentages for each, eco and not
+#columns sum to 1
+
+surveyreproinvesttable<-pivot_longer(as.data.frame(larvreprotable), cols=1:2, names_to = "Reproductive_Investment",
+                                   values_to = "Percent", values_drop_na = FALSE)
+surveyreproinvesttable$Diff_type<-c("Statistical","Statistical","Diagnostic","Diagnostic","No_Difference","No_Difference")
+
+ggplot(as.data.frame(surveyreproinvesttable),aes(x=Reproductive_Investment,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
 
 ```
-Result: not significant.
+Result: Hypothesis not supported. We do see more diagnostic differences at low RI but the sample sizes are very low and the result is not significant.
 
 # High HKK leads to more CS ss (HKK as proxy for Ne)
 
@@ -362,11 +379,11 @@ Hkk_count
 chisq.test(surveymorpho$Morpho_diff,surveymorpho$HKKv3)
 
 #Graph
-HKKtable2<-pivot_longer(as.data.frame(HKKtable), cols=1:6, names_to = "HKK",
+HKKtable2<-pivot_longer(as.data.frame(HKKtable), cols=1:4, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
-HKKtable2$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Statistical","Statistical","Diagnostic","Diagnostic","Diagnostic","Diagnostic","Diagnostic","Diagnostic","No_Difference","No_Difference","No_Difference","No_Difference","No_Difference","No_Difference")
+HKKtable2$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Diagnostic","Diagnostic","Diagnostic","Diagnostic","No_Difference","No_Difference","No_Difference","No_Difference")
 HKKtable2["HKK"][HKKtable2["HKK"] == "1"] <- "A1"
-HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "B2"
+HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "B5"
 HKKtable2["HKK"][HKKtable2["HKK"] == "10"] <- "C10"
 HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "D25"
 HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "E100"
@@ -386,9 +403,9 @@ HKKtable3<-rbind(CSss_total,CSsl_total)
 HKKtable3
 
 #Graph
-HKK_NbCS<-pivot_longer(as.data.frame(HKKtable3), cols=1:6, names_to = "HKK",
+HKK_NbCS<-pivot_longer(as.data.frame(HKKtable3), cols=1:4, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
-HKK_NbCS$Diff_type<-c("CSss","CSss","CSss","CSss","CSss","CSss","CSsl","CSsl","CSsl","CSsl","CSsl","CSsl")
+HKK_NbCS$Diff_type<-c("CSss","CSss","CSss","CSss","CSsl","CSsl","CSsl","CSsl")
 HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "1"] <- "A1"
 HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "5"] <- "B2"
 HKK_NbCS["HKK"][HKK_NbCS["HKK"] == "10"] <- "C10"
@@ -400,9 +417,9 @@ ggplot(as.data.frame(HKK_NbCS),aes(x=HKK,y=Percent,fill=Diff_type,))+geom_bar(st
 
 ```
 
-Results: More diagnostic differences (=CSsl) at lower HKK values, both when considering 3 morpho classes AND just ss vs sl. Overall p-value still significant but this pattern seems less clear. Lots more CSss at high HKK.
+Results: Not longer significant, either with 3 morpho types OR when testing CSss vs sl. Only working with 25 cases.
 
-## In sum, we see support for the neutral hypothesis if we use HKK as a proxy for Ne but NOT if we use reproductive investment.
+## In sum, we see NO support for the neutral hypothesis with either reproductive investment and HKK.
 
 ## Hypothesis: effect of recent divergence -- More sympatric than allopatric CS/NS for a given Nsg?
 
@@ -423,7 +440,7 @@ res.aov
 
 ```
 
-These results aren't statistically significant (ANCOVA) but the graph is in line with the hypothesis. Marginal support. HOWEVER these lines look closer together than the whole dataset or RIOK=true? Careful on interpretation.
+These results aren't statistically significant (ANCOVA) but the graph is in line with the hypothesis. HOWEVER, error overlaps a lot. Marginal support.
 
 ## Selection against hybrids -- More diagnostic differences in sympatry than allopatry? 
 
@@ -447,14 +464,14 @@ ggplot(as.data.frame(surveyCSsymtable),aes(x=Sympatry,y=Percent,fill=CSss_type,)
 
 ```
 
-Result: There are no longer significant associations here = different from whole dataset AND from RIOK=TRUE.
+Result: Not supported. Very small sample size here, just 20 cases.
 
 ## Importance of biological traits
 # More diagnostic traits with hard skeleton?
 ```{r}
 surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
 table(surveymorpho$Morpho_diff,surveymorpho$hard_skeleton)
-chisq.test(surveymorpho$Morpho_diff,surveymorpho$hard_skeleton)
+#chisq.test(surveymorpho$Morpho_diff,surveymorpho$hard_skeleton)
 
 #graph
 morphoskel_count<-table(surveymorpho$hard_skeleton)
@@ -476,21 +493,21 @@ ggplot(as.data.frame(surveymorphoskeltable),aes(x=Hard_Skeleton,y=Percent,fill=D
 
 ```
 
-THIS IS NO LONGER SUPPORTED WHEN NbCS/article = 1. This must mean that species that were dropped in some way affected this. Investigate!
+No test; everyone has hard skeleton.
 
 # More diagnostic traits with image vision?
 ```{r}
 #Next: image vision
 table(surveymorpho$Morpho_diff,surveymorpho$image)
-chisq.test(surveymorpho$Morpho_diff,surveymorpho$image)
+#chisq.test(surveymorpho$Morpho_diff,surveymorpho$image)
 
 ```
-Result: hypothesis not supported
+No test; no one has image vision.
 
 # More diagnostic traits with internal fertilization?
 ```{r}
 table(surveymorpho$Morpho_diff,surveymorpho$ferti)
-chisq.test(surveymorpho$Morpho_diff,surveymorpho$ferti)
+#chisq.test(surveymorpho$Morpho_diff,surveymorpho$ferti)
 
 #Note: Still significant if we just do ss vs sl. Graphing whole thing.
 morphoferti_count<-table(surveymorpho$ferti)
@@ -511,12 +528,12 @@ ggplot(as.data.frame(surveymorphofertitable),aes(x=Fertilization,y=Percent,fill=
 
 ```
 
-Result: hypothesis supported. Species with internal fert are more likely to have diag diffs, ie CSsl. This is also true if I remove the "both" category. Hypothesis accepted.
+Result: No test; everyone has external fertilization.
 
 # More diagnostic traits with external genitalia?
 ```{r}
 table(surveymorpho$Morpho_diff,surveymorpho$genitals)
-chisq.test(surveymorpho$Morpho_diff,surveymorpho$genitals)
+#chisq.test(surveymorpho$Morpho_diff,surveymorpho$genitals)
 
 #and a graph
 
@@ -539,10 +556,8 @@ ggplot(as.data.frame(surveymorphogentable),aes(x=External_genitals,y=Percent,fil
 
 ```
 
-Result: more diagnostic traits with external, hypothesis accepted. This is also true if only considering CSss and CSsl, AND when gastropods are removed (the only class with "both").
+Result: No test; no one has genitalia.
 
-## In sum, fertilization and genitalia still have a role in determining the TYPE of CS that is found (ss vs sl) BUT the role of hard skeletons went away? Need to look into this.
+## So, no tests of biological traits are possible here because they are fixed within the class.
 
-## So, overall conclusions: When looking at the full dataset, there is support for several (but not all) sets of hypotheses. Interestingly, the effect of taxonomic work/effort seems to go away, while the effect of taxonomic class remains. Some support for both selection-based and neutral ideas.
-
-## When considering NbCS per article = 1, patterns are mostly similar to the full dataset. There is slightly less support for biological factors here (skeletons) AND we no longer see more diagnostic differences in sympatry.
+## So, overall conclusions: When looking at just the chordates, many patterns have changed relative to the whole dataset. Most notably, we now have support for reproductive investment but have lost support for biological factors (and HKK?) within the class.

@@ -72,7 +72,7 @@ chisq.test(cbind(expected,observed))
 # Next we will make a graph
 CSssGraph<-as.data.frame(cbind(observed,c("CSss","CSsl")))
 colnames(CSssGraph)<-c("Number","CS_Type")
-ggplot(data=CSssGraph,aes(x=CS_Type, y=Number))+geom_bar(stat="identity")+
+ggplot(data=CSssGraph,aes(x=CS_Type, y=as.numeric(Number)))+geom_bar(stat="identity")+
   theme_bw()+
   #theme(legend.position="none")+
   theme(panel.background = element_blank(), 
