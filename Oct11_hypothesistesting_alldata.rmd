@@ -186,10 +186,17 @@ decadetable$decade<-c("1750","1760","1770","1780","1790","1800","1810","1820","1
 
 ggplot(decadetable,aes(x=decade,y=Percent_Easy))+geom_point()+theme_bw()
 
+#stacked bars
+decadetable2<-cbind(decadetable[,1:3],decadetable[,5])
+decadetable3<-pivot_longer(as.data.frame(decadetable2), cols=1:3, names_to = "Difficulty",
+                       values_to = "Number", values_drop_na = FALSE)
+colnames(decadetable3)<-c("Decade","Difficulty","Number_Hard")
+ggplot(decadetable3,aes(x=Decade,y=Number_Hard,fill=Difficulty,))+geom_bar(position="fill",stat="identity")
+ggplot(decadetable3,aes(x=Decade,y=Number_Hard,fill=Difficulty,))+geom_bar(stat="identity")
 
 ```
 
-Again a statistically significant result but no clear trend like we expect; hypothesis not supported overall. 
+Again a statistically significant result but no clear trend like we expect; hypothesis not supported overall. BUT looking at percent difficult shows clearer patterns (increase through time).
 
 ## In sum, when we only look at species with CS (i.e. our database), the effect of taxonomic work goes away. This is interesting since that was the strongest effect in paper 1.
 
