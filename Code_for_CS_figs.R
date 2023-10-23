@@ -84,10 +84,14 @@ ggplot(data=numzones, aes(x=Number_zones, y=Proportion, fill=has_CS)) +
 ## Figure 5 -- Phylogenetic tree and heatmap
 
 tree57data<-read.tree("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/57_tree.tre")
-traits57<-read.table("C:/Users/acahill/Documents/GitHub/Cryptic_species_figs/traits_57_aug2023.txt",header=T)
+traits57<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/traits_57_aug2023.txt",header=T)
 
 
 tree57<-ggtree(tree57data)
+
+supp.labs <- c("Fertilisation Mode", "Hard skeletal elements","Image-forming eyes","Residuals")
+
+names(supp.labs) <- c("Fertilization", "Hard_skeleton","Image","Residuals")
 
 heatmap<-ggplot(data = traits57, mapping = aes(x = Variable,
                                                y = Class_num,
@@ -117,4 +121,4 @@ heatmap<-ggplot(data = traits57, mapping = aes(x = Variable,
   geom_hline(yintercept=39.5)+
   geom_hline(yintercept=41.5)+
   geom_hline(yintercept=43.5)+
-  facet_grid(~Variable,switch = "x", scales = "free_x", space = "free_x")
+  facet_grid(~Variable,labeller = labeller(Variable=supp.labs),switch = "x", scales = "free_x", space = "free_x")
