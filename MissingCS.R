@@ -1,0 +1,18 @@
+#Writing a script to do OBIS code for paper 3 (missing species)
+
+library(dplyr)
+library(robis)
+
+setwd("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs")
+
+##Part 1: pulling all animal species from OBIS
+
+animalia<-checklist(taxonid=2)   #pulls list of all animals from OBIS
+write.csv(animalia, "animal_list.csv") #writing mostly so I don't lose it
+animalspp<-animalia[animalia$taxonRank=="Species",]   #ONLY use those that are ID'd to the species level
+animals<-as.data.frame(cbind(animalspp$scientificName,animalspp$phylum,animalspp$class))  #create table of names and phyla
+
+##Part2: need polygons for all seas - read in Mark's code
+
+
+##Part3: create checklists for each sea
