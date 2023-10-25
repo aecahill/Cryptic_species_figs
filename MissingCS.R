@@ -90,8 +90,50 @@ Pac_check2 <- Pac_check %>% distinct(Species, .keep_all = TRUE)  #Remove duplica
 # CS or no
 # Present in each ocean, yes or no
 # So read in the CS list
+
+survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE )
+survey2<-survey %>% drop_na(acceptedName_wormsV1) #Get rid of anything without an accepted name in WORMS
+
 # Loop over the animal list:
-# Is in CS (T/F)?
-# Is in .... each ocean, 5 calls, T/F
+# Looking to see if a species is present on the CS list, T/F
+# Is in each ocean, 5 calls, T/F
 # Wind up with table of Species, Phylum, Class, then those columns.
-# Maybe use animalspp instead of the smaller df? I don't think it'll do much for calc time to use all the info, better not to lose it.
+
+
+is_cs<-c()
+is_Art<-c()
+is_Atl<-c()
+is_Ind<-c()
+is_Pac<-c()
+is_South<-c()
+
+for (i in animalspp$acceptedNameUsage){
+  cs<-match(i,survey2$acceptedName_wormsV1,nomatch=FALSE) #match spits out the line number of the match; otherwise returns a zero
+  is_cs<-rbind(is_cs,cs)
+  Art<-match(i,Art_check2$Species,nomatch=FALSE)
+  is_Art<-rbind(is_Art,Art)  
+  Atl<-match(i,Atl_check2$Species,nomatch=FALSE)
+  is_Atl<-rbind(is_Atl,Atl)
+  Ind<-match(i,Ind_check2$Species,nomatch=FALSE)
+  is_Ind<-rbind(is_Ind,Ind)
+  Pac<-match(i,Pac_check2$Species,nomatch=FALSE)
+  is_Pac<-rbind(is_Pac,Pac)
+  South<-match(i,South_check2$Species,nomatch=FALSE)
+  is_South<-rbind(is_South,South)
+  
+}
+
+animalspp<-cbind(animalspp,is_cs,is_Art,is_Atl,is_Ind,is_Pac,is_South)
+animalspp$is_cs<-animalspp$is_cs>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+animalspp$is_Art<-animalspp$is_Art>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+animalspp$is_Atl<-animalspp$is_Atl>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+animalspp$is_Ind<-animalspp$is_Ind>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+animalspp$is_Pac<-animalspp$is_Pac>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+animalspp$is_South<-animalspp$is_South>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+
+write.csv(animalspp, "animal_list_with_geo.csv") #write it so I don't have to do it again!
+
+# The numbers in each column don't match up to the checklisted numbers - ie fewer species in an ocean than there are on an ocean's checklist. Why?
+# Maybe because I didn't use the step to filter the checklists to only things ID'd as a species
+
+# From here I can calculate missing species based on what Anne has done for the latitudinal zones
