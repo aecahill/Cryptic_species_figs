@@ -2,6 +2,7 @@
 
 library(dplyr)
 library(robis)
+library(tidyr)
 
 setwd("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs")
 
@@ -85,6 +86,20 @@ for (i in num_poly_Pacific){
 colnames(Pac_check)<-c("Species","Phylum","Class")
 Pac_check2 <- Pac_check %>% distinct(Species, .keep_all = TRUE)  #Remove duplicates (ie spp found in multiple polygons)
 
+# Write out the checklist files
+write.csv(Art_check2, "Art_checklist.csv") #write it so I don't have to do it again!
+write.csv(Atl_check2, "Atl_checklist.csv") #write it so I don't have to do it again!
+write.csv(Ind_check2, "Ind_checklist.csv") #write it so I don't have to do it again!
+write.csv(Pac_check2, "Pac_checklist.csv") #write it so I don't have to do it again!
+write.csv(South_check2, "South_checklist.csv") #write it so I don't have to do it again!
+
+# And read them back in
+
+Art_check2<-read.csv("Art_checklist.csv")
+Atl_check2<-read.csv("Atl_checklist.csv")
+Ind_check2<-read.csv("Ind_checklist.csv")
+Pac_check2<-read.csv("Pac_checklist.csv")
+South_check2<-read.csv("South_checklist.csv")
 
 # For all animal species, need following info:
 # CS or no
@@ -135,5 +150,281 @@ write.csv(animalspp, "animal_list_with_geo.csv") #write it so I don't have to do
 
 # The numbers in each column don't match up to the checklisted numbers - ie fewer species in an ocean than there are on an ocean's checklist. Why?
 # Maybe because I didn't use the step to filter the checklists to only things ID'd as a species
+# YES THIS SEEMS TO BE IT (10/26)
 
-# From here I can calculate missing species based on what Anne has done for the latitudinal zones
+# Now I need to know zone info IN the survey table bc I need that Nb_CS column, so we'll repeat the code.
+# Same loop as above, just a different input?
+# Removing the 'is_cs' bc the answer will always be yes
+
+is_Art<-c()
+is_Atl<-c()
+is_Ind<-c()
+is_Pac<-c()
+is_South<-c()
+
+for (i in survey2$acceptedName_wormsV1){
+  Art<-match(i,Art_check2$Species,nomatch=FALSE)
+  is_Art<-rbind(is_Art,Art)  
+  Atl<-match(i,Atl_check2$Species,nomatch=FALSE)
+  is_Atl<-rbind(is_Atl,Atl)
+  Ind<-match(i,Ind_check2$Species,nomatch=FALSE)
+  is_Ind<-rbind(is_Ind,Ind)
+  Pac<-match(i,Pac_check2$Species,nomatch=FALSE)
+  is_Pac<-rbind(is_Pac,Pac)
+  South<-match(i,South_check2$Species,nomatch=FALSE)
+  is_South<-rbind(is_South,South)
+  
+}
+
+survey3<-cbind(survey2,is_Art,is_Atl,is_Ind,is_Pac,is_South)
+survey3$is_Art<-survey3$is_Art>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+survey3$is_Atl<-survey3$is_Atl>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+survey3$is_Ind<-survey3$is_Ind>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+survey3$is_Pac<-survey3$is_Pac>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+survey3$is_South<-survey3$is_South>0  #This line turns the numbers (which don't mean anything) into TRUE - means species is present in the zone.
+
+write.csv(survey3, "survey_with_geo.csv") #write it so I don't have to do it again!
+
+
+# Read in files
+
+animalgeo<-read.csv("animal_list_with_geo.csv")
+survey3<-read.csv("survey_with_geo.csv")
+
+#### For Arctic Ocean (adopted from Anne's code for latitudinal zones)
+
+# nb of nominal species in ocean
+table(animalgeo$is_Art, useNA="always") # to check there are several cases and their numbers
+a <- nrow(filter(animalgeo,is_Art==TRUE))
+# nb of these which have CS in this zone
+b <- nrow(filter(animalgeo, (is_Art==T)&(is_cs==T)))
+# mean nb of CS per nominal sp with CS (based on survey dataset)
+c <- mean((filter(survey3, is_Art==T))[,"Nb_CS"], na.rm=T)
+sd <- sd((filter(survey3, is_Art==T))[,"Nb_CS"], na.rm=T)
+# number of biological species MISSED due to CS when counting only nominal species (indirect estimation and direct count, differences unexplained)
+m <- b*(c-1)                        
+m2 <- sum(filter(survey3, is_Art==T)[,"Nb_CS"], na.rm=T) - nrow(filter(survey3, is_Art==T))   # direct count, quite distinct (but error since a few NS appear several times in survey)
+#proportions of biological species missed
+prop.m<-m/(a+m)
+prop.m2<-m2/(a+m2)
+
+missArt<-c(a,b,c,sd,m,m2,prop.m,prop.m2)
+
+#### For Atlantic Ocean 
+
+# nb of nominal species in ocean
+table(animalgeo$is_Atl, useNA="always") # to check there are several cases and their numbers
+a <- nrow(filter(animalgeo,is_Atl==TRUE))
+# nb of these which have CS in this zone
+b <- nrow(filter(animalgeo, (is_Atl==T)&(is_cs==T)))
+# mean nb of CS per nominal sp with CS (based on survey dataset)
+c <- mean((filter(survey3, is_Atl==T))[,"Nb_CS"], na.rm=T)
+sd <- sd((filter(survey3, is_Atl==T))[,"Nb_CS"], na.rm=T)
+# number of biological species MISSED due to CS when counting only nominal species (indirect estimation and direct count, differences unexplained)
+m <- b*(c-1)                        
+m2 <- sum(filter(survey3, is_Atl==T)[,"Nb_CS"], na.rm=T) - nrow(filter(survey3, is_Atl==T))   # direct count, quite distinct (but error since a few NS appear several times in survey)
+#proportions of biological species missed
+prop.m<-m/(a+m)
+prop.m2<-m2/(a+m2)
+
+missAtl<-c(a,b,c,sd,m,m2,prop.m,prop.m2)
+
+#### For Indian Ocean 
+
+# nb of nominal species in ocean
+table(animalgeo$is_Ind, useNA="always") # to check there are several cases and their numbers
+a <- nrow(filter(animalgeo,is_Ind==TRUE))
+# nb of these which have CS in this zone
+b <- nrow(filter(animalgeo, (is_Ind==T)&(is_cs==T)))
+# mean nb of CS per nominal sp with CS (based on survey dataset)
+c <- mean((filter(survey3, is_Ind==T))[,"Nb_CS"], na.rm=T)
+sd <- sd((filter(survey3, is_Ind==T))[,"Nb_CS"], na.rm=T)
+# number of biological species MISSED due to CS when counting only nominal species (indirect estimation and direct count, differences unexplained)
+m <- b*(c-1)                        
+m2 <- sum(filter(survey3, is_Ind==T)[,"Nb_CS"], na.rm=T) - nrow(filter(survey3, is_Ind==T))   # direct count, quite distinct (but error since a few NS appear several times in survey)
+#proportions of biological species missed
+prop.m<-m/(a+m)
+prop.m2<-m2/(a+m2)
+
+missInd<-c(a,b,c,sd,m,m2,prop.m,prop.m2)
+
+#### For Pacific Ocean 
+
+# nb of nominal species in ocean
+table(animalgeo$is_Pac, useNA="always") # to check there are several cases and their numbers
+a <- nrow(filter(animalgeo,is_Pac==TRUE))
+# nb of these which have CS in this zone
+b <- nrow(filter(animalgeo, (is_Pac==T)&(is_cs==T)))
+# mean nb of CS per nominal sp with CS (based on survey dataset)
+c <- mean((filter(survey3, is_Pac==T))[,"Nb_CS"], na.rm=T)
+sd <- sd((filter(survey3, is_Pac==T))[,"Nb_CS"], na.rm=T)
+# number of biological species MISSED due to CS when counting only nominal species (indirect estimation and direct count, differences unexplained)
+m <- b*(c-1)                        
+m2 <- sum(filter(survey3, is_Pac==T)[,"Nb_CS"], na.rm=T) - nrow(filter(survey3, is_Pac==T))   # direct count, quite distinct (but error since a few NS appear several times in survey)
+#proportions of biological species missed
+prop.m<-m/(a+m)
+prop.m2<-m2/(a+m2)
+
+missPac<-c(a,b,c,sd,m,m2,prop.m,prop.m2)
+
+#### For Southern Ocean 
+
+# nb of nominal species in ocean
+table(animalgeo$is_South, useNA="always") # to check there are several cases and their numbers
+a <- nrow(filter(animalgeo,is_South==TRUE))
+# nb of these which have CS in this zone
+b <- nrow(filter(animalgeo, (is_South==T)&(is_cs==T)))
+# mean nb of CS per nominal sp with CS (based on survey dataset)
+c <- mean((filter(survey3, is_South==T))[,"Nb_CS"], na.rm=T)
+sd <- sd((filter(survey3, is_South==T))[,"Nb_CS"], na.rm=T)
+# number of biological species MISSED due to CS when counting only nominal species (indirect estimation and direct count, differences unexplained)
+m <- b*(c-1)                        
+m2 <- sum(filter(survey3, is_South==T)[,"Nb_CS"], na.rm=T) - nrow(filter(survey3, is_South==T))   # direct count, quite distinct (but error since a few NS appear several times in survey)
+#proportions of biological species missed
+prop.m<-m/(a+m)
+prop.m2<-m2/(a+m2)
+
+missSouth<-c(a,b,c,sd,m,m2,prop.m,prop.m2)
+
+# Joining all zones together
+MissPerOcean<-data.frame(missArt,missAtl, missInd, missPac, missSouth)
+rownames(MissPerOcean)<-c("nb nominal spp","nb NS having CS","mean nb CS/sp.with","sd_nb CS/sp.with", "estim. missed Biol sp", "count missed Biol sp","prop.m","prop.m2")
+
+# WRITE TABLE in a file: choose name carefully (either restricted to NCBI species or not, below)
+# write.csv2(MissPerZone, file="Missed biological species per zone.csv")
+write.csv(MissPerOcean, file="Missed_biological_spp_per_Ocean.csv")
+
+# These numbers look pretty different than the zone numbers. 
+# Maybe this is because I pulled the original animal list from OBIS and the zone analysis (Anne) pulled from WORMS
+# THEREFORE I am only including species that are in OBIS to begin wtih?
+# But if they aren't in OBIS, how can we know where they exist?
+# My total species count is higher in all oceans than the zone numbers
+# My CS count is higher in all oceans than the zone numbers
+
+
+# Two more things to do
+# 1: Expected vs observed chi square tests per ocean (like Mark did)
+# Based on Mark's code
+
+#Chi-square test
+nspecies<-c(nrow(filter(animalgeo,is_Art==TRUE)),nrow(filter(animalgeo,is_Atl==TRUE)),nrow(filter(animalgeo,is_Ind==TRUE)),
+            nrow(filter(animalgeo,is_Pac==TRUE)),nrow(filter(animalgeo,is_South==TRUE)))
+
+nspecies_cryptic<-c(nrow(filter(survey3,is_Art==TRUE)),nrow(filter(survey3,is_Atl==TRUE)),nrow(filter(survey3,is_Ind==TRUE)),
+                    nrow(filter(survey3,is_Pac==TRUE)),nrow(filter(survey3,is_South==TRUE)))
+
+table_nspecies<-t(data.frame(nspecies,nspecies_cryptic))
+collumnname<-c("Arctic","Atlantic","Indian","Pacific","Southern")
+colnames(table_nspecies)<-collumnname
+
+chisq.test(table_nspecies)
+
+# Significant but I am not convinced -- let's redo this by hand.
+# Total NS = 168999
+# Total CS = 1632 (note that both these numbers include double counting and idk what to do about that
+# Expected Arctic = 61.85
+# Expected Atlantic = 451,21
+# Expected Indian = 383
+# Expected Pacific = 668
+# Expected Southern = 67.46
+# So lots more than expected in Arctic, Indian
+# About as expected in Atlantic, Southern
+# Lots fewer than expected in Pacific
+# More or less what Mark found
+
+
+# 2: Calculate the number of CS we would expect to find if we had NCBI data for all species in an ocean
+# I think this will be (CS/NCBI)*Total_Obis for each ocean
+# we have a column in animalspp that is NCBI id - if >0, NCBI data exist.
+
+#Arctic Ocean
+
+d<-nrow(filter(animalgeo, (is_Art==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Art==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Art==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING CS
+j<-h/f   # proportion missing CS -- compared to total CS already found
+
+missingArt<-cbind(g,h,j)
+
+#Atlantic Ocean
+
+d<-nrow(filter(animalgeo, (is_Atl==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Atl==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Atl==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/f  # proportion MISSING
+
+missingAtl<-cbind(g,h,j)
+
+#Indian Ocean
+
+d<-nrow(filter(animalgeo, (is_Ind==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Ind==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Ind==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/f   # proportion MISSING
+
+missingInd<-cbind(g,h,j)
+
+#Pacific Ocean
+
+d<-nrow(filter(animalgeo, (is_Pac==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Pac==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Pac==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/f   # proportion MISSING
+
+missingPac<-cbind(g,h,j)
+
+#Southern Ocean
+
+d<-nrow(filter(animalgeo, (is_South==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_South==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_South==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/f   # proportion MISSING
+
+missingSouth<-cbind(g,h,j)
+
+MissingPerOcean<-rbind(missingArt,missingAtl, missingInd, missingPac, missingSouth)
+colnames(MissingPerOcean)<-c("Total CS expected","Total not yet found","Proportion not yet found")
+rownames(MissingPerOcean)<-c("Arctic","Atlantic","Indian","Pacific","Southern")
+
+write.csv(MissingPerOcean,"Missing_CS_per_Ocean.csv")
+
+# Results say that in all oceans, there are more CS out there than have already been discovered
+# But that proportion is highest in the Southern ocean (3.5X expected out there)
+
+
+# WILL PICK UP HERE - this is Anne's code for the phyla, copy-pasted
+# 2- By PHYLUM ####
+
+phyla <- factor(unique(nomsp$phylum))
+columns <- c("nb_NS","nb_NS_ncbi","nb_NS_withCS","nb_NS_withCS_ncbi","mean_Nb_CS_perCpx")
+info    <- data.frame(matrix(nrow = length(phyla), ncol = length(columns))) 
+colnames(info) = columns
+row.names(info)<- phyla
+
+survey$phylum_worms<-as.character(survey$phylum_worms) # required for the loop below to work
+
+for (i in 1:length(phyla)){ 
+  info$nb_NS[i] <-nrow(filter(nomsp,phylum==phyla[i]))
+  info$nb_NS_ncbi[i] <-nrow(filter(nomsp,(phylum==phyla[i]) & (ncbi==T)))
+  info$nb_NS_withCS[i] <-nrow(filter(nomsp,(phylum==phyla[i]) & (hasCS==T)))
+  info$nb_NS_withCS_ncbi[i] <-nrow(filter(nomsp,(phylum==phyla[i])& (ncbi==T) & (hasCS==T)))
+  info$mean_Nb_CS_perCpx[i] <-mean(filter(survey,(phylum_worms==phyla[i]))[,"Nb_CS"], na.rm=T)
+  info$sd_Nb_CS_perCpx[i] <-sd(filter(survey,(phylum_worms==phyla[i]))[,"Nb_CS"], na.rm=T)
+}  
+
+info$missed_BS_estim <- info$nb_NS_withCS * (info$mean_Nb_CS_perCpx-1)
+info$prop.missed_BS_estim <- info$missed_BS_estim / (info$missed_BS_estim + info$nb_NS )
+info$prop.missed_BS_estim_ncbi <- info$missed_BS_estim / (info$missed_BS_estim + info$nb_NS_ncbi )  
+
+write.csv(info, file="Missed biological species per phylum Oct4.csv")
+
