@@ -404,6 +404,11 @@ write.csv(MissingPerOcean,"Missing_CS_per_Ocean.csv")
 
 # WILL PICK UP HERE - this is Anne's code for the phyla, copy-pasted
 # 2- By PHYLUM ####
+# Here I am going to use the WORMS data and not the OBIS data, so that we have a larger sample size.
+# I think that's ok but we need to remember it.
+
+nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+
 
 phyla <- factor(unique(nomsp$phylum))
 columns <- c("nb_NS","nb_NS_ncbi","nb_NS_withCS","nb_NS_withCS_ncbi","mean_Nb_CS_perCpx")
@@ -426,5 +431,81 @@ info$missed_BS_estim <- info$nb_NS_withCS * (info$mean_Nb_CS_perCpx-1)
 info$prop.missed_BS_estim <- info$missed_BS_estim / (info$missed_BS_estim + info$nb_NS )
 info$prop.missed_BS_estim_ncbi <- info$missed_BS_estim / (info$missed_BS_estim + info$nb_NS_ncbi )  
 
-write.csv(info, file="Missed biological species per phylum Oct4.csv")
+write.csv(info, file="Missed biological species per phylum Oct27.csv")
 
+
+#Ok, now let's figure out how to do the MISSING like I did yesterday for the oceans
+# 2: Calculate the number of CS we would expect to find if we had NCBI data for all species in an ocean
+
+#Loop over phyla
+missing_phyla<-data.frame()
+
+for (i in phyla){
+
+d<-nrow(filter(nomsp, (phylum==i)&(ncbi==T))) #total in phylum with NCBI
+e<-nrow(filter(nomsp, (phylum==i))) #total in phylum
+f<-nrow(filter(nomsp, (phylum==i)&(hasCS==T))) #total CS
+g<-(f/d)*e #total in phylum IF everyone had NCBI
+h<-g-f  #total MISSING CS, yet to be found
+j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
+
+missing<-cbind(i,g,h,j)
+missing_phyla<-rbind(missing_phyla,missing)
+
+}
+
+colnames(missing_phyla)<-c("Phylum","Total CS IF NCBI","Total CS yet to be found","Proportion CS yet to be found")
+
+write.csv(missing_phyla,"missing_per_phylum.csv")
+
+#Ok, now let's figure out how to do the MISSING by latitudinal zones
+# 2: Calculate the number of CS we would expect to find if we had NCBI data for all species in an ocean
+
+
+  d<-nrow(filter(nomsp, (Npol==T)&(ncbi==T))) #total in phylum with NCBI
+  e<-nrow(filter(nomsp, (Npol==T))) #total in phylum
+  f<-nrow(filter(nomsp, (Npol==T)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total in phylum IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
+  missing_Npol<-cbind(i,g,h,j)
+  
+  d<-nrow(filter(nomsp, (Ntemp==T)&(ncbi==T))) #total in phylum with NCBI
+  e<-nrow(filter(nomsp, (Ntemp==T))) #total in phylum
+  f<-nrow(filter(nomsp, (Ntemp==T)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total in phylum IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
+  missing_Ntemp<-cbind(i,g,h,j)
+  
+  d<-nrow(filter(nomsp, (Trop==T)&(ncbi==T))) #total in phylum with NCBI
+  e<-nrow(filter(nomsp, (Trop==T))) #total in phylum
+  f<-nrow(filter(nomsp, (Trop==T)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total in phylum IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
+  missing_Trop<-cbind(i,g,h,j)
+  
+  d<-nrow(filter(nomsp, (Stemp==T)&(ncbi==T))) #total in phylum with NCBI
+  e<-nrow(filter(nomsp, (Stemp==T))) #total in phylum
+  f<-nrow(filter(nomsp, (Stemp==T)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total in phylum IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
+  missing_Stemp<-cbind(i,g,h,j)
+  
+  d<-nrow(filter(nomsp, (Spol==T)&(ncbi==T))) #total in phylum with NCBI
+  e<-nrow(filter(nomsp, (Spol==T))) #total in phylum
+  f<-nrow(filter(nomsp, (Spol==T)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total in phylum IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
+  missing_Spol<-cbind(i,g,h,j)
+  
+
+  missing_zones<-rbind(missing_Npol,missing_Ntemp,missing_Trop,missing_Stemp,missing_Spol)
+  
+colnames(missing_zones)<-c("Zone","Total CS IF NCBI","Total CS yet to be found","Proportion CS yet to be found")
+rownames(missing_zones)<-c("Npol","Ntemp","Trop","Stemp","Spol")
+
+write.csv(missing_zones,"missing_per_zone.csv")
