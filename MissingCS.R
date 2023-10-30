@@ -322,7 +322,7 @@ chisq.test(table_nspecies)
 # Significant but I am not convinced -- let's redo this by hand.
 # Total NS = 168999
 # Total CS = 1632 (note that both these numbers include double counting and idk what to do about that
-# Expected Arctic = 61.85
+# Expected Arctic = 61.85 -- I DID THESE BY HAND, FIX
 # Expected Atlantic = 451,21
 # Expected Indian = 383
 # Expected Pacific = 668
@@ -332,6 +332,10 @@ chisq.test(table_nspecies)
 # Lots fewer than expected in Pacific
 # More or less what Mark found
 
+#Chisq with those numbers
+expected<-c(61.85,451.21,383,668,67.46)
+observed<-c(130,453,430,562,59)
+chisq.test(rbind(expected,observed))
 
 # 2: Calculate the number of CS we would expect to find if we had NCBI data for all species in an ocean
 # I think this will be (CS/NCBI)*Total_Obis for each ocean
@@ -433,6 +437,31 @@ info$prop.missed_BS_estim_ncbi <- info$missed_BS_estim / (info$missed_BS_estim +
 
 write.csv(info, file="Missed biological species per phylum Oct27.csv")
 
+# BY CLASS instead of phylum
+
+class <- factor(unique(nomsp$class))
+columns <- c("nb_NS","nb_NS_ncbi","nb_NS_withCS","nb_NS_withCS_ncbi","mean_Nb_CS_perCpx")
+info    <- data.frame(matrix(nrow = length(class), ncol = length(columns))) 
+colnames(info) = columns
+row.names(info)<- class
+
+survey$class_worms<-as.character(survey$class_worms) # required for the loop below to work
+
+for (i in 1:length(class)){ 
+  info$nb_NS[i] <-nrow(filter(nomsp,class==class[i]))
+  info$nb_NS_ncbi[i] <-nrow(filter(nomsp,(class==class[i]) & (ncbi==T)))
+  info$nb_NS_withCS[i] <-nrow(filter(nomsp,(class==class[i]) & (hasCS==T)))
+  info$nb_NS_withCS_ncbi[i] <-nrow(filter(nomsp,(class==class[i])& (ncbi==T) & (hasCS==T)))
+  info$mean_Nb_CS_perCpx[i] <-mean(filter(survey,(class_worms==class[i]))[,"Nb_CS"], na.rm=T)
+  info$sd_Nb_CS_perCpx[i] <-sd(filter(survey,(class_worms==class[i]))[,"Nb_CS"], na.rm=T)
+}  
+
+info$missed_BS_estim <- info$nb_NS_withCS * (info$mean_Nb_CS_perCpx-1)
+info$prop.missed_BS_estim <- info$missed_BS_estim / (info$missed_BS_estim + info$nb_NS )
+info$prop.missed_BS_estim_ncbi <- info$missed_BS_estim / (info$missed_BS_estim + info$nb_NS_ncbi )  
+
+write.csv(info, file="Missed biological species per class Oct30.csv")
+
 
 #Ok, now let's figure out how to do the MISSING like I did yesterday for the oceans
 # 2: Calculate the number of CS we would expect to find if we had NCBI data for all species in an ocean
@@ -509,3 +538,27 @@ colnames(missing_zones)<-c("Zone","Total CS IF NCBI","Total CS yet to be found",
 rownames(missing_zones)<-c("Npol","Ntemp","Trop","Stemp","Spol")
 
 write.csv(missing_zones,"missing_per_zone.csv")
+
+
+# 2: Calculate the number of CS we would expect to find if we had NCBI data for all species in an ocean
+#BY CLASS
+#Loop over class
+missing_class<-data.frame()
+
+for (i in class){
+  
+  d<-nrow(filter(nomsp, (class==i)&(ncbi==T))) #total in class with NCBI
+  e<-nrow(filter(nomsp, (class==i))) #total in class
+  f<-nrow(filter(nomsp, (class==i)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total in class IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
+  
+  missing<-cbind(i,g,h,j)
+  missing_class<-rbind(missing_class,missing)
+  
+}
+
+colnames(missing_class)<-c("Class","Total CS IF NCBI","Total CS yet to be found","Proportion CS yet to be found")
+
+write.csv(missing_class,"missing_per_class.csv")
