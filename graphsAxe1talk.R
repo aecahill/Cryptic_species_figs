@@ -32,13 +32,32 @@ oceans<-(rbind(expected,observed))
 offexp<-oceans[2,]-oceans[1,]
 oceans<-t(rbind(oceans,offexp))
 oceans<-as.data.frame(cbind(oceans,c("Arctic","Atlantic","Indian","Pacific","Southern")))
-oceanpercent<-as.numeric(oceans[,3])/as.numeric(oceans[,2])
-oceans<-cbind(oceans,oceanpercent)
-colnames(oceans)<-c("expected","observed","difference","Ocean","percent")
+expectedpercent<-as.numeric(oceans[,1])/sum(expected)
+obspercent<-as.numeric(oceans[,2])/sum(observed)
+diffpercent<-obspercent-expectedpercent
+oceans<-cbind(oceans,expectedpercent,obspercent,diffpercent)
+colnames(oceans)<-c("expected","observed","difference","Ocean","expectedpercent","observedpercent","diffpercent")
 
 oceancolors<-c("#58cc00","#cc3300","#cccc00","#00c5cc","#b400cc")
 
-ggplot(oceans,aes(x=Ocean,y=as.numeric(percent),fill=Ocean))+geom_bar(stat="identity")+
+ggplot(oceans,aes(x=Ocean,y=as.numeric(diffpercent),fill=Ocean))+geom_bar(stat="identity")+
   scale_fill_manual(values=oceancolors)+
-  labs(x ="Oceans", y = "Difference between Expected and Observed")+
+  labs(x ="Oceans", y = "Difference between Percent Expected and Observed")+
   theme_bw()
+
+
+notfound<-read.table("not_yet_found.txt",header=T)
+ggplot(notfound,aes(x=Ocean,y=as.numeric(Number),fill=Ocean))+geom_bar(stat="identity")+
+  scale_fill_manual(values=oceancolors)+
+  #labs(x ="Oceans", y = "Difference between Percent Expected and Observed")+
+  theme_bw()+
+  facet_wrap(~Variable,scales="free_y")
+
+notfoundphyla<-read.table("not_yet_found_phyla.txt",header=T)
+ggplot(notfoundphyla,aes(x=Phylum,y=as.numeric(Number),fill=Phylum))+geom_bar(stat="identity")+
+  #scale_fill_manual(values=oceancolors)+
+  #labs(x ="Oceans", y = "Difference between Percent Expected and Observed")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 45,vjust = 1, hjust=1))+
+  facet_wrap(~Variable,scales="free_y")
+

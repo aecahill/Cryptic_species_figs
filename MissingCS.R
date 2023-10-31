@@ -350,7 +350,7 @@ g<-(f/d)*e #total in ocean IF everyone had NCBI
 h<-g-f  #total MISSING CS
 j<-h/f   # proportion missing CS -- compared to total CS already found
 
-missingArt<-cbind(g,h,j)
+missingArt<-cbind(e,f,g,h,j)
 
 #Atlantic Ocean
 
@@ -361,7 +361,7 @@ g<-(f/d)*e #total in ocean IF everyone had NCBI
 h<-g-f  #total MISSING
 j<-h/f  # proportion MISSING
 
-missingAtl<-cbind(g,h,j)
+missingAtl<-cbind(e,f,g,h,j)
 
 #Indian Ocean
 
@@ -372,7 +372,7 @@ g<-(f/d)*e #total in ocean IF everyone had NCBI
 h<-g-f  #total MISSING
 j<-h/f   # proportion MISSING
 
-missingInd<-cbind(g,h,j)
+missingInd<-cbind(e,f,g,h,j)
 
 #Pacific Ocean
 
@@ -383,7 +383,7 @@ g<-(f/d)*e #total in ocean IF everyone had NCBI
 h<-g-f  #total MISSING
 j<-h/f   # proportion MISSING
 
-missingPac<-cbind(g,h,j)
+missingPac<-cbind(e,f,g,h,j)
 
 #Southern Ocean
 
@@ -394,10 +394,10 @@ g<-(f/d)*e #total in ocean IF everyone had NCBI
 h<-g-f  #total MISSING
 j<-h/f   # proportion MISSING
 
-missingSouth<-cbind(g,h,j)
+missingSouth<-cbind(e,f,g,h,j)
 
 MissingPerOcean<-rbind(missingArt,missingAtl, missingInd, missingPac, missingSouth)
-colnames(MissingPerOcean)<-c("Total CS expected","Total not yet found","Proportion not yet found")
+colnames(MissingPerOcean)<-c("Total in ocean","Total CS observed","Total CS expected","Total not yet found","Proportion not yet found")
 rownames(MissingPerOcean)<-c("Arctic","Atlantic","Indian","Pacific","Southern")
 
 write.csv(MissingPerOcean,"Missing_CS_per_Ocean.csv")
@@ -478,12 +478,12 @@ g<-(f/d)*e #total in phylum IF everyone had NCBI
 h<-g-f  #total MISSING CS, yet to be found
 j<-h/f   # proportion missing CS -- compared to total CS already found, so often greater than 1
 
-missing<-cbind(i,g,h,j)
+missing<-cbind(i,e,f,g,h,j)
 missing_phyla<-rbind(missing_phyla,missing)
 
 }
 
-colnames(missing_phyla)<-c("Phylum","Total CS IF NCBI","Total CS yet to be found","Proportion CS yet to be found")
+colnames(missing_phyla)<-c("Phylum","Total in phylum","Total CS","Total CS IF NCBI","Total CS yet to be found","Proportion CS yet to be found")
 
 write.csv(missing_phyla,"missing_per_phylum.csv")
 
