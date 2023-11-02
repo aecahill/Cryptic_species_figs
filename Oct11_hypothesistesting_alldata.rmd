@@ -323,6 +323,30 @@ surveystabletable$CSss_type<-c("CSss","CSss","CSsl","CSsl")
 
 ggplot(as.data.frame(surveystabletable),aes(x=Stable,y=Percent,fill=CSss_type,))+geom_bar(stat="identity")
 
+
+# What about sediment vs rocky?
+sed_hab<-cbind(survey$Hsubstrate,survey$Morpho_diff,survey$CSss)
+sed_hab<-as.data.frame(na.omit(sed_hab)) #235 cases left
+colnames(sed_hab)<-c("Hsubstrate","Morpho_diff","CSss")
+
+
+table(sed_hab$CSss,sed_hab$Hsubstrate)
+chisq.test(sed_hab$CSss,sed_hab$Hsubstrate)
+
+sed_count<-table(sed_hab$Hsubstrate)
+seddiff<-table(sed_hab$CSss,sed_hab$Hsubstrate) 
+CSss_total<-seddiff[2,]/sed_count
+CSsl_total<-seddiff[1,]/sed_count
+sedtable<-rbind(CSss_total,CSsl_total)
+sedtable #this should be the percentages for each, sym and not, columns sum to 1
+
+surveysedtable<-pivot_longer(as.data.frame(sedtable), cols=1:3, names_to = "Substrate",
+                               values_to = "Percent", values_drop_na = FALSE)
+surveysedtable$CSss_type<-c("CSss","CSss","CSss","CSsl","CSsl","CSsl")
+surveysedtable$Substrate<-c("Rocky","Sediment","Both","Rocky","Sediment","Both")
+
+ggplot(as.data.frame(surveysedtable),aes(x=Substrate,y=Percent,fill=CSss_type,))+geom_bar(stat="identity")
+
 ```
 
 Result: marginal - but in predicted direction. More CSss found in stable environments. Hypothesis supported.
@@ -476,6 +500,20 @@ surveymorphoskeltable$Diff_type<-c("Statistical","Statistical","Diagnostic","Dia
 
 ggplot(as.data.frame(surveymorphoskeltable),aes(x=Hard_Skeleton,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
 
+
+skel_count<-table(surveymorpho$hard_skeleton)
+skeldiff<-table(surveymorpho$CSss,surveymorpho$hard_skeleton) 
+CSss_total<-skeldiff[2,]/skel_count
+CSsl_total<-skeldiff[1,]/skel_count
+skeltable<-rbind(CSss_total,CSsl_total)
+skeltable #this should be the percentages for each, sym and not, columns sum to 1
+
+surveyskeltable<-pivot_longer(as.data.frame(skeltable), cols=1:2, names_to = "Hard_skel",
+                               values_to = "Percent", values_drop_na = FALSE)
+surveyskeltable$CSss_type<-c("CSss","CSss","CSsl","CSsl")
+
+ggplot(as.data.frame(surveyskeltable),aes(x=Hard_skel,y=Percent,fill=CSss_type,))+geom_bar(stat="identity")
+
 ```
 
 Note: We do not get the same result if I just consider ss vs sl - there is no longer significance. I think this is because hard skeleton should be important for both statistical and diagnostic differences.
@@ -486,6 +524,24 @@ Result: hypothesis supported.
 #Next: image vision
 table(surveymorpho$Morpho_diff,surveymorpho$image)
 chisq.test(surveymorpho$Morpho_diff,surveymorpho$image)
+
+table(surveymorpho$CSss,surveymorpho$image)
+chisq.test(surveymorpho$CSss,surveymorpho$image)
+
+
+image_count<-table(surveymorpho$image)
+imagediff<-table(surveymorpho$CSss,surveymorpho$image) 
+CSss_total<-imagediff[2,]/image_count
+CSsl_total<-imagediff[1,]/image_count
+imagetable<-rbind(CSss_total,CSsl_total)
+imagetable #this should be the percentages for each, sym and not, columns sum to 1
+
+surveyimagetable<-pivot_longer(as.data.frame(imagetable), cols=1:2, names_to = "Image",
+                               values_to = "Percent", values_drop_na = FALSE)
+surveyimagetable$CSss_type<-c("CSss","CSss","CSsl","CSsl")
+
+ggplot(as.data.frame(surveyimagetable),aes(x=Image,y=Percent,fill=CSss_type,))+geom_bar(stat="identity")
+
 
 ```
 Result: hypothesis not supported
@@ -511,6 +567,20 @@ surveymorphofertitable<-pivot_longer(as.data.frame(morphofertitable), cols=1:3, 
 surveymorphofertitable$Diff_type<-c("Statistical","Statistical","Statistical","Diagnostic","Diagnostic","Diagnostic","No_Difference","No_Difference","No_Difference")
 
 ggplot(as.data.frame(surveymorphofertitable),aes(x=Fertilization,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+morphoferti_count<-table(surveymorpho$ferti)
+fertidiff<-table(surveymorpho$CSss,surveymorpho$ferti) 
+CSss_total<-fertidiff[2,]/morphoferti_count
+CSsl_total<-fertidiff[1,]/morphoferti_count
+morphofertitable<-rbind(CSss_total,CSsl_total)
+morphofertitable #this should be the percentages for each, eco and not
+#columns sum to 1
+surveyfertitable<-pivot_longer(as.data.frame(morphofertitable), cols=1:3, names_to = "Fertilization",
+                                    values_to = "Percent", values_drop_na = FALSE)
+surveyfertitable$Diff_type<-c("CSss","CSss","CSss","CSsl","CSsl","CSsl")
+
+ggplot(as.data.frame(surveyfertitable),aes(x=Fertilization,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
 
 ```
 
@@ -539,6 +609,21 @@ surveymorphogentable<-pivot_longer(as.data.frame(morphogentable), cols=1:3, name
 surveymorphogentable$Diff_type<-c("Statistical","Statistical","Statistical","Diagnostic","Diagnostic","Diagnostic","No_Difference","No_Difference","No_Difference")
 
 ggplot(as.data.frame(surveymorphogentable),aes(x=External_genitals,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
+
+morphogen_count<-table(surveymorpho$genitals)
+gendiff<-table(surveymorpho$CSss,surveymorpho$genitals) 
+CSss_total<-gendiff[2,]/morphogen_count
+CSsl_total<-gendiff[1,]/morphogen_count
+morphogentable<-rbind(CSss_total,CSsl_total)
+morphogentable #this should be the percentages for each, eco and not
+#columns sum to 1
+surveygentable<-pivot_longer(as.data.frame(morphogentable), cols=1:3, names_to = "Genitals",
+                                    values_to = "Percent", values_drop_na = FALSE)
+surveygentable$Diff_type<-c("CSss","CSss","CSss","CSsl","CSsl","CSsl")
+
+ggplot(as.data.frame(surveygentable),aes(x=Genitals,y=Percent,fill=Diff_type,))+geom_bar(stat="identity")
+
 
 ```
 
