@@ -466,7 +466,7 @@ CSsymtable #this should be the percentages for each, sym and not, columns sum to
 
 surveyCSsymtable<-pivot_longer(as.data.frame(CSsymtable), cols=1:2, names_to = "Sympatry",
                                    values_to = "Percent", values_drop_na = FALSE)
-surveyCSsymtable$CSss_type<-c("CSsl","CSsl","CSss","CSss")
+surveyCSsymtable$CSss_type<-c("CSss","CSss","CSsl","CSsl")
 
 ggplot(as.data.frame(surveyCSsymtable),aes(x=Sympatry,y=Percent,fill=CSss_type,))+geom_bar(stat="identity")
 
