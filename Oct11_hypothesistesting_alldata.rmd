@@ -696,8 +696,8 @@ drop1(glm(CSss~HKKv3+phylum_class,data=largeclasstable,family=binomial),test="Ch
 Classes are still significant here.
 
 
-I guess I need to try the other analyses but I am not sure how to interpret these things - DF sometimes goes to zero. There remains an effect of class.
+I guess I need to try the other analyses but I am not sure how to interpret these things - DF sometimes goes to zero. There remains an effect of class. I don't understand what is happening here.
 ```{r}
-drop1(glm(CSss~hard_skeleton+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~ferti+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
 ```
 
