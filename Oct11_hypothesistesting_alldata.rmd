@@ -640,3 +640,64 @@ Result: more diagnostic traits with external, hypothesis accepted. This is also 
 ## In sum, except "image vision" we still see an importance of taxonomic characters in determining the TYPE of CS that is found (ss vs sl).
 
 ## So, overall conclusions: When looking at the full dataset, there is support for several (but not all) sets of hypotheses. Interestingly, the effect of taxonomic work/effort seems to go away, while the effect of taxonomic class remains. Some support for both selection-based and neutral ideas.
+
+
+
+#Now, November 14, doing more analyses
+```{r}
+summary(glm(CSss~HKKv3+phylum_wormsV1,data=surveymorpho,family=binomial))
+drop1(glm(CSss~HKKv3+phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~HKKv3+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+
+
+```
+These show no effect of phylum on the probability of haviing CSss, BUT a strong effect of class.
+
+What if we analyze for only large classes?
+
+```{r}
+
+largeclass<-c()
+class_string<-c("Mollusca_Gastropoda",
+"Arthropoda_Malacostraca",
+"Chordata_Actinopterygii",
+"Annelida_Polychaeta",
+"Cnidaria_Anthozoa",
+"Arthropoda_Hexanauplia",
+"Mollusca_Bivalvia",
+"Cnidaria_Scyphozoa",
+"Porifera_Demospongiae",
+"Cnidaria_Hydrozoa",
+"Chordata_Ascidiacea",
+"Echinodermata_Asteroidea",
+"Nemertea_Hoplonemertea")
+  
+for (i in 1:length(surveymorpho$NameBeforeCor)) {
+  if (surveymorpho$phylum_class[i]%in% class_string == TRUE)
+    b<-TRUE
+      else 
+      b<-NA
+
+  largeclass<-rbind(largeclass,b)
+  
+}
+
+largeclasstable<-as.data.frame(cbind(surveymorpho,largeclass))
+largeclasstable<-largeclasstable[!is.na(largeclasstable$largeclass),]
+```
+
+This gave us a dataframe where only classes with AT LEAST TEN CS are considered.
+
+Redoing analyses above:
+```{r}
+drop1(glm(CSss~HKKv3+phylum_class,data=largeclasstable,family=binomial),test="Chisq")
+```
+
+Classes are still significant here.
+
+
+I guess I need to try the other analyses but I am not sure how to interpret these things - DF sometimes goes to zero. There remains an effect of class.
+```{r}
+drop1(glm(CSss~hard_skeleton+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+```
+
