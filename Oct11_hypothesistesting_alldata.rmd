@@ -20,7 +20,8 @@ library(vioplot)
 library(bestglm)
 library(tidyr)
 library(ggmosaic)
-survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
+#survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
+survey <- read.csv(file="978_CScpx_100cols_corrige_151123.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
 surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
@@ -205,7 +206,7 @@ ggplot(decadetable3,aes(x=Decade,y=Number_Hard,fill=Difficulty,))+geom_bar(stat=
 
 ```
 
-Again a statistically significant result but no clear trend like we expect; hypothesis not supported overall. BUT looking at percent difficult shows clearer patterns (increase through time).
+Again hypothesis not supported overall - no significant result with regressions. BUT looking at percent difficult shows clearer patterns (increase through time).
 
 ## In sum, when we only look at species with CS (i.e. our database), the effect of taxonomic work goes away. This is interesting since that was the strongest effect in paper 1.
 
@@ -481,7 +482,7 @@ ggplot(as.data.frame(surveyCSsymtable),aes(x=Sympatry,y=Percent,fill=CSss_type,)
 
 ```
 
-Result: we do see more diagnostic differences in sympatry than allopatry; hypothesis supported.
+Result: we do NOT see more diagnostic differences in sympatry than allopatry; hypothesis supported.
 
 ## Importance of biological traits
 # More diagnostic traits with hard skeleton?
