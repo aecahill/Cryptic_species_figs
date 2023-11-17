@@ -21,7 +21,7 @@ library(bestglm)
 library(tidyr)
 library(ggmosaic)
 #survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
-survey <- read.csv(file="978_CScpx_100cols_corrige_151123.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
+survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
 surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
@@ -482,7 +482,7 @@ ggplot(as.data.frame(surveyCSsymtable),aes(x=Sympatry,y=Percent,fill=CSss_type,)
 
 ```
 
-Result: we do NOT see more diagnostic differences in sympatry than allopatry; hypothesis supported.
+Result: we do see more diagnostic differences in sympatry than allopatry; hypothesis supported.
 
 ## Importance of biological traits
 # More diagnostic traits with hard skeleton?
@@ -691,7 +691,7 @@ This gave us a dataframe where only classes with AT LEAST TEN CS are considered.
 
 Redoing analyses above:
 ```{r}
-drop1(glm(CSss~HKKv3+phylum_class,data=largeclasstable,family=binomial),test="Chisq")
+summary(glm(CSss~as.character(HKKv3)*phylum_class,data=largeclasstable,family=binomial),test="Chisq")
 ```
 
 Classes are still significant here.
@@ -699,6 +699,6 @@ Classes are still significant here.
 
 I guess I need to try the other analyses but I am not sure how to interpret these things - DF sometimes goes to zero. There remains an effect of class. I don't understand what is happening here.
 ```{r}
-drop1(glm(CSss~ferti+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~hard_skeleton+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
 ```
 
