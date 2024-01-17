@@ -24,7 +24,7 @@ library(ggmosaic)
 survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
+surveylarv<-read.csv("survey_oct11.csv",header=TRUE) #This file has also been updated to include all 978 spp (ie with Eurytemora affinis)
 
 
 # cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
@@ -646,8 +646,9 @@ Result: more diagnostic traits with external, hypothesis accepted. This is also 
 
 #Now, November 14, doing more analyses
 ```{r}
-summary(glm(CSss~HKKv3+phylum_wormsV1,data=surveymorpho,family=binomial))
-drop1(glm(CSss~HKKv3+phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+summary(glm(CSss~HKKv3+phylum_class,data=large2classtable,family=binomial))
+drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+summary(glm(CSss~phylum_class,data=large2classtable,family=binomial))
 drop1(glm(CSss~HKKv3+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
 
 
@@ -686,12 +687,41 @@ for (i in 1:length(surveymorpho$NameBeforeCor)) {
 largeclasstable<-as.data.frame(cbind(surveymorpho,largeclass))
 largeclasstable<-largeclasstable[!is.na(largeclasstable$largeclass),]
 ```
+```{r}
+large2class<-c()
+class_string<-c("Mollusca_Gastropoda",
+"Arthropoda_Malacostraca",
+"Chordata_Actinopterygii",
+"Annelida_Polychaeta",
+"Cnidaria_Anthozoa",
+"Arthropoda_Hexanauplia",
+"Mollusca_Bivalvia",
+"Cnidaria_Scyphozoa",
+"Porifera_Demospongiae",
+"Cnidaria_Hydrozoa",
+#"Chordata_Ascidiacea",
+"Echinodermata_Asteroidea",
+"Nemertea_Hoplonemertea")
+  
+for (i in 1:length(surveymorpho$NameBeforeCor)) {
+  if (surveymorpho$phylum_class[i]%in% class_string == TRUE)
+    b<-TRUE
+      else 
+      b<-NA
+
+  large2class<-rbind(large2class,b)
+  
+}
+
+large2classtable<-as.data.frame(cbind(surveymorpho,large2class))
+large2classtable<-large2classtable[!is.na(large2classtable$large2class),]
+```
 
 This gave us a dataframe where only classes with AT LEAST TEN CS are considered.
 
 Redoing analyses above:
 ```{r}
-summary(glm(CSss~as.character(HKKv3)*phylum_class,data=largeclasstable,family=binomial),test="Chisq")
+summary(glm(CSss~as.character(HKKv3)+phylum_class,data=large2classtable,family=binomial),test="Chisq")
 ```
 
 Classes are still significant here.
@@ -699,6 +729,6 @@ Classes are still significant here.
 
 I guess I need to try the other analyses but I am not sure how to interpret these things - DF sometimes goes to zero. There remains an effect of class. I don't understand what is happening here.
 ```{r}
-drop1(glm(CSss~hard_skeleton+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~hard_skeleton+phylum_class,data=largeclasstable,family=binomial),test="Chisq")
 ```
 
