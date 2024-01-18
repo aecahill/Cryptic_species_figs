@@ -20,6 +20,7 @@ library(vioplot)
 library(bestglm)
 library(tidyr)
 library(ggmosaic)
+library(lme4)
 #survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
 survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
@@ -646,7 +647,10 @@ Result: more diagnostic traits with external, hypothesis accepted. This is also 
 
 #Now, November 14, doing more analyses
 ```{r}
-summary(glm(CSss~HKKv3+phylum_class,data=large2classtable,family=binomial))
+
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+#drop1(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho),test="Chisq")
+
 drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
 summary(glm(CSss~phylum_class,data=large2classtable,family=binomial))
 drop1(glm(CSss~HKKv3+phylum_class,data=surveymorpho,family=binomial),test="Chisq")
@@ -732,3 +736,11 @@ I guess I need to try the other analyses but I am not sure how to interpret thes
 drop1(glm(CSss~hard_skeleton+phylum_class,data=largeclasstable,family=binomial),test="Chisq")
 ```
 
+# Jan 18. 
+I am coming back to this after several months away. I think I need to analyze each question using GLMM, with phylum_class as a random effect. I think I understand the syntax here, which is this:
+
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+
+The probability of a species having CSss based on Eco_diff, once the variance from phylum_class is accounted for. 
+
+So, game plan: build a model and then work through the table with it. 
