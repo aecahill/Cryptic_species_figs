@@ -1,0 +1,241 @@
+---
+title: "Mixed models for CS paper 2, RIOK = TRUE"
+output: html_document
+date: "2024-01-19"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+```
+
+## GLMMs from January 2024 
+
+I am coming back to this after several months away. I think I need to analyze each question using GLMM, with phylum_class as a random effect. I think I understand the syntax here, which is this:
+
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+
+The probability of a species having CSss based on Eco_diff, once the variance from phylum_class is accounted for. 
+
+So, game plan: build a model and then work through the table with it. 
+
+First, code to load libraries, read in files, etc
+```{r}
+
+
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(vioplot)
+library(bestglm)
+library(tidyr)
+library(ggmosaic)
+library(lme4)
+#survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
+survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
+nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+bio<-read.csv2(file="input_BIOLOGY_classes.csv")
+surveylarv<-read.csv("survey_oct11.csv",header=TRUE) #This file has also been updated to include all 978 spp (ie with Eurytemora affinis)
+
+
+# cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
+# reintroduce genus but several possibilities: solution below not OK for CS at genus level (no data), can also use NameBoforeCor instead of acceptedName
+survey$genus <-word(survey$acceptedName_wormsV1,1)
+survey$genusBC <-word(survey$NameBeforeCor,1) # see if this genusBC changes results / genus.
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
+survey$Geo_dif3 <-survey$Geo_diff
+levels(survey$Geo_dif3)<-c("","Allopatric", "Allopatric", "Allopatric","Sympatric","Sympatric, Allopatric", "Sympatric, Allopatric", "Sympatric, Allopatric")
+levels(survey$Geo_dif3)<-c(NA, "Allopatric","Sympatric","Sympatric, Allopatric")
+# add booleans for geographical differentiation and morphological differentiation variables
+survey$symp    <- str_detect(survey$Geo_diff,"Sympatric")
+survey$sympara <- str_detect(survey$Geo_diff,"Sympatric") | str_detect(survey$Geo_diff,"Parapatric")
+survey$allop   <- str_detect(survey$Geo_diff,"Allopatric")
+survey$NoMorphoDiff    <- survey$Morpho_diff=="No differentiation"
+survey$StatMorphoDiff  <- survey$Morpho_diff=="Statistic"
+survey$DiagMorphoDiff  <- survey$Morpho_diff=="Diagnostic"
+# add biological traits of the class to which the CScpx belongs
+survey$phylum_class <-paste0(survey$phylum_worms,"_",survey$class_worms)
+survey$hard_skeleton  <- factor(bio$hard_skeleton[match(survey$phylum_class,bio$phylum_class)])
+survey$ferti          <- factor(bio$ferti[match(survey$phylum_class,bio$phylum_class)])
+survey$image          <- factor(bio$image[match(survey$phylum_class,bio$phylum_class)])
+survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylum_class)])
+survey$CSss     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"No differentiation") #need to combine stat + no_diff to make CSss
+survey$Sympatric <-str_detect(survey$Geo_dif3,"Sympatric") | str_detect(survey$Geo_dif3,"Sympatric, Allopatric") #This creates a vector that counts sym/allo as sympatric - that is, do spp exist in sympatry?
+
+#NEW FOR THIS SCRIPT: MAKE RIOK
+
+survey<-filter(survey, RIOK==TRUE) #N = 535
+surveylarv<-filter(surveylarv, RIOK==TRUE) #N = 532, not sure why difference
+```
+
+1) Taxonomic work is needed? Are there more CSss or CSsl overall? This can probably stay the same, chi-square test.
+
+```{r}
+expected<-c((length(na.omit(survey$Morpho_diff)))/2,(length(na.omit(survey$Morpho_diff)))/2)
+observed<-c(length(which(survey$CSss=="TRUE")),length(which(survey$CSss=="FALSE")))
+chisq.test(cbind(expected,observed))
+
+# Next we will make a graph
+CSssGraph<-as.data.frame(cbind(observed,c("CSss","CSsl")))
+colnames(CSssGraph)<-c("Number","CS_Type")
+ggplot(data=CSssGraph,aes(x=CS_Type, y=as.numeric(Number)))+geom_bar(stat="identity")+
+  theme_bw()+
+  #theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+```
+
+More CSss than the 50% benchmark (significant), so reject the idea that most CS are just due to taxonomic oversight. BUT, does this vary with phyla or classes?
+
+```{r}
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+
+drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~class_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+
+```
+
+Phylum is not significant, but class is (both class_wormsV1 and phylum_class). This is because of a few classes, mostly Ascidea (others are minor classes, ie <10 species). So, from here I will be using mixed models with phylum_class as a random factor. This will *remove variation due to phylum_class* and allow us to see if there is a main effect once phylum_class is accounted for. This is not a proper phylo correction per se but should get the job done.
+
+
+2. Are there differences in time of description? For this, the independent variable is time (year of description OR decade of description; not sure why we need to bin but I will run both of them). Dependent variable is CSss.
+
+```{r}
+#Add decade to dataframe
+breaks=c(1750,1760,1770,1780,1790,1800,1810,1820,1830,1840,1850,1860,1870,1880,1890,1900,1910,
+         1920,1930,1940,1950,1960,1970,1980,1990,2000,2010,2020,2030)
+surveymorpho$decade<-cut(as.numeric(surveymorpho$yearb),breaks=breaks)
+levels(surveymorpho$decade)<-c("1760","1770","1780","1790","1800","1810","1820","1830","1840",
+                       "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
+                       "1950","1960","1970","1980","1990","2000","2010","2020","2030")
+
+#Now test CSss by decade
+summary(glmer(CSss~decade+(1|phylum_class),data=surveymorpho,family=binomial))
+
+#and by year
+summary(glmer(CSss~yearb+(1|phylum_class),data=surveymorpho,family=binomial))
+
+
+```
+So no effect of time on CSss, either by year (continuous) or decade (bins).
+
+3. Are there differences in the number that are easy or hard to access through time?
+First, test trend in HARD to access through time:
+
+```{r}
+surveyaccess<-filter(survey, HDifAccess != "NA")
+surveyaccess$Difficult<-surveyaccess$HDifAccess=="Difficult"
+surveyaccess$decade<-cut(as.numeric(surveyaccess$yearb),breaks=breaks)
+levels(surveymorpho$decade)<-c("1760","1770","1780","1790","1800","1810","1820","1830","1840",
+                       "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
+                       "1950","1960","1970","1980","1990","2000","2010","2020","2030")
+
+
+summary(glmer(Difficult~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+
+```
+
+So there IS a trend where Difficult Access CS are described later. How about easy?
+```{r}
+surveyaccess$Easy<-surveyaccess$HDifAccess=="Easy"
+
+summary(glmer(Easy~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+
+```
+
+...and where easy ones are described earlier.
+
+4. How about HKK (habitat connectivity) and an association with CSss? 
+
+```{r}
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+Slight effect of HKKv3, with a positive effect (large HKK more likely to show more CSss).
+
+5. Is habitat stability associated with CSss?
+
+```{r}
+Hstable<-c()
+
+for (i in 1:length(surveymorpho$NameBeforeCor)) {
+  if (is.na(surveymorpho$Hcoralreef[i]))
+    b<-"NA"
+  else if (surveymorpho$Hpelagic[i] == TRUE)
+    b<-"TRUE"
+  else if (surveymorpho$Hdeepsea[i] == TRUE)
+    b<-"TRUE"
+  else if (surveymorpho$Hcave[i] == TRUE)
+    b<-"TRUE"
+  else if (surveymorpho$Hcoralreef[i]  == TRUE)
+    b<-"TRUE"
+    else
+    b<-"FALSE"
+  
+  Hstable<-c(Hstable,b)
+  
+}
+
+surveymorpho<-cbind(surveymorpho,Hstable)
+
+summary(glmer(CSss~Hstable+(1|phylum_class),data=surveymorpho,family=binomial))
+
+
+```
+No effect of habitat stability with these habitat classes.
+
+6. Are CSss more common in sympatry or not?
+```{r}
+summary(glmer(CSss~Sympatric+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+NO EFFECT HERE, different from full dataset.
+
+7. Are species in sympatry more likely to have ecological differentiation?
+```{r}
+summary(glmer(Eco_diff~Sympatric+(1|phylum_class),data=survey,family=binomial))
+
+```
+No, no relation
+
+8. Are CSss more likely in species with eco diff?
+```{r}
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+Species with ecological differentiation are LESS likely to be CSss (more likely to have diagnostic differences).
+
+9. Biological traits associated with CSss?
+```{r}
+summary(glmer(CSss~hard_skeleton+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~ferti+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~genitals+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+10. Ok, now larvae.
+```{r}
+surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+summary(glmer(CSss~Repro_invest+(1|phylum_class),data=surveylarvmorpho,family=binomial))
+summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
+
+
+```
+No effect of larval type (3 categories) or reproductive investment (2 categories).
+
+11. Sediment vs rocky only
+```{r}
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") #make matrix where only the cases for rocky or sediment habitat
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
+
+```
+Significant! More likely to have CSss in sediment than on rocky shores.
