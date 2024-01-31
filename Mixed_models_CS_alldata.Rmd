@@ -218,7 +218,8 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 
 10. Ok, now larvae.
 ```{r}
-surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
+surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")#make matrix where only the cases where morpho was studied is here
 summary(glmer(CSss~Repro_invest+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 
