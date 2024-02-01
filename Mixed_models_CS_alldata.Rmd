@@ -30,6 +30,7 @@ library(bestglm)
 library(tidyr)
 library(ggmosaic)
 library(lme4)
+library(cowplot)
 #survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
 survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
@@ -291,7 +292,6 @@ ggplot(classtable,aes(x=Class,y=Percent_SS))+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))
 
-
 ```
 
 Fig 2: CS through time, with habitat access plotted over. NEED TO THINK THROUGH
@@ -303,12 +303,73 @@ Fig 2: CS through time, with habitat access plotted over. NEED TO THINK THROUGH
 Fig 3: HKK and proportion CSss. This will be a bar graph with the 6 HKK values on the x, proportion ss on the y.
 
 ```{r}
+Hkk_count<-table(surveymorpho$HKKv3,surveymorpho$CSss)
+percent_ss<-c()
+
+for (i in 1:length(Hkk_count[,2])) {
+  b<-(Hkk_count[i,2]/(Hkk_count[i,1]+Hkk_count[i,2]))
+  percent_ss<-rbind(percent_ss,b)
+}
+
+Hkk_count<-as.data.frame(cbind(rownames(Hkk_count),Hkk_count,percent_ss))
+colnames(Hkk_count)<-c("HKK","SL","SS","Percent_SS")
+
+Hkk_count["HKK"][Hkk_count["HKK"] == "1"] <- "A1"
+Hkk_count["HKK"][Hkk_count["HKK"] == "5"] <- "B2"
+Hkk_count["HKK"][Hkk_count["HKK"] == "10"] <- "C10"
+Hkk_count["HKK"][Hkk_count["HKK"] == "25"] <- "D25"
+Hkk_count["HKK"][Hkk_count["HKK"] == "100"] <- "E100"
+Hkk_count["HKK"][Hkk_count["HKK"] == "1000"] <- "F1000"
+
+ggplot(Hkk_count,aes(x=HKK,y=as.numeric(Percent_SS)))+
+  geom_bar(stat="identity")+
+  geom_hline(yintercept=0.659,linetype=2)+
+  ylab("Proportion CS sensu stricto")+
+  xlab("Connectivity")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
 
 ```
 
 Fig 4: Sympatry vs morpho and eco diffs. This will be a two-panel with Proportion ss on the y, and on the x will be morpho diffs OR eco diffs (two panels).
 
 ```{r}
+#for sympatry
+Morphodiffs<-table(surveymorpho$CSss,surveymorpho$Sympatric)
+Morphodiffstable<-pivot_longer(as.data.frame(Morphodiffs),cols=1)
+colnames(Morphodiffstable)<-c("Sympatric","Freq","name","CSss")
+
+percentCSss<-c((Morphodiffstable[2,2]/(Morphodiffstable[1,2]+Morphodiffstable[2,2])),(Morphodiffstable[4,2]/(Morphodiffstable[3,2]+Morphodiffstable[4,2])))
+Morphodiffsgraphtable<-as.data.frame(cbind(as.numeric(percentCSss),c("No","Yes")))
+colnames(Morphodiffsgraphtable)<-c("percentCSss","Sympatry")
+
+Sympatrygraph<-ggplot(Morphodiffsgraphtable,aes(x=Sympatry,y=as.numeric(percentCSss)))+
+  geom_bar(stat="identity")+
+  #geom_hline(yintercept=0.659,linetype=2)+
+  ylab("Proportion CS sensu stricto")+
+  xlab("Sympatry")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
+#for Ecodiffs
+Ecodiffs<-table(survey$Eco_diff,survey$Sympatric)[1:2,]
+Ecodiffstable<-pivot_longer(as.data.frame(Ecodiffs),cols=1)
+colnames(Ecodiffstable)<-c("Sympatric","Freq","name","Eco_diff")
+
+percentEcodiff<-c((Ecodiffstable[2,2]/(Ecodiffstable[1,2]+Ecodiffstable[2,2])),(Ecodiffstable[4,2]/(Ecodiffstable[3,2]+Ecodiffstable[4,2])))
+Ecodiffsgraphtable<-as.data.frame(cbind(as.numeric(percentEcodiff),c("No","Yes")))
+colnames(Ecodiffsgraphtable)<-c("percentEcodiff","Sympatry")
+
+Ecograph<-ggplot(Ecodiffsgraphtable,aes(x=Sympatry,y=as.numeric(percentEcodiff)))+
+  geom_bar(stat="identity")+
+  #geom_hline(yintercept=0.659,linetype=2)+
+  ylab("Proportion Ecologically Differentiated")+
+  xlab("Sympatry")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
+plot_grid(Sympatrygraph,Ecograph,ncol=1,labels=c("A","B"))
 
 ```
 
