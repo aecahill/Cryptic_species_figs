@@ -236,3 +236,79 @@ summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
 ```
 Significant! More likely to have CSss in sediment than on rocky shores.
+
+# Now let's make some graphs
+Fig 1: ss vs sl by major class. I want this to be a barplot with Proportion CSss on the y and major classes on the x, with a horizontal dashed line for the overall proportion.
+
+```{r}
+#First, reduce the dataset to only large classes
+largeclass<-c()
+class_string<-c("Mollusca_Gastropoda",
+"Arthropoda_Malacostraca",
+"Chordata_Actinopterygii",
+"Annelida_Polychaeta",
+"Cnidaria_Anthozoa",
+"Arthropoda_Hexanauplia",
+"Mollusca_Bivalvia",
+"Cnidaria_Scyphozoa",
+"Porifera_Demospongiae",
+"Cnidaria_Hydrozoa",
+"Chordata_Ascidiacea",
+"Echinodermata_Asteroidea",
+"Nemertea_Hoplonemertea")
+  
+for (i in 1:length(surveymorpho$NameBeforeCor)) {
+  if (surveymorpho$phylum_class[i]%in% class_string == TRUE)
+    b<-TRUE
+      else 
+      b<-NA
+
+  largeclass<-rbind(largeclass,b)
+
+}
+
+largeclasstable<-as.data.frame(cbind(surveymorpho,largeclass))
+largeclasstable<-largeclasstable[!is.na(largeclasstable$largeclass),]
+
+#Now, we need the proportion of CSss in each large class
+
+classtable<-table(largeclasstable$phylum_class,largeclasstable$CSss)
+percent_ss<-c()
+
+for (i in 1:length(classtable[,2])) {
+  b<-(classtable[i,2]/(classtable[i,1]+classtable[i,2]))
+  percent_ss<-rbind(percent_ss,b)
+}
+
+classtable<-as.data.frame(cbind(rownames(classtable),classtable,percent_ss))
+colnames(classtable)<-c("Class","SL","SS","Percent_SS")
+
+ggplot(classtable,aes(x=Class,y=Percent_SS))+
+  geom_bar(stat="identity")+
+  geom_hline(yintercept=0.659,linetype=2)+
+  ylab("Proportion CS sensu stricto")+
+  xlab("Phylum and Class")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
+
+```
+
+Fig 2: CS through time, with habitat access plotted over. NEED TO THINK THROUGH
+
+```{r}
+
+```
+
+Fig 3: HKK and proportion CSss. This will be a bar graph with the 6 HKK values on the x, proportion ss on the y.
+
+```{r}
+
+```
+
+Fig 4: Sympatry vs morpho and eco diffs. This will be a two-panel with Proportion ss on the y, and on the x will be morpho diffs OR eco diffs (two panels).
+
+```{r}
+
+```
+
