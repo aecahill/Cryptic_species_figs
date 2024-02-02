@@ -298,6 +298,15 @@ Fig 2: CS through time, with habitat access plotted over. NEED TO THINK THROUGH
 
 ```{r}
 
+
+ggplot(surveyaccess,aes(x=yearb,y=HDifAccess))+
+  geom_boxplot()+
+  geom_jitter(alpha=0.8)+
+   ylab("Difficulty of Habitat Access")+
+  xlab("Year Described")+
+  theme_bw()
+
+
 ```
 
 Fig 3: HKK and proportion CSss. This will be a bar graph with the 6 HKK values on the x, proportion ss on the y.
