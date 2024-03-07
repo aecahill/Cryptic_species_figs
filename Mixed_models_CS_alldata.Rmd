@@ -31,6 +31,8 @@ library(tidyr)
 library(ggmosaic)
 library(lme4)
 library(cowplot)
+library(GLMMselect)
+library(anocAIC)
 #survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
 survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
@@ -379,6 +381,30 @@ Ecograph<-ggplot(Ecodiffsgraphtable,aes(x=Sympatry,y=as.numeric(percentEcodiff))
   theme(axis.text.x = element_text(angle = 90))
 
 plot_grid(Sympatrygraph,Ecograph,ncol=1,labels=c("A","B"))
+
+```
+
+# OK. Break in code and thoughts.
+Here we are, March 7, and I'm trying to use AIC to compare different glmers with variables to see which is 'most important.' 
+
+The variables that are significant in one-by-one analysis are sympatry, HKKv3, and sediment vs rocky habitat. We will therefore test this using the subset of species that are either soft sediment or rocky.
+
+
+```{r}
+#This function didn't work well.
+anocAIC(glmer(CSss~HKKv3+(1|phylum_class),data=surveysed,family=binomial),glmer(CSss~Sympatric+(1|phylum_class),data=surveysed,family=binomial),glmer(CSss~HKKv3*Sympatric+(1|phylum_class),data=surveysed,family=binomial),digits=2)
+```
+
+Next try: need to just run regular models to get AIC/BIC values, then make a table - I'm not going to be able to do the comparison functions (habitat data has zero covariance or something, look at error message if needed)
+
+```{r}
+glmer(CSss~HKKv3+(1|phylum_class),data=surveysed,family=binomial)
+glmer(CSss~Sympatric+(1|phylum_class),data=surveysed,family=binomial)
+glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial)
+glmer(CSss~HKKv3*Sympatric+(1|phylum_class),data=surveysed,family=binomial)
+glmer(CSss~HKKv3*Hsubstrate+(1|phylum_class),data=surveysed,family=binomial)
+glmer(CSss~Hsubstrate*Sympatric+(1|phylum_class),data=surveysed,family=binomial)
+glmer(CSss~Hsubstrate*Sympatric*HKKv3+(1|phylum_class),data=surveysed,family=binomial)
 
 ```
 
