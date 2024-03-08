@@ -32,7 +32,7 @@ library(ggmosaic)
 library(lme4)
 library(cowplot)
 library(GLMMselect)
-library(anocAIC)
+library(cAIC4)
 #survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
 survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
