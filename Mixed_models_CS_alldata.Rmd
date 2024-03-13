@@ -408,3 +408,23 @@ glmer(CSss~Hsubstrate*Sympatric*HKKv3+(1|phylum_class),data=surveysed,family=bin
 
 ```
 
+# Here again March 13 to test whether zones are related to CSss.
+
+```{r}
+spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
+
+summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
+
+```
+# No significant results. 
+
+# Consider only shallow species, sediment vs rocky (206 cases)
+
+```{r}
+shallow<-read.csv("shallow_rock_sed.csv",header=T)
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both, 193 cases remaining
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
+
+```
+
