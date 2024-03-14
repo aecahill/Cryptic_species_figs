@@ -428,3 +428,23 @@ summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
 ```
 
+#Need something about zones?
+
+```{r}
+tropmorpho<-filter(surveymorpho, Trop != "NA") #make matrix where only the cases where morpho was studied is here
+summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
+
+npolmorpho<-filter(surveymorpho, Npol != "NA") #make matrix where only the cases where morpho was studied is here
+summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
+
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") #make matrix where only the cases where morpho was studied is here
+summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
+
+spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
+summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
+
+stempmorpho<-filter(surveymorpho, Stemp != "NA") #make matrix where only the cases where morpho was studied is here
+summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
+
+```
+
