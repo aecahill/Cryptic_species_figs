@@ -286,13 +286,31 @@ for (i in 1:length(classtable[,2])) {
 classtable<-as.data.frame(cbind(rownames(classtable),classtable,percent_ss))
 colnames(classtable)<-c("Class","SL","SS","Percent_SS")
 
-ggplot(classtable,aes(x=Class,y=Percent_SS))+
+ggplot(classtable,aes(x=Class,y=as.numeric(Percent_SS)))+
   geom_bar(stat="identity")+
   geom_hline(yintercept=0.659,linetype=2)+
   ylab("Proportion CS sensu stricto")+
   xlab("Phylum and Class")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle = 90))
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+    annotate("text", x = 1, y = 0.1, label = "48", size = 4.5,color="white")+
+  annotate("text", x = 2, y = 0.1, label = "18", size = 4.5,color="white")+
+  annotate("text", x = 3, y = 0.1, label = "73", size = 4.5,color="white")+
+  annotate("text", x = 4, y = 0.1, label = "64", size = 4.5,color="white")+
+  annotate("text", x = 5, y = 0.1, label = "11", size = 4.5,color="white")+
+  annotate("text", x = 6, y = 0.1, label = "27", size = 4.5,color="white")+
+  annotate("text", x = 7, y = 0.1, label = "13", size = 4.5,color="white")+
+  annotate("text", x = 8, y = 0.1, label = "14", size = 4.5,color="white")+
+  annotate("text", x = 9, y = 0.1, label = "10", size = 4.5,color="white")+
+  annotate("text", x = 10, y = 0.1, label = "15", size = 4.5,color="white")+
+  annotate("text", x = 11, y = 0.1, label = "77", size = 4.5,color="white")+
+  annotate("text", x = 12, y = 0.1, label = "11", size = 4.5,color="white")+
+  annotate("text", x = 13, y = 0.1, label = "14", size = 4.5,color="white")
+ 
 
 ```
 
@@ -300,13 +318,16 @@ Fig 2: CS through time, with habitat access plotted over. NEED TO THINK THROUGH
 
 ```{r}
 
-
 ggplot(surveyaccess,aes(x=yearb,y=HDifAccess))+
   geom_boxplot()+
   geom_jitter(alpha=0.8)+
    ylab("Difficulty of Habitat Access")+
   xlab("Year Described")+
-  theme_bw()
+  theme_bw()+ 
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
 
 
 ```
@@ -326,19 +347,76 @@ Hkk_count<-as.data.frame(cbind(rownames(Hkk_count),Hkk_count,percent_ss))
 colnames(Hkk_count)<-c("HKK","SL","SS","Percent_SS")
 
 Hkk_count["HKK"][Hkk_count["HKK"] == "1"] <- "A1"
-Hkk_count["HKK"][Hkk_count["HKK"] == "5"] <- "B2"
+Hkk_count["HKK"][Hkk_count["HKK"] == "5"] <- "B5"
 Hkk_count["HKK"][Hkk_count["HKK"] == "10"] <- "C10"
 Hkk_count["HKK"][Hkk_count["HKK"] == "25"] <- "D25"
 Hkk_count["HKK"][Hkk_count["HKK"] == "100"] <- "E100"
 Hkk_count["HKK"][Hkk_count["HKK"] == "1000"] <- "F1000"
 
-ggplot(Hkk_count,aes(x=HKK,y=as.numeric(Percent_SS)))+
+cats2<-ggplot(Hkk_count,aes(x=HKK,y=as.numeric(Percent_SS)))+
   geom_bar(stat="identity")+
-  geom_hline(yintercept=0.659,linetype=2)+
+  #geom_hline(yintercept=0.659,linetype=2)+
   ylab("Proportion CS sensu stricto")+
   xlab("Connectivity")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))
+
+
+#Ok, now need a panel that does this but with the three morpho classes.
+#Code taken from Oct11 file
+
+Hkk_count3<-table(surveymorpho$HKKv3)
+morphodiff<-table(surveymorpho$Morpho_diff,surveymorpho$HKKv3) 
+stat_diag<-morphodiff[3,]/morphodiff[1,]
+stat_anydiff<-morphodiff[3,]/(morphodiff[3,]+morphodiff[1,])
+stat_total<-morphodiff[3,]/Hkk_count3
+diag_total<-morphodiff[1,]/Hkk_count3
+nod_total<-morphodiff[2,]/Hkk_count3
+HKKtable<-rbind(stat_total,diag_total,nod_total)
+morphodiff 
+HKKtable
+Hkk_count3
+
+#Graph
+HKKtable2<-pivot_longer(as.data.frame(HKKtable), cols=1:6, names_to = "HKK",
+                        values_to = "Percent", values_drop_na = FALSE)
+HKKtable2$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Statistical","Statistical","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
+HKKtable2["HKK"][HKKtable2["HKK"] == "1"] <- "A1"
+HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "B5"
+HKKtable2["HKK"][HKKtable2["HKK"] == "10"] <- "C10"
+HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "D25"
+HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "E100"
+HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "F1000"
+
+ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
+  geom_bar(stat="identity")+
+  xlab("Connectivity")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  annotate("text", x = 1, y = 0.1, label = "1", size = 4.5)+
+  annotate("text", x = 2, y = 0.1, label = "20", size = 4.5)+
+  annotate("text", x = 3, y = 0.1, label = "34", size = 4.5)+
+  annotate("text", x = 4, y = 0.1, label = "37", size = 4.5)+
+  annotate("text", x = 5, y = 0.1, label = "22", size = 4.5)+
+  annotate("text", x = 6, y = 0.1, label = "11", size = 4.5)+
+  annotate("text", x = 1, y = 0.9, label = "4", size = 4.5)+
+  annotate("text", x = 2, y = 0.9, label = "37", size = 4.5)+
+  annotate("text", x = 3, y = 0.9, label = "49", size = 4.5)+
+  annotate("text", x = 4, y = 0.9, label = "49", size = 4.5)+
+  annotate("text", x = 5, y = 0.9, label = "9", size = 4.5)+
+  annotate("text", x = 6, y = 0.9, label = "11", size = 4.5)+
+  annotate("text", x = 2, y = 0.4, label = "33", size = 4.5)+
+  annotate("text", x = 3, y = 0.45, label = "57", size = 4.5)+
+  annotate("text", x = 4, y = 0.45, label = "33", size = 4.5)+
+  annotate("text", x = 5, y = 0.65, label = "13", size = 4.5)+
+  annotate("text", x = 6, y = 0.5, label = "52", size = 4.5)+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+
+#plot_grid(cats2,cats3,labels=c("A","B"),ncol=1)
 
 
 ```
@@ -358,10 +436,15 @@ colnames(Morphodiffsgraphtable)<-c("percentCSss","Sympatry")
 Sympatrygraph<-ggplot(Morphodiffsgraphtable,aes(x=Sympatry,y=as.numeric(percentCSss)))+
   geom_bar(stat="identity")+
   #geom_hline(yintercept=0.659,linetype=2)+
-  ylab("Proportion CS sensu stricto")+
+  ylab("CS sensu stricto")+
   xlab("Sympatry")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle = 90))
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(axis.text.y= element_text(size=10))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
 
 #for Ecodiffs
 Ecodiffs<-table(survey$Eco_diff,survey$Sympatric)[1:2,]
@@ -375,12 +458,58 @@ colnames(Ecodiffsgraphtable)<-c("percentEcodiff","Sympatry")
 Ecograph<-ggplot(Ecodiffsgraphtable,aes(x=Sympatry,y=as.numeric(percentEcodiff)))+
   geom_bar(stat="identity")+
   #geom_hline(yintercept=0.659,linetype=2)+
-  ylab("Proportion Ecologically Differentiated")+
+  ylab("Ecologically Differentiated")+
   xlab("Sympatry")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle = 90))
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(axis.text.y= element_text(size=10))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+  
 
 plot_grid(Sympatrygraph,Ecograph,ncol=1,labels=c("A","B"))
+
+
+#Trying mosaic plots March 27
+
+Sympatrygraph2<-ggplot(data = surveymorpho) +
+  geom_mosaic(aes(x = product(Sympatric, CSss)), na.rm=TRUE)+
+  labs(x ="In Sympatry", y = "Is CSss")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))+
+    annotate("text", x = .15, y = .15, label = "48", size = 4.5,color="white")+
+  annotate("text", x = .15, y = .65, label = "142", size = 4.5,color="white")+
+  annotate("text", x = .65, y = .65, label = "117", size = 4.5,color="white")+
+  annotate("text", x = .65, y = .15, label = "179", size = 4.5,color="white")+
+  theme(axis.title.x=element_blank())+
+  theme(axis.text.x=element_blank())
+
+surveyeco<-droplevels(surveymorpho,exclude="Yes (sea surface temperature)")
+
+Ecograph2<-ggplot(data = surveyeco) +
+  geom_mosaic(aes(x = product(Sympatric, Eco_diff)), na.rm=TRUE)+
+  labs(x ="In Sympatry", y = "Ecological Differences")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))+
+    annotate("text", x = .15, y = .15, label = "10", size = 4.5,color="white")+
+  annotate("text", x = .15, y = .65, label = "30", size = 4.5,color="white")+
+  annotate("text", x = .65, y = .65, label = "21", size = 4.5,color="white")+
+  annotate("text", x = .65, y = .15, label = "86", size = 4.5,color="white")
+
+plot_grid(Sympatrygraph2,Ecograph2,ncol=1,labels=c("A","B"))
+
 
 ```
 
