@@ -33,6 +33,8 @@ library(lme4)
 library(cowplot)
 library(GLMMselect)
 library(cAIC4)
+library(wesanderson)
+
 #survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
 survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
@@ -388,8 +390,12 @@ HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "D25"
 HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "E100"
 HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "F1000"
 
+palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
+
+
 ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
+  scale_fill_manual(values=palwes)+
   xlab("Connectivity")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
