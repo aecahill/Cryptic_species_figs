@@ -173,8 +173,8 @@ for (i in 1:length(surveymorpho$NameBeforeCor)) {
     b<-"TRUE"
   else if (surveymorpho$Hcave[i] == TRUE)
     b<-"TRUE"
-  else if (surveymorpho$Hcoralreef[i]  == TRUE)
-    b<-"TRUE"
+  #else if (surveymorpho$Hcoralreef[i]  == TRUE)
+    #b<-"TRUE"
     else
     b<-"FALSE"
   
@@ -186,9 +186,12 @@ surveymorpho<-cbind(surveymorpho,Hstable)
 
 summary(glmer(CSss~Hstable+(1|phylum_class),data=surveymorpho,family=binomial))
 
+summary(glmer(CSss~Hstable+HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+
+
 
 ```
-No effect of habitat stability with these habitat classes.
+No effect of habitat stability with these habitat classes. <- Note April 4 -- NOW THAT I HAVE MADE CORAL NOT STABLE, THIS IS NOT TRUE. MORE CSSS IN STABLE HABITATS.
 
 6. Are CSss more common in sympatry or not?
 ```{r}
