@@ -9,8 +9,8 @@ setwd("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs")
 ##Part 1: pulling all animal species from OBIS
 
 animalia<-checklist(taxonid=2)   #pulls list of all animals from OBIS
-write.csv(animalia, "animal_list.csv") #writing so I don't have to pull the data every time
-animalia<-read.csv("animal_list.csv") #read back in if needed
+#write.csv(animalia, "animal_list.csv") #writing so I don't have to pull the data every time
+animalia<-read.csv("animal_list_with_geo.csv") #read back in if needed
 animalspp<-animalia[animalia$taxonRank=="Species",]   #ONLY use those that are ID'd to the species level
 animals<-as.data.frame(cbind(animalspp$scientificName,animalspp$phylum,animalspp$class))  #create table of names and phyla
 colnames(animals)<-c("Species","Phylum","Class")
@@ -562,3 +562,130 @@ for (i in class){
 colnames(missing_class)<-c("Class","Total CS IF NCBI","Total CS yet to be found","Proportion CS yet to be found")
 
 write.csv(missing_class,"missing_per_class.csv")
+
+
+## Pickign up again April 12, Montpellier
+
+missing_phyla<-data.frame()
+phyla <- factor(unique(nomsp$phylum))
+
+for (i in phyla){
+  
+  d<-nrow(filter(nomsp, (phylum==i)&(ncbi==T))) #total in phylum with NCBI
+  e<-nrow(filter(nomsp, (phylum==i))) #total in phylum
+  f<-nrow(filter(nomsp, (phylum==i)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total CS in phylum IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/g  #proportion of MISSING CS
+  
+  missing<-cbind(i,e,f,g,h,j)
+  missing_phyla<-rbind(missing_phyla,missing)
+  
+}
+
+colnames(missing_phyla)<-c("Phylum","Total_phylum","Total_CS","Total_IF_NCBI","Not_yet_found","Proportion_missing")
+
+# Now graphs (large phyla only, >= 8 CS found)
+
+largephyla<-missing_phyla %>%                 # Order table with dplyr
+  as.data.frame() %>% 
+  arrange(desc(as.numeric(Total_CS)))
+
+largephyla<-largephyla[1:10,]
+
+ggplot(largephyla,aes(x=Phylum,y=as.numeric(Proportion_missing)))+
+  geom_bar(stat="identity")+
+  ylab("Proportion CS missing")+
+  xlab("Phylum")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+# Now redo again for the geography
+
+d<-nrow(filter(animalgeo, (is_Art==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Art==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Art==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING CS
+j<-h/g   # proportion missing CS -- compared to total CS already found
+
+missingArt<-cbind(e,f,g,h,j)
+
+#Atlantic Ocean
+
+d<-nrow(filter(animalgeo, (is_Atl==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Atl==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Atl==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/g  # proportion MISSING
+
+missingAtl<-cbind(e,f,g,h,j)
+
+#Indian Ocean
+
+d<-nrow(filter(animalgeo, (is_Ind==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Ind==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Ind==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/g   # proportion MISSING
+
+missingInd<-cbind(e,f,g,h,j)
+
+#Pacific Ocean
+
+d<-nrow(filter(animalgeo, (is_Pac==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_Pac==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_Pac==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/g   # proportion MISSING
+
+missingPac<-cbind(e,f,g,h,j)
+
+#Southern Ocean
+
+d<-nrow(filter(animalgeo, (is_South==T)&(ncbi_id>0))) #total in ocean with NCBI
+e<-nrow(filter(animalgeo, (is_South==T))) #total in ocean
+f<-nrow(filter(animalgeo, (is_South==T)&(is_cs==T))) #total CS
+g<-(f/d)*e #total in ocean IF everyone had NCBI
+h<-g-f  #total MISSING
+j<-h/g   # proportion MISSING
+
+missingSouth<-cbind(e,f,g,h,j)
+
+
+MissingPerOcean<-rbind(missingArt,missingAtl, missingInd, missingPac, missingSouth)
+MissingPerOcean<-cbind(MissingPerOcean,c("Arctic","Atlantic","Indian","Pacific","Southern"))
+colnames(MissingPerOcean)<-c("Total_ocean","Total_CS","CS_expected","Missing","Proportion_Missing","Ocean")
+rownames(MissingPerOcean)<-c("Arctic","Atlantic","Indian","Pacific","Southern")
+
+
+missingoce<-ggplot(as.data.frame(MissingPerOcean),aes(x=as.character(Ocean),y=as.numeric(Proportion_Missing),fill=as.character(O)))+
+  geom_bar(stat="identity")+
+  ylab("Proportion CS missing")+
+  xlab("Ocean")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+oce<-ggplot(as.data.frame(MissingPerOcean),aes(x=as.character(Ocean),y=as.numeric(Total_CS)))+
+  geom_bar(stat="identity")+
+  ylab("Total CS Found")+
+  xlab("Ocean")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+plot_grid(oce,missingoce,ncol=2)
