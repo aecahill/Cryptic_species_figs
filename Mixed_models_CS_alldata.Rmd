@@ -402,18 +402,18 @@ ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
   xlab("Connectivity")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
-  annotate("text", x = 1, y = 0.1, label = "1", size = 4.5)+
-  annotate("text", x = 2, y = 0.1, label = "20", size = 4.5)+
-  annotate("text", x = 3, y = 0.1, label = "34", size = 4.5)+
-  annotate("text", x = 4, y = 0.1, label = "37", size = 4.5)+
-  annotate("text", x = 5, y = 0.1, label = "22", size = 4.5)+
-  annotate("text", x = 6, y = 0.1, label = "11", size = 4.5)+
-  annotate("text", x = 1, y = 0.9, label = "4", size = 4.5)+
-  annotate("text", x = 2, y = 0.9, label = "37", size = 4.5)+
-  annotate("text", x = 3, y = 0.9, label = "49", size = 4.5)+
-  annotate("text", x = 4, y = 0.9, label = "49", size = 4.5)+
-  annotate("text", x = 5, y = 0.9, label = "9", size = 4.5)+
-  annotate("text", x = 6, y = 0.9, label = "11", size = 4.5)+
+  annotate("text", x = 1, y = 0.1, label = "1", size = 4.5,color="white")+
+  annotate("text", x = 2, y = 0.1, label = "20", size = 4.5,color="white")+
+  annotate("text", x = 3, y = 0.1, label = "34", size = 4.5,color="white")+
+  annotate("text", x = 4, y = 0.1, label = "37", size = 4.5,color="white")+
+  annotate("text", x = 5, y = 0.1, label = "22", size = 4.5,color="white")+
+  annotate("text", x = 6, y = 0.1, label = "11", size = 4.5,color="white")+
+  annotate("text", x = 1, y = 0.9, label = "4", size = 4.5,color="white")+
+  annotate("text", x = 2, y = 0.9, label = "37", size = 4.5,color="white")+
+  annotate("text", x = 3, y = 0.9, label = "49", size = 4.5,color="white")+
+  annotate("text", x = 4, y = 0.9, label = "49", size = 4.5,color="white")+
+  annotate("text", x = 5, y = 0.9, label = "9", size = 4.5,color="white")+
+  annotate("text", x = 6, y = 0.9, label = "11", size = 4.5,color="white")+
   annotate("text", x = 2, y = 0.4, label = "33", size = 4.5)+
   annotate("text", x = 3, y = 0.45, label = "57", size = 4.5)+
   annotate("text", x = 4, y = 0.45, label = "33", size = 4.5)+
@@ -584,5 +584,113 @@ summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
 stempmorpho<-filter(surveymorpho, Stemp != "NA") #make matrix where only the cases where morpho was studied is here
 summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 
+```
+
+
+## Graphs on April 12 2024, prepping for Montpellier seminar
+
+First, a graph looking at the shallow rocky vs sediment habitat
+```{r}
+Shallowdiffs<-table(shallow$CSss,shallow$Hsubstrate)
+Shallowdiffstable<-pivot_longer(as.data.frame(Shallowdiffs),cols=1)
+colnames(Shallowdiffstable)<-c("Substrate","Freq","name","CSss")
+
+
+percentShallowdiff<-c((Shallowdiffstable[2,2]/(Shallowdiffstable[1,2]+Shallowdiffstable[2,2])),(Shallowdiffstable[4,2]/(Shallowdiffstable[3,2]+Shallowdiffstable[4,2])))
+Shallowdiffsgraphtable<-as.data.frame(cbind(as.numeric(percentShallowdiff),c("Rocky","Sediment")))
+colnames(Shallowdiffsgraphtable)<-c("percentCSss","Substrate")
+
+
+ggplot(Shallowdiffsgraphtable,aes(x=Substrate,y=as.numeric(percentCSss)))+
+  geom_bar(stat="identity")+
+  ylab("Proportion CS sensu stricto")+
+  xlab("Substrate")+
+  ylim(0,1)+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+```
+
+Now let's do this for stable habitats overall.
+
+```{r}
+stablediffs<-table(surveymorpho$CSss,surveymorpho$Hstable)
+stablediffstable<-pivot_longer(as.data.frame(stablediffs),cols=1)
+colnames(stablediffstable)<-c("Stable","Freq","name","CSss")
+
+
+percentstablediff<-c((stablediffstable[2,2]/(stablediffstable[1,2]+stablediffstable[2,2])),(stablediffstable[4,2]/(stablediffstable[3,2]+stablediffstable[4,2])))
+stablediffsgraphtable<-as.data.frame(cbind(as.numeric(percentstablediff),c("Not_Stable","Stable")))
+colnames(stablediffsgraphtable)<-c("percentCSss","Habitat")
+
+
+ggplot(stablediffsgraphtable,aes(x=Habitat,y=as.numeric(percentCSss)))+
+  geom_bar(stat="identity")+
+  ylab("Proportion CS sensu stricto")+
+  xlab("Habitat")+
+  ylim(0,1)+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+```
+
+Need graph of the biological factors
+
+```{r}
+skel<-ggplot(data = surveymorpho) +
+  geom_mosaic(aes(x = product(CSss,hard_skeleton), fill=CSss), na.rm=TRUE)+
+  labs(x ="Hard Skeleton", y = "Is CSss")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+   theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+vision<-ggplot(data = surveymorpho) +
+  geom_mosaic(aes(x = product(CSss,image), fill=CSss), na.rm=TRUE)+
+  labs(x ="Image Vision", y = "Is CSss")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+     theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+genitals<-ggplot(data = surveymorpho) +
+  geom_mosaic(aes(x = product(CSss,genitals), fill=CSss), na.rm=TRUE)+
+  labs(x ="External Genitals", y = "Is CSss")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+     theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+fertitype<-ggplot(data = surveymorpho) +
+  geom_mosaic(aes(x = product(CSss,ferti), fill=CSss), na.rm=TRUE)+
+  labs(x ="Fertilization Type", y = "Is CSss")+
+  theme_bw()+
+  theme(legend.title=element_blank())+
+     theme(legend.position="none")+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())+
+  theme(axis.text.x = element_text(angle = 65,hjust=1))
+
+plot_grid(skel,vision,genitals,fertitype,ncol=2)
 ```
 
