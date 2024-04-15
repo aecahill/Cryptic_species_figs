@@ -3,6 +3,8 @@
 library(dplyr)
 library(robis)
 library(tidyr)
+library(ggplot2)
+library(cowplot)
 
 setwd("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs")
 
@@ -666,7 +668,7 @@ colnames(MissingPerOcean)<-c("Total_ocean","Total_CS","CS_expected","Missing","P
 rownames(MissingPerOcean)<-c("Arctic","Atlantic","Indian","Pacific","Southern")
 
 
-missingoce<-ggplot(as.data.frame(MissingPerOcean),aes(x=as.character(Ocean),y=as.numeric(Proportion_Missing),fill=as.character(O)))+
+missingoce<-ggplot(as.data.frame(MissingPerOcean),aes(x=as.character(Ocean),y=as.numeric(Proportion_Missing)))+
   geom_bar(stat="identity")+
   ylab("Proportion CS missing")+
   xlab("Ocean")+
