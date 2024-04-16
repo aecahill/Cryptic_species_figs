@@ -1,6 +1,8 @@
 ---
 title: "Mixed models for CS paper 2, all data"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 date: "2024-01-19"
 ---
 
@@ -129,7 +131,7 @@ First, test trend in HARD to access through time:
 
 ```{r}
 surveyaccess<-filter(survey, HDifAccess != "NA")
-surveyaccess$Difficult<-surveyaccess$HDifAccess=="Difficult"
+surveyaccess$Difficult<-surveyaccess$HDifAccess=="Inaccessible"
 surveyaccess$decade<-cut(as.numeric(surveyaccess$yearb),breaks=breaks)
 levels(surveymorpho$decade)<-c("1760","1770","1780","1790","1800","1810","1820","1830","1840",
                        "1850","1860","1870","1880","1890","1900","1910","1920","1930","1940",
@@ -142,7 +144,7 @@ summary(glmer(Difficult~yearb+(1|phylum_class),data=surveyaccess,family=binomial
 
 So there IS a trend where Difficult Access CS are described later. How about easy?
 ```{r}
-surveyaccess$Easy<-surveyaccess$HDifAccess=="Easy"
+surveyaccess$Easy<-surveyaccess$HDifAccess=="Accessible"
 
 summary(glmer(Easy~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
 
