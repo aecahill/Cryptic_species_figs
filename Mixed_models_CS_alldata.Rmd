@@ -497,8 +497,8 @@ Sympatrygraph2<-ggplot(data = surveymorpho) +
   theme(axis.text.x = element_text(angle = 65,hjust=1))+
     annotate("text", x = .15, y = .15, label = "48", size = 4.5,color="white")+
   annotate("text", x = .15, y = .65, label = "142", size = 4.5,color="white")+
-  annotate("text", x = .65, y = .65, label = "117", size = 4.5,color="white")+
-  annotate("text", x = .65, y = .15, label = "179", size = 4.5,color="white")+
+  annotate("text", x = .65, y = .65, label = "179", size = 4.5,color="white")+
+  annotate("text", x = .65, y = .15, label = "117", size = 4.5,color="white")+
   theme(axis.title.x=element_blank())+
   theme(axis.text.x=element_blank())
 
@@ -516,8 +516,8 @@ Ecograph2<-ggplot(data = surveyeco) +
   theme(axis.text.x = element_text(angle = 65,hjust=1))+
     annotate("text", x = .15, y = .15, label = "10", size = 4.5,color="white")+
   annotate("text", x = .15, y = .65, label = "30", size = 4.5,color="white")+
-  annotate("text", x = .65, y = .65, label = "21", size = 4.5,color="white")+
-  annotate("text", x = .65, y = .15, label = "86", size = 4.5,color="white")
+  annotate("text", x = .65, y = .65, label = "86", size = 4.5,color="white")+
+  annotate("text", x = .65, y = .15, label = "21", size = 4.5,color="white")
 
 plot_grid(Sympatrygraph2,Ecograph2,ncol=1,labels=c("A","B"))
 
