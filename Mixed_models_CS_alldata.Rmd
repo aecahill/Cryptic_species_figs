@@ -67,6 +67,7 @@ survey$image          <- factor(bio$image[match(survey$phylum_class,bio$phylum_c
 survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylum_class)])
 survey$CSss     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"No differentiation") #need to combine stat + no_diff to make CSss
 survey$Sympatric <-str_detect(survey$Geo_dif3,"Sympatric") | str_detect(survey$Geo_dif3,"Sympatric, Allopatric") #This creates a vector that counts sym/allo as sympatric - that is, do spp exist in sympatry?
+#survey$CSsl     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"Diagnostic") #
 
 ```
 
