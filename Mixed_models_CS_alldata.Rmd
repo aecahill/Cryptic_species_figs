@@ -697,3 +697,75 @@ fertitype<-ggplot(data = surveymorpho) +
 plot_grid(skel,vision,genitals,fertitype,ncol=2)
 ```
 
+# Trying again April 24 with some new ideas.
+
+What if I build a model wtih lots of variables just inside one class?
+
+```{r}
+gastro<-filter(surveymorpho, phylum_class == "Mollusca_Gastropoda")
+summary(glm(CSss~gastro$Hsubstrate,data=gastro,family=binomial))
+summary(glm(CSss~Hsubstrate*HKKv3,data=gastro,family=binomial))
+
+
+arthro<-filter(surveymorpho, phylum_class == "Arthropoda_Malacostraca")
+summary(glm(CSss~arthro$Hsubstrate,data=arthro,family=binomial))
+
+fish<-filter(surveymorpho, phylum_class == "Chordata_Actinopterygii")
+summary(glm(CSss~fish$Hsubstrate,data=fish,family=binomial))
+
+```
+
+I think sample sizes may be too small. 
+
+Attempt at model selection with whole dataset
+```{r}
+mat<-select(surveymorpho, c(Trop,Ntemp,Npol,Stemp,Spol, HKKv3, phylum_class, Sympatric,yearb,hard_skeleton,ferti,image,genitals, CSss))
+mat[1:14]<-lapply(mat[1:14],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+outBIC$BestModels 
+
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10,nvmax=1)  
+outAIC$BestModels 
+
+```
+
+Attempt at model selection with gastro only
+```{r}
+mat<-select(gastro, c(HKKv3, Sympatric,yearb,CSss))
+mat[1:4]<-lapply(mat[1:4],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+outBIC$BestModels 
+
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10,nvmax=1)  
+outAIC$BestModels 
+
+gastro2<-filter(gastro, Hsubstrate != "NA")
+mat<-select(gastro2, c(Trop,Ntemp,Npol,Stemp,Hsubstrate,HKKv3, Sympatric,yearb,CSss))
+mat[1:9]<-lapply(mat[1:9],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+outBIC$BestModels 
+```
+
+But there are a lot of missing values on Hsubstrate, so let's try with the smaller surveysed set.
+```{r}
+mat<-select(surveysed, c(Hsubstrate, HKKv3, phylum_class, Sympatric, yearb,hard_skeleton,ferti,image,genitals, CSss))
+mat[1:10]<-lapply(mat[1:10],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+outBIC$BestModels 
+
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10,nvmax=1)  
+outAIC$BestModels 
+```
+
+And what about the shallow-water sediment vs rocky set?
+```{r}
+mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, yearb,hard_skeleton,ferti,image,genitals, CSss))
+mat[1:10]<-lapply(mat[1:10],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+outBIC$BestModels 
+
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10,nvmax=1)  
+outAIC$BestModels 
+
+```
+
