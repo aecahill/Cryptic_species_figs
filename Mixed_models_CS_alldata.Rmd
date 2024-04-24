@@ -719,12 +719,12 @@ I think sample sizes may be too small.
 
 Attempt at model selection with whole dataset
 ```{r}
-mat<-select(surveymorpho, c(Trop,Ntemp,Npol,Stemp,Spol, HKKv3, phylum_class, Sympatric,yearb,hard_skeleton,ferti,image,genitals, CSss))
-mat[1:14]<-lapply(mat[1:14],as.factor)
-outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+mat<-select(surveymorpho, c(HKKv3, phylum_class, Sympatric,yearb,hard_skeleton,ferti,image,genitals, CSss))
+mat[1:9]<-lapply(mat[1:9],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
 outBIC$BestModels 
 
-outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10,nvmax=1)  
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10)  
 outAIC$BestModels 
 
 ```
@@ -750,10 +750,10 @@ But there are a lot of missing values on Hsubstrate, so let's try with the small
 ```{r}
 mat<-select(surveysed, c(Hsubstrate, HKKv3, phylum_class, Sympatric, yearb,hard_skeleton,ferti,image,genitals, CSss))
 mat[1:10]<-lapply(mat[1:10],as.factor)
-outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
 outBIC$BestModels 
 
-outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10,nvmax=1)  
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10)  
 outAIC$BestModels 
 ```
 
@@ -761,10 +761,10 @@ And what about the shallow-water sediment vs rocky set?
 ```{r}
 mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, yearb,hard_skeleton,ferti,image,genitals, CSss))
 mat[1:10]<-lapply(mat[1:10],as.factor)
-outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10,nvmax=1)  
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
 outBIC$BestModels 
 
-outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10,nvmax=1)  
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10)  
 outAIC$BestModels 
 
 ```
