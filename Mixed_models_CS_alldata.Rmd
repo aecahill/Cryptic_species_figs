@@ -769,3 +769,132 @@ outAIC$BestModels
 
 ```
 
+# April 25 2024 -- work to run separate analyses for rocky shores and hard sediment.
+
+1. Split the data into a sediment set AND a rocky set for HKK analyses.
+```{r}
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+
+sediment<-filter(surveymorpho, Hsubstrate == "Sediment") #only sediment cases
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=sediment,family=binomial))
+
+rocky<-filter(surveymorpho, Hsubstrate == "Rocky") #only rocky cases
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=rocky,family=binomial))
+
+rockybis<-filter(rocky,HKKv3 !=1)
+rockybis<-filter(rockybis,HKKv3 !=1000) #removing extreme cases because n=1 for both
+
+#making graphs
+Hkk_countsed<-table(sediment$HKKv3)
+morphodiffsed<-table(sediment$Morpho_diff,sediment$HKKv3) 
+stat_diag<-morphodiffsed[3,]/morphodiffsed[1,]
+stat_anydiff<-morphodiffsed[3,]/(morphodiffsed[3,]+morphodiffsed[1,])
+stat_total<-morphodiffsed[3,]/Hkk_countsed
+diag_total<-morphodiffsed[1,]/Hkk_countsed
+nod_total<-morphodiffsed[2,]/Hkk_countsed
+HKKtablesed<-rbind(stat_total,diag_total,nod_total)
+morphodiffsed 
+HKKtablesed
+Hkk_countsed
+
+HKKtable2sed<-pivot_longer(as.data.frame(HKKtablesed), cols=1:4, names_to = "HKK",
+                        values_to = "Percent", values_drop_na = FALSE)
+HKKtable2sed$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "5"] <- "B5"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "10"] <- "C10"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "25"] <- "D25"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "100"] <- "E100"
+
+
+palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
+
+
+sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=HKK,y=Percent,fill=Diff_type,))+
+  geom_bar(stat="identity")+
+  scale_fill_manual(values=palwes)+
+  xlab("Connectivity")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+
+Hkk_countrocky<-table(rockybis$HKKv3)
+morphodiffrocky<-table(rockybis$Morpho_diff,rockybis$HKKv3) 
+stat_diag<-morphodiffrocky[3,]/morphodiffrocky[1,]
+stat_anydiff<-morphodiffrocky[3,]/(morphodiffrocky[3,]+morphodiffrocky[1,])
+stat_total<-morphodiffrocky[3,]/Hkk_countrocky
+diag_total<-morphodiffrocky[1,]/Hkk_countrocky
+nod_total<-morphodiffrocky[2,]/Hkk_countrocky
+HKKtablerocky<-rbind(stat_total,diag_total,nod_total)
+morphodiffrocky 
+HKKtablerocky
+Hkk_countrocky
+
+HKKtable2rocky<-pivot_longer(as.data.frame(HKKtablerocky), cols=1:4, names_to = "HKK",
+                        values_to = "Percent", values_drop_na = FALSE)
+HKKtable2rocky$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "5"] <- "B5"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "10"] <- "C10"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "25"] <- "D25"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "100"] <- "E100"
+
+
+rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=HKK,y=Percent,fill=Diff_type,))+
+  geom_bar(stat="identity")+
+  scale_fill_manual(values=palwes)+
+  xlab("Connectivity")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+plot_grid(sedplot,rockyplot,ncol=1,labels=c("A","B"))
+```
+
+Ok, now let's test the larvae within the habitat.
+
+```{r}
+surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
+surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
+
+#now sediment and larvae (n=70)
+sedimentlarv<-filter(surveylarvmorpho, Hsubstrate == "Sediment") 
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=sedimentlarv,family=binomial)) 
+
+#and rocky and larvae (n=68)
+rockylarv<-filter(surveylarvmorpho, Hsubstrate == "Rocky") 
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=rockylarv,family=binomial)) 
+```
+
+Ok, now building a glm of the factors that have been significant in univariate analysis, and selecting bestglm.
+
+First with all data
+```{r}
+mat<-select(surveymorpho, c(HKKv3, phylum_class, Sympatric,CSss))
+mat[1:4]<-lapply(mat[1:4],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
+outBIC$BestModels 
+
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10)  
+outAIC$BestModels 
+```
+
+And now with the shallow-water rocky vs soft sed dataset
+```{r}
+shallow<-read.csv("shallow_rock_sed.csv",header=T)
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases 
+
+mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, CSss))
+mat[1:5]<-lapply(mat[1:5],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
+outBIC$BestModels 
+
+outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10)  
+outAIC$BestModels 
+```
+
