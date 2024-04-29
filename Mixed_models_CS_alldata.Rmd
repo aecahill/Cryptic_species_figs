@@ -814,8 +814,20 @@ sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=HKK,y=Percent,fill=Diff_type,)
   scale_fill_manual(values=palwes)+
   xlab("Connectivity")+
   theme_bw()+
-  theme(axis.text.x = element_text(angle = 90))+
-  theme(panel.background = element_blank(), 
+  theme(axis.text.x = element_text(angle = 90))+ 
+  annotate("text", x = 1, y = 0.05, label = "6", size = 4.5,color="white")+
+  annotate("text", x = 2, y = 0.05, label = "2", size = 4.5,color="white")+
+  annotate("text", x = 3, y = 0.05, label = "21", size = 4.5,color="white")+
+  annotate("text", x = 4, y = 0.05, label = "13", size = 4.5,color="white")+
+  annotate("text", x = 1, y = 0.95, label = "8", size = 4.5,color="white")+
+  annotate("text", x = 2, y = 0.95, label = "6", size = 4.5,color="white")+
+  annotate("text", x = 3, y = 0.95, label = "9", size = 4.5,color="white")+
+  annotate("text", x = 4, y = 0.95, label = "2", size = 4.5,color="white")+
+  annotate("text", x = 1, y = 0.45, label = "9", size = 4.5)+
+  annotate("text", x = 2, y = 0.45, label = "13", size = 4.5)+
+  annotate("text", x = 3, y = 0.6, label = "10", size = 4.5)+
+  annotate("text", x = 4, y = 0.8, label = "4", size = 4.5)+
+   theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         plot.background = element_blank())
@@ -848,6 +860,17 @@ rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=HKK,y=Percent,fill=Diff_ty
   xlab("Connectivity")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
+  annotate("text", x = 1, y = 0.05, label = "6", size = 4.5,color="white")+
+  annotate("text", x = 2, y = 0.05, label = "4", size = 4.5,color="white")+
+  annotate("text", x = 3, y = 0.05, label = "6", size = 4.5,color="white")+
+  annotate("text", x = 4, y = 0.25, label = "1", size = 4.5,color="white")+
+  annotate("text", x = 1, y = 0.95, label = "21", size = 4.5,color="white")+
+  annotate("text", x = 2, y = 0.95, label = "4", size = 4.5,color="white")+
+  annotate("text", x = 3, y = 0.95, label = "18", size = 4.5,color="white")+
+  annotate("text", x = 1, y = 0.4, label = "16", size = 4.5)+
+  annotate("text", x = 2, y = 0.4, label = "9", size = 4.5)+
+  annotate("text", x = 3, y = 0.4, label = "10", size = 4.5)+
+  annotate("text", x = 4, y = 0.75, label = "1", size = 4.5)+
   theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
