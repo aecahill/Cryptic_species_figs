@@ -1,5 +1,5 @@
 ---
-title: "Appendix of GLMM Outputs"
+title: "Code for analyses"
 output:
   word_document: default
   html_document: default
@@ -8,12 +8,9 @@ date: "2024-04-15"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
-#This code will knit to produce a word doc with output tables of the different models in the paper, with all four datasets in here.
 ```
 
-## Full list of GLMM outputs for Cahill & Chenuil
-
-These results are the full outputs of the analyses conducted in Cahill & Chenuil to understand cryptic species. 
+This is the code used to produce the results in Cahill & Chenuil.
 
 ```{r}
 library(dplyr)
@@ -29,36 +26,11 @@ library(GLMMselect)
 library(cAIC4)
 library(wesanderson)
 
-#survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
-survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
-nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+survey <- read.csv(file="full_dataset" , header=TRUE ) 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE) #This file has also been updated to include all 978 spp (ie with Eurytemora affinis)
+surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
 
-
-# cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
-# reintroduce genus but several possibilities: solution below not OK for CS at genus level (no data), can also use NameBoforeCor instead of acceptedName
-survey$genus <-word(survey$acceptedName_wormsV1,1)
-survey$genusBC <-word(survey$NameBeforeCor,1) # see if this genusBC changes results / genus.
 survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
-survey$Geo_dif3 <-survey$Geo_diff
-levels(survey$Geo_dif3)<-c("","Allopatric", "Allopatric", "Allopatric","Sympatric","Sympatric, Allopatric", "Sympatric, Allopatric", "Sympatric, Allopatric")
-levels(survey$Geo_dif3)<-c(NA, "Allopatric","Sympatric","Sympatric, Allopatric")
-# add booleans for geographical differentiation and morphological differentiation variables
-survey$symp    <- str_detect(survey$Geo_diff,"Sympatric")
-survey$sympara <- str_detect(survey$Geo_diff,"Sympatric") | str_detect(survey$Geo_diff,"Parapatric")
-survey$allop   <- str_detect(survey$Geo_diff,"Allopatric")
-survey$NoMorphoDiff    <- survey$Morpho_diff=="No differentiation"
-survey$StatMorphoDiff  <- survey$Morpho_diff=="Statistic"
-survey$DiagMorphoDiff  <- survey$Morpho_diff=="Diagnostic"
-# add biological traits of the class to which the CScpx belongs
-survey$phylum_class <-paste0(survey$phylum_worms,"_",survey$class_worms)
-survey$hard_skeleton  <- factor(bio$hard_skeleton[match(survey$phylum_class,bio$phylum_class)])
-survey$ferti          <- factor(bio$ferti[match(survey$phylum_class,bio$phylum_class)])
-survey$image          <- factor(bio$image[match(survey$phylum_class,bio$phylum_class)])
-survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylum_class)])
-survey$CSss     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"No differentiation") #need to combine stat + no_diff to make CSss
-survey$Sympatric <-str_detect(survey$Geo_dif3,"Sympatric") | str_detect(survey$Geo_dif3,"Sympatric, Allopatric") #This creates a vector that counts sym/allo as sympatric - that is, do spp exist in sympatry?
 
 ```
 
@@ -154,26 +126,26 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 11) Is larval type associated with CSss? (n = 292)
 ```{r}
 surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")#make matrix where only the cases where morpho was studied is here
+surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
 12) Are CSss more common in particular geographic zones? (n = 367)
 ```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") #make matrix where only the cases where morpho was studied is here
+tropmorpho<-filter(surveymorpho, Trop != "NA") 
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
 
-npolmorpho<-filter(surveymorpho, Npol != "NA") #make matrix where only the cases where morpho was studied is here
+npolmorpho<-filter(surveymorpho, Npol != "NA") 
 summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
 
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") #make matrix where only the cases where morpho was studied is here
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
 summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
 
 spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
 summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
 
-stempmorpho<-filter(surveymorpho, Stemp != "NA") #make matrix where only the cases where morpho was studied is here
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
 summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 
 ```
@@ -191,8 +163,8 @@ outBIC$BestModels
 
 And now with the shallow-water rocky vs soft sed dataset
 ```{r}
-shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases 
+shallow<-read.csv("shallow_rock_sed.csv",header=T) #make matrix of shallow water species
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases  with both
 
 mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, CSss))
 mat[1:5]<-lapply(mat[1:5],as.factor)
@@ -205,36 +177,11 @@ outBIC$BestModels
 # Analyses with species where reproductive isolation is clear based on multiple datatypes (see main text) (starting n = 535)
 
 ```{r}
-survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
-nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+survey <- read.csv(file="full_dataset" , header=TRUE ) 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE) #This file has also been updated to include all 978 spp (ie with Eurytemora affinis)
+surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
 
-
-# cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
-# reintroduce genus but several possibilities: solution below not OK for CS at genus level (no data), can also use NameBoforeCor instead of acceptedName
-survey$genus <-word(survey$acceptedName_wormsV1,1)
-survey$genusBC <-word(survey$NameBeforeCor,1) # see if this genusBC changes results / genus.
 survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
-survey$Geo_dif3 <-survey$Geo_diff
-levels(survey$Geo_dif3)<-c("","Allopatric", "Allopatric", "Allopatric","Sympatric","Sympatric, Allopatric", "Sympatric, Allopatric", "Sympatric, Allopatric")
-levels(survey$Geo_dif3)<-c(NA, "Allopatric","Sympatric","Sympatric, Allopatric")
-# add booleans for geographical differentiation and morphological differentiation variables
-survey$symp    <- str_detect(survey$Geo_diff,"Sympatric")
-survey$sympara <- str_detect(survey$Geo_diff,"Sympatric") | str_detect(survey$Geo_diff,"Parapatric")
-survey$allop   <- str_detect(survey$Geo_diff,"Allopatric")
-survey$NoMorphoDiff    <- survey$Morpho_diff=="No differentiation"
-survey$StatMorphoDiff  <- survey$Morpho_diff=="Statistic"
-survey$DiagMorphoDiff  <- survey$Morpho_diff=="Diagnostic"
-# add biological traits of the class to which the CScpx belongs
-survey$phylum_class <-paste0(survey$phylum_worms,"_",survey$class_worms)
-survey$hard_skeleton  <- factor(bio$hard_skeleton[match(survey$phylum_class,bio$phylum_class)])
-survey$ferti          <- factor(bio$ferti[match(survey$phylum_class,bio$phylum_class)])
-survey$image          <- factor(bio$image[match(survey$phylum_class,bio$phylum_class)])
-survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylum_class)])
-survey$CSss     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"No differentiation") #need to combine stat + no_diff to make CSss
-survey$Sympatric <-str_detect(survey$Geo_dif3,"Sympatric") | str_detect(survey$Geo_dif3,"Sympatric, Allopatric") #This creates a vector that counts sym/allo as sympatric - that is, do spp exist in sympatry?
-
 survey<-filter(survey, RIOK==TRUE) #N = 535
 surveylarv<-filter(surveylarv, RIOK==TRUE) 
 
@@ -292,7 +239,7 @@ surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
 shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both, 193 cases remaining
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -328,62 +275,37 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 11) Is larval type associated with CSss? (n = 246)
 ```{r}
 surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")#make matrix where only the cases where morpho was studied is here
+surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
 12) Are CSss more common in particular geographic zones? (n = 312)
 ```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") #make matrix where only the cases where morpho was studied is here
+tropmorpho<-filter(surveymorpho, Trop != "NA") 
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
 
-npolmorpho<-filter(surveymorpho, Npol != "NA") #make matrix where only the cases where morpho was studied is here
+npolmorpho<-filter(surveymorpho, Npol != "NA") 
 summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
 
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") #make matrix where only the cases where morpho was studied is here
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
 summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
 
-spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
+spolmorpho<-filter(surveymorpho, Spol != "NA") 
 summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
 
-stempmorpho<-filter(surveymorpho, Stemp != "NA") #make matrix where only the cases where morpho was studied is here
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
 summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 
 ```
 
+
 # Analyses with species where the number of CS per article = 1 (see main text) (starting n = 535)
 
 ```{r}
-survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
-nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+survey <- read.csv(file="full_dataset" , header=TRUE ) 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE) #This file has also been updated to include all 978 spp (ie with Eurytemora affinis)
-
-
-# cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
-# reintroduce genus but several possibilities: solution below not OK for CS at genus level (no data), can also use NameBoforeCor instead of acceptedName
-survey$genus <-word(survey$acceptedName_wormsV1,1)
-survey$genusBC <-word(survey$NameBeforeCor,1) # see if this genusBC changes results / genus.
-survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
-survey$Geo_dif3 <-survey$Geo_diff
-levels(survey$Geo_dif3)<-c("","Allopatric", "Allopatric", "Allopatric","Sympatric","Sympatric, Allopatric", "Sympatric, Allopatric", "Sympatric, Allopatric")
-levels(survey$Geo_dif3)<-c(NA, "Allopatric","Sympatric","Sympatric, Allopatric")
-# add booleans for geographical differentiation and morphological differentiation variables
-survey$symp    <- str_detect(survey$Geo_diff,"Sympatric")
-survey$sympara <- str_detect(survey$Geo_diff,"Sympatric") | str_detect(survey$Geo_diff,"Parapatric")
-survey$allop   <- str_detect(survey$Geo_diff,"Allopatric")
-survey$NoMorphoDiff    <- survey$Morpho_diff=="No differentiation"
-survey$StatMorphoDiff  <- survey$Morpho_diff=="Statistic"
-survey$DiagMorphoDiff  <- survey$Morpho_diff=="Diagnostic"
-# add biological traits of the class to which the CScpx belongs
-survey$phylum_class <-paste0(survey$phylum_worms,"_",survey$class_worms)
-survey$hard_skeleton  <- factor(bio$hard_skeleton[match(survey$phylum_class,bio$phylum_class)])
-survey$ferti          <- factor(bio$ferti[match(survey$phylum_class,bio$phylum_class)])
-survey$image          <- factor(bio$image[match(survey$phylum_class,bio$phylum_class)])
-survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylum_class)])
-survey$CSss     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"No differentiation") #need to combine stat + no_diff to make CSss
-survey$Sympatric <-str_detect(survey$Geo_dif3,"Sympatric") | str_detect(survey$Geo_dif3,"Sympatric, Allopatric") #This creates a vector that counts sym/allo as sympatric - that is, do spp exist in sympatry?
+surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
 
 survey<-filter(survey, Nb_CScomplex_inArticle == 1) 
 surveylarv<-filter(surveylarv, Nb_CScomplex_inArticle == 1)
@@ -442,7 +364,7 @@ surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
 shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both, 193 cases remaining
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -478,26 +400,26 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 11) Is larval type associated with CSss? (n = 261)
 ```{r}
 surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")#make matrix where only the cases where morpho was studied is here
+surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
 12) Are CSss more common in particular geographic zones? (n = 294)
 ```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") #make matrix where only the cases where morpho was studied is here
+tropmorpho<-filter(surveymorpho, Trop != "NA")
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
 
-npolmorpho<-filter(surveymorpho, Npol != "NA") #make matrix where only the cases where morpho was studied is here
+npolmorpho<-filter(surveymorpho, Npol != "NA")
 summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
 
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") #make matrix where only the cases where morpho was studied is here
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
 summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
 
-spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
+spolmorpho<-filter(surveymorpho, Spol != "NA") 
 summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
 
-stempmorpho<-filter(surveymorpho, Stemp != "NA") #make matrix where only the cases where morpho was studied is here
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
 summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 
 ```
@@ -505,35 +427,9 @@ summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 # Analyses with species where the number of individuals studied for genetics is greater than 20 (see main text) (starting n = 735)
 
 ```{r}
-survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
-nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+survey <- read.csv(file="full_dataset" , header=TRUE ) 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE) #This file has also been updated to include all 978 spp (ie with Eurytemora affinis)
-
-
-# cleaned from some original variables and temporary variable (CAUTION: CHECK COLUMN nb!):
-# reintroduce genus but several possibilities: solution below not OK for CS at genus level (no data), can also use NameBoforeCor instead of acceptedName
-survey$genus <-word(survey$acceptedName_wormsV1,1)
-survey$genusBC <-word(survey$NameBeforeCor,1) # see if this genusBC changes results / genus.
-survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
-survey$Geo_dif3 <-survey$Geo_diff
-levels(survey$Geo_dif3)<-c("","Allopatric", "Allopatric", "Allopatric","Sympatric","Sympatric, Allopatric", "Sympatric, Allopatric", "Sympatric, Allopatric")
-levels(survey$Geo_dif3)<-c(NA, "Allopatric","Sympatric","Sympatric, Allopatric")
-# add booleans for geographical differentiation and morphological differentiation variables
-survey$symp    <- str_detect(survey$Geo_diff,"Sympatric")
-survey$sympara <- str_detect(survey$Geo_diff,"Sympatric") | str_detect(survey$Geo_diff,"Parapatric")
-survey$allop   <- str_detect(survey$Geo_diff,"Allopatric")
-survey$NoMorphoDiff    <- survey$Morpho_diff=="No differentiation"
-survey$StatMorphoDiff  <- survey$Morpho_diff=="Statistic"
-survey$DiagMorphoDiff  <- survey$Morpho_diff=="Diagnostic"
-# add biological traits of the class to which the CScpx belongs
-survey$phylum_class <-paste0(survey$phylum_worms,"_",survey$class_worms)
-survey$hard_skeleton  <- factor(bio$hard_skeleton[match(survey$phylum_class,bio$phylum_class)])
-survey$ferti          <- factor(bio$ferti[match(survey$phylum_class,bio$phylum_class)])
-survey$image          <- factor(bio$image[match(survey$phylum_class,bio$phylum_class)])
-survey$genitals       <- factor(bio$genitals[match(survey$phylum_class,bio$phylum_class)])
-survey$CSss     <-str_detect(survey$Morpho_diff,"Statistic") | str_detect(survey$Morpho_diff,"No differentiation") #need to combine stat + no_diff to make CSss
-survey$Sympatric <-str_detect(survey$Geo_dif3,"Sympatric") | str_detect(survey$Geo_dif3,"Sympatric, Allopatric") #This creates a vector that counts sym/allo as sympatric - that is, do spp exist in sympatry?
+surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
 
 survey<-filter(survey, as.numeric(survey$Nig) > 20) 
 
@@ -595,7 +491,7 @@ surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
 shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both, 193 cases remaining
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -631,26 +527,26 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 11) Is larval type associated with CSss? (n = 236)
 ```{r}
 surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")#make matrix where only the cases where morpho was studied is here
+surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
 12) Are CSss more common in particular geographic zones? (n = 289)
 ```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") #make matrix where only the cases where morpho was studied is here
+tropmorpho<-filter(surveymorpho, Trop != "NA") 
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
 
-npolmorpho<-filter(surveymorpho, Npol != "NA") #make matrix where only the cases where morpho was studied is here
+npolmorpho<-filter(surveymorpho, Npol != "NA") 
 summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
 
 ntempmorpho<-filter(surveymorpho, Ntemp != "NA") #make matrix where only the cases where morpho was studied is here
 summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
 
-spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
+spolmorpho<-filter(surveymorpho, Spol != "NA") 
 summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
 
-stempmorpho<-filter(surveymorpho, Stemp != "NA") #make matrix where only the cases where morpho was studied is here
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
 summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 
 ```
