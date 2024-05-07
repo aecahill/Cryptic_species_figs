@@ -354,10 +354,10 @@ for (i in 1:length(Hkk_count[,2])) {
 Hkk_count<-as.data.frame(cbind(rownames(Hkk_count),Hkk_count,percent_ss))
 colnames(Hkk_count)<-c("HKK","SL","SS","Percent_SS")
 
-Hkk_count["HKK"][Hkk_count["HKK"] == "1"] <- "A1"
-Hkk_count["HKK"][Hkk_count["HKK"] == "5"] <- "B5"
-Hkk_count["HKK"][Hkk_count["HKK"] == "10"] <- "C10"
-Hkk_count["HKK"][Hkk_count["HKK"] == "25"] <- "D25"
+Hkk_count["HKK"][Hkk_count["HKK"] == "1"] <- "A001"
+Hkk_count["HKK"][Hkk_count["HKK"] == "5"] <- "B005"
+Hkk_count["HKK"][Hkk_count["HKK"] == "10"] <- "C010"
+Hkk_count["HKK"][Hkk_count["HKK"] == "25"] <- "D025"
 Hkk_count["HKK"][Hkk_count["HKK"] == "100"] <- "E100"
 Hkk_count["HKK"][Hkk_count["HKK"] == "1000"] <- "F1000"
 
@@ -389,17 +389,17 @@ Hkk_count3
 HKKtable2<-pivot_longer(as.data.frame(HKKtable), cols=1:6, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
 HKKtable2$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Statistical","Statistical","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
-HKKtable2["HKK"][HKKtable2["HKK"] == "1"] <- "A1"
-HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "B5"
-HKKtable2["HKK"][HKKtable2["HKK"] == "10"] <- "C10"
-HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "D25"
-HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "E100"
-HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "F1000"
+HKKtable2["HKK"][HKKtable2["HKK"] == "1"] <- "H001"
+HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "H005"
+HKKtable2["HKK"][HKKtable2["HKK"] == "10"] <- "H010"
+HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "H025"
+HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "H100"
+HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "H1000"
 
 palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
 
 
-ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
+alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
   xlab("Connectivity")+
@@ -800,10 +800,10 @@ Hkk_countsed
 HKKtable2sed<-pivot_longer(as.data.frame(HKKtablesed), cols=1:4, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
 HKKtable2sed$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "5"] <- "B5"
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "10"] <- "C10"
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "25"] <- "D25"
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "100"] <- "E100"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "5"] <- "H005"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "10"] <- "H010"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "25"] <- "H025"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "100"] <- "H100"
 
 
 palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
@@ -815,22 +815,24 @@ sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=HKK,y=Percent,fill=Diff_type,)
   xlab("Connectivity")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+ 
-  annotate("text", x = 1, y = 0.05, label = "6", size = 4.5,color="white")+
-  annotate("text", x = 2, y = 0.05, label = "2", size = 4.5,color="white")+
-  annotate("text", x = 3, y = 0.05, label = "21", size = 4.5,color="white")+
-  annotate("text", x = 4, y = 0.05, label = "13", size = 4.5,color="white")+
-  annotate("text", x = 1, y = 0.95, label = "8", size = 4.5,color="white")+
-  annotate("text", x = 2, y = 0.95, label = "6", size = 4.5,color="white")+
-  annotate("text", x = 3, y = 0.95, label = "9", size = 4.5,color="white")+
-  annotate("text", x = 4, y = 0.95, label = "2", size = 4.5,color="white")+
-  annotate("text", x = 1, y = 0.45, label = "9", size = 4.5)+
-  annotate("text", x = 2, y = 0.45, label = "13", size = 4.5)+
-  annotate("text", x = 3, y = 0.6, label = "10", size = 4.5)+
-  annotate("text", x = 4, y = 0.8, label = "4", size = 4.5)+
+  annotate("text", x = 1, y = 0.05, label = "6", size = 3.5,color="white")+
+  annotate("text", x = 2, y = 0.05, label = "2", size = 3.5,color="white")+
+  annotate("text", x = 3, y = 0.05, label = "21", size = 3.5,color="white")+
+  annotate("text", x = 4, y = 0.05, label = "13", size = 3.5,color="white")+
+  annotate("text", x = 1, y = 0.95, label = "8", size = 3.5,color="white")+
+  annotate("text", x = 2, y = 0.95, label = "6", size = 3.5,color="white")+
+  annotate("text", x = 3, y = 0.95, label = "9", size = 3.5,color="white")+
+  annotate("text", x = 4, y = 0.95, label = "2", size = 3.5,color="white")+
+  annotate("text", x = 1, y = 0.45, label = "9", size = 3.5)+
+  annotate("text", x = 2, y = 0.45, label = "13", size = 3.5)+
+  annotate("text", x = 3, y = 0.6, label = "10", size = 3.5)+
+  annotate("text", x = 4, y = 0.8, label = "4", size = 3.5)+
+  theme(legend.position = "none")+
    theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        plot.background = element_blank())
+        plot.background = element_blank(),
+        axis.title.x = element_blank())
 
 
 Hkk_countrocky<-table(rockybis$HKKv3)
@@ -848,10 +850,10 @@ Hkk_countrocky
 HKKtable2rocky<-pivot_longer(as.data.frame(HKKtablerocky), cols=1:4, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
 HKKtable2rocky$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Pseudo-CS","Pseudo-CS","Pseudo-CS","Pseudo-CS","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "5"] <- "B5"
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "10"] <- "C10"
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "25"] <- "D25"
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "100"] <- "E100"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "5"] <- "H005"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "10"] <- "H010"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "25"] <- "H025"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "100"] <- "H100"
 
 
 rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=HKK,y=Percent,fill=Diff_type,))+
@@ -860,23 +862,33 @@ rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=HKK,y=Percent,fill=Diff_ty
   xlab("Connectivity")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
-  annotate("text", x = 1, y = 0.05, label = "6", size = 4.5,color="white")+
-  annotate("text", x = 2, y = 0.05, label = "4", size = 4.5,color="white")+
-  annotate("text", x = 3, y = 0.05, label = "6", size = 4.5,color="white")+
-  annotate("text", x = 4, y = 0.25, label = "1", size = 4.5,color="white")+
-  annotate("text", x = 1, y = 0.95, label = "21", size = 4.5,color="white")+
-  annotate("text", x = 2, y = 0.95, label = "4", size = 4.5,color="white")+
-  annotate("text", x = 3, y = 0.95, label = "18", size = 4.5,color="white")+
-  annotate("text", x = 1, y = 0.4, label = "16", size = 4.5)+
-  annotate("text", x = 2, y = 0.4, label = "9", size = 4.5)+
-  annotate("text", x = 3, y = 0.4, label = "10", size = 4.5)+
-  annotate("text", x = 4, y = 0.75, label = "1", size = 4.5)+
+  annotate("text", x = 1, y = 0.05, label = "6", size = 3.5,color="white")+
+  annotate("text", x = 2, y = 0.05, label = "4", size = 3.5,color="white")+
+  annotate("text", x = 3, y = 0.05, label = "6", size = 3.5,color="white")+
+  annotate("text", x = 4, y = 0.25, label = "1", size = 3.5,color="white")+
+  annotate("text", x = 1, y = 0.95, label = "21", size = 3.5,color="white")+
+  annotate("text", x = 2, y = 0.95, label = "4", size = 3.5,color="white")+
+  annotate("text", x = 3, y = 0.95, label = "18", size = 3.5,color="white")+
+  annotate("text", x = 1, y = 0.4, label = "16", size = 3.5)+
+  annotate("text", x = 2, y = 0.4, label = "9", size = 3.5)+
+  annotate("text", x = 3, y = 0.4, label = "10", size = 3.5)+
+  annotate("text", x = 4, y = 0.75, label = "1", size = 3.5)+
+  theme(legend.position = "none")+
   theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         plot.background = element_blank())
 
-plot_grid(sedplot,rockyplot,ncol=1,labels=c("A","B"))
+#plot_grid(sedplot,rockyplot,ncol=1,labels=c("A","B"))
+
+ggarrange(
+    alldataplot,# First row with line plot
+    # Second row with box and dot plots
+    ggarrange(sedplot, rockyplot, nrow = 2, labels = c("B", "C")), 
+    ncol = 2, 
+    labels = "A" , 
+    common.legend=TRUE,legend="bottom"      # Label of the line plot
+) 
 ```
 
 Ok, now let's test the larvae within the habitat.
@@ -919,5 +931,16 @@ outBIC$BestModels
 
 outAIC<-bestglm(mat,IC="AIC", family=binomial,TopModels=10)  
 outAIC$BestModels 
+```
+
+```{r}
+ggarrange(
+    alldataplot,# First row with line plot
+    # Second row with box and dot plots
+    ggarrange(sedplot, rockyplot, nrow = 2, labels = c("B", "C")), 
+    ncol = 2, 
+    labels = "A" , 
+    common.legend=TRUE,legend="bottom"      # Label of the line plot
+) 
 ```
 
