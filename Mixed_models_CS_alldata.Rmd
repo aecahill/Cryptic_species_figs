@@ -38,7 +38,7 @@ library(cAIC4)
 library(wesanderson)
 
 #survey <- read.csv(file="977_CScpx_100cols_Habitat&Larva_Completed_20230928_comma.csv"   , header=TRUE ) # file ready for analyses with new variables ,# data with range sizes rarefied for 100 sites, and RIOK
-survey <- read.csv(file="coma978_cryptic_cpx_96var_2023.nov.16.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
+survey <- read.csv(file="978_species_clean_may17.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
 surveylarv<-read.csv("survey_oct11.csv",header=TRUE) #This file has also been updated to include all 978 spp (ie with Eurytemora affinis)
@@ -229,7 +229,7 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 
 10. Ok, now larvae.
 ```{r}
-surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
+surveylarvmorpho<-filter(survey, Morpho_diff != "NA")
 surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")#make matrix where only the cases where morpho was studied is here
 summary(glmer(CSss~Repro_invest+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
