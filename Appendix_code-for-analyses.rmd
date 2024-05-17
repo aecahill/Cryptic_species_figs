@@ -26,9 +26,8 @@ library(GLMMselect)
 library(cAIC4)
 library(wesanderson)
 
-survey <- read.csv(file="full_dataset" , header=TRUE ) 
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
 bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
 
 survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
 
@@ -89,8 +88,8 @@ surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
-shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both, 193 cases remaining
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both, 192 cases remaining
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -123,10 +122,9 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-11) Is larval type associated with CSss? (n = 292)
+11) Is larval type associated with CSss? (n = 305)
 ```{r}
-surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
@@ -163,7 +161,6 @@ outBIC$BestModels
 
 And now with the shallow-water rocky vs soft sed dataset
 ```{r}
-shallow<-read.csv("shallow_rock_sed.csv",header=T) #make matrix of shallow water species
 shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases  with both
 
 mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, CSss))
