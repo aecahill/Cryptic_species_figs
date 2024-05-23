@@ -2,7 +2,6 @@
 # ... the bibliographical references citing the species name OR ANY SYNONYM, 
 # ... [AND other keywords (corresponding to the traits, for instance to fill in a database)]
 # ... and to write in a table the reference numbers for each species.
-# if the species list of synonyms is ready and has been used already, and 1wordspecies list done , can start at PART C.
 
 # install.packages("tidyverse")
 library(tidyverse)
@@ -29,18 +28,17 @@ list.files() # check that your input files are listed in the working directory
 ### STEP A : CREATE A LIST OF ALL SYNONYMS OF EACH SPECIES NAME ####
 ################################################################################################################
 
-# Load our initial species name list is Species_List (loaded as a .csv from an Excel file for instance, the column being named "scientificName")
+# Load our initial species name list is Species_List (loaded as a .csv from an Excel file in this example, the column being named "scientificName")
 spp<-read.csv2("scientificName.csv")
 
 # Load the WoRMS database (can be obtained from WoRMS but it requires a particular request/registering, etc)
-worms <- read_tsv('taxon.txt',show_col_types = FALSE) #
+worms <- read_tsv('taxon.txt',show_col_types = FALSE) 
 
 # keep only names of animal species 
 worms<-filter(worms,(kingdom=="Animalia" & taxonRank=="Species")) 
 
 # Find the "accepted Names" corresponding to this name which may not be "accepted" (WoRMS lists all scientificNames, even obsolete ones, and the "Accepted" names are in the acceptedNameUsage column)
-spp$acceptedNameUsage <-worms$acceptedNameUsage[match(spp$scientificName,worms$scientificName)] # in the present case (Medit_spp.csv) the variable already exists
-# may also add taxonomy information (phylum, class, order, family...) :
+spp$acceptedNameUsage <-worms$acceptedNameUsage[match(spp$scientificName,worms$scientificName)] 
 
 
 # Create the list of synonyms for each name of our species list
@@ -52,28 +50,20 @@ for (i in 1:nrow(spp)){
   n    <- length(list)
   spp$synonymList[i]  <- paste0(list, collapse=", ")
   spp$Nb_synonyms[i]  <- n
-} #  
+}   
 summary(spp$Nb_synonyms) 
 hist(spp$Nb_synonyms, breaks=67) 
 
 # Below are some checks (were done for very big lists) 
 nrow(filter(spp,Nb_synonyms==0)) #  had 0 species in list of synonyms 
 # SOME of the scientificNames in spp. ARE NOT CLEAN SPECIES NAMES: they contain either 'spp.'  or 'cf.' or are family names, for instance.
-# These should be corrected manually, or removed. You can then re-run the script with the corrected input file (no problem to follow running the script however)
+# These should be corrected manually, or removed. You can then re-run the script with the corrected input file 
 
 # If you do not correct the initial list NOW but want to run the code, you can, provided you...
-# ...RUN AT LEAST 1 OF THE 2 ALTERNATIVES BELOW (you can do both: just run all the code lines)
-# They serve to avoid NA when no synonyms were found, in the final list or "species names" separated by OR, which will be used in bibliographic search. Because searches containing " NA OR NA" cannot run in WoS (logically).
-# I recommend just running ALTERNATIVE 2 and skipping ALTERNATIVE 1.
+# RUN THE CODE BELOW!
+# It serves to avoid NA when no synonyms were found, in the final list or "species names" separated by OR, which will be used in bibliographic search. Searches containing " NA OR NA" cannot run in Web of Science.
 
-# ALTERNATIVE 1 (I used this on a very large initial list, when not an updated worms version, to separate cases): 
-spp$synonymList[spp$Nb_synonyms==0]<- spp$acceptedNameUsage[spp$Nb_synonyms==0] # can help in some cases (may be not in this example)
-spp$Nb_synonyms[spp$Nb_synonyms==0 & is.na(spp$acceptedNameUsage)==F]<- 1
-nrow(filter(spp,Nb_synonyms==0)) # nb sp without an acceptedNameUsage: then should use their speciesName (initial) in search WoS
-spp$synonymList[spp$Nb_synonyms==0]<- spp$scientificName[spp$Nb_synonyms==0]
-spp$Nb_synonyms[spp$Nb_synonyms==0]<- 1
 
-# ALTERNATIVE 2  (simpler, has no effect if ALTERNATIVE 1 has been run previously)
 spp <-filter(spp, is.na(synonymList)==F) # This step is necessary if you did not run code replacing missing synonymLists by scientificNames 
 
 # Print the Total number of species names, including synonyms, just for your information :
@@ -82,8 +72,8 @@ sum(spp$Nb_synonyms) # in this example there are 516 species names (after adding
 # WRITE QUERY FOR SPECIES NAMES WITH SYNONYMS FOR BIBLIOGRAPHIC SEARCH
 
 # Important preliminary step:  remove species names with NA in the synonymList:
-spp <-filter(spp, is.na(synonymList)==F) # This step is necessary if you did not run code replacing missing synonymLists by scientificNames 
-spp <-filter(spp, (synonymList)!="") # This step is necessary if you did not run code replacing missing synonymLists by scientificNames 
+spp <-filter(spp, is.na(synonymList)==F) 
+spp <-filter(spp, (synonymList)!="") 
 
 # initialize list by the first true element to avoid manual correction of the beginning of 1word_SpeciesList
 list <-spp$synonymList[1] # then loop over all (initial) species while taking synonyms
@@ -93,7 +83,6 @@ for (i in 2:nrow(spp)){
 }
 list <-gsub (", ",",",list) # global substitution of ", " by "," (removes space after comma)
 list <-gsub(",", " OR ", list) 
-# list<-gsub("OR OR", "OR", list) # no longer useful, but does not harm (it is a security)
 list <-gsub(' OR ','" OR "' ,list) # add quotes surrounding names (except first and last species)
 list<-paste0('"',list,'"')  # add double quote at very beginning and very end of the string of characters 'list'.
 
@@ -111,23 +100,24 @@ rm(list, liste,n,name,w,worms)
 # TS= ("Callinectes sapidus" OR "Crassostrea virginica" OR .......)
 # AND
 # TS=("body size" OR "body length" OR "body shape" OR "body volume" OR "body surface")
-# The search equation provides ~420 references  which can be downloaded in Excel format ...
+# The search equation provides references  which can be downloaded in Excel format ...
 # ...(if more than 1000 references you can download several Excel files via the WoS interface)
 # Save the reference file(s) in the same  directory of this script 
 # Go back to this R code (STEP C)
 
-# One bibliographical search for each main trait: save results in Excel format with abstracts (1-1000 ref maximum)
-# if there are more than 1000 ref, several files are needed
-# For instance, for Duration rename the Excel files: Duration1, Duration2
+# If studying more than one trait:
+# Conduct one bibliographical search for each main trait and save results in Excel format with abstracts (1-1000 ref maximum)
+# if there are more than 1000 ref, several files are needed.
+# For instance, for trait "Duration" rename the Excel files: Duration1, Duration2
 # 
-# In the end we have, at least one exdcel file per main trait:
+# In the end we have, at least one excel file per main trait:
 # Duration1.xlsx,
 # Duration2.xlsx,
 # Length1.xlsx, 
 # Shape1.xlsx, 
 # Fecundity1.xlsx
 # ... 
-# and so on for all main traits (11 for benthic invertebrates).
+# and so on for all main traits 
 # PLACE ALL FILES INTO THE SAME DIRECTORY WITHIN THE WORKING DIRECTORY, named RefFolder
 
 write_xlsx(spp,path="Species_synonym.xlsx", col_names = TRUE, format_headers = TRUE,use_zip64 = FALSE)
@@ -149,12 +139,12 @@ traitnames <-unique(gsub('[0-9]+', '', traitnames))
 # Initialising the reference file (to be completed in the for loop with all ref Excel files)
 allreferences <-read_xls(paste0("RefFolder/",filenames[1]))
 colstokeep <- c("Authors","Publication Year","Article Title","Abstract","Source Title","Volume","Start Page","End Page")
-allreferences <-select(allreferences, all_of(colstokeep)) # cette expression fonctionne !
+allreferences <-select(allreferences, all_of(colstokeep)) 
 
 # keep only first line and col names (so we can  increment then in all 'filenames, avoid using brackets [i] in loop code)
 allreferences <-allreferences[1,] # can then check how duplicates are removed
 for (j in traitnames) { # create columns for each traits
-  allreferences[,j] <- NA#
+  allreferences[,j] <- NA
 }
 
 # looping to all individual reference files
@@ -173,7 +163,7 @@ for (i in filenames) {
 table(duplicated(allreferences[,c(1:3,5:8)])) # I removed abstracts to save the planet
 allreferences$concat <-paste(allreferences$Authors,allreferences$`Publication Year`,allreferences$`Article Title`,allreferences$`Source Title`,allreferences$Volume,allreferences$`Start Page`)  
 
-# 1st Solution ChatGPT (base R)
+
 colnames(allreferences)[length(allreferences)]
 
 
@@ -236,23 +226,13 @@ for (k in traitnames){ #1st trait column to last trait column
     dat$occ_abstracts <- rep(FALSE, length(dat$Article.Title)) # (re-)initialise avec des valeurs = FALSE
     dat$occ_titles_short    <- rep(FALSE, length(dat$Article.Title)) # (re-)initialise avec des valeurs = FALSE
     dat$occ_abstracts_short <- rep(FALSE, length(dat$Article.Title)) # (re-)initialise avec des valeurs = FALSE
-    # 2 lignes dessous : new essai simplifier
     dat$occ            <- rep(FALSE, length(dat$Article.Title))
     dat$occ_short      <- rep(FALSE, length(dat$Article.Title))
     dat$occ_any        <- rep(FALSE, length(dat$Article.Title))
     temporary <-c("occ_titles","occ_abstracts","occ_titles_short","occ_abstracts_short","occ", "occ_short","occ_any")
     
-    #####ABERRATION SORTIAT UNE VALEUR POUR SHORT QUAND AVAIT le crochait ci-dessous  pas mis pour spp$refs_fullName
-    # spp$refs_fullName    <- character(nrow(spp))
-    # spp$refs_shortName[i]   <- character(nrow(spp))
-    # spp$refs_any[i]         <- character(nrow(spp))
-    # 
-    # spp$Count_refs_full  <- numeric(nrow(spp))
-    # spp$Count_refs_short <- numeric(nrow(spp))
-    # spp$Count_refs_any   <- numeric(nrow(spp))
-    
-    
-    #  TERTIARY LOOP THROUGH SYNONYMS (SHOULD NOT reinitialize the above variables for code below)
+ 
+    #  TERTIARY LOOP THROUGH SYNONYMS 
     
     for (j in 1:length(list)){  # loop through synonyms
       
@@ -284,11 +264,7 @@ for (k in traitnames){ #1st trait column to last trait column
     Pos_short<- grep(TRUE, dat$occ_short, ignore.case = FALSE) # short name  (anywhere: title or abstract) 
     Pos_any  <- grep(TRUE, dat$occ_any, ignore.case = FALSE)   # any name  (anywhere: title or abstract) 
     
-    # spp$ref_list_Title[i]              <- paste(Pos_T, collapse=", ")   # too detailed, better be omitted AND should replace Pos... by dat$referenceID[Pos...]
-    # spp$ref_list_Abstract[i]           <- paste(Pos_A, collapse=", ")   # too detailed, better be omitted AND should replace Pos... by dat$referenceID[Pos...]
-    # spp$ref_list_Title_shortName[i]    <- paste(Pos_Ts, collapse=", ")  # too detailed, better be omitted AND should replace Pos... by dat$referenceID[Pos...]
-    # spp$ref_list_Abstract_shortName[i] <- paste(Pos_As, collapse=", ")  # too detailed, better be omitted AND should replace Pos... by dat$referenceID[Pos...]
-    
+     
     spp$refs_fullName[i]           <- paste(dat$referenceID[Pos], collapse=",")
     spp$refs_shortName[i]          <- paste(dat$referenceID[Pos_short], collapse=",")
     spp$refs_any[i]                <- paste(dat$referenceID[Pos_any], collapse=",")
@@ -297,7 +273,7 @@ for (k in traitnames){ #1st trait column to last trait column
     spp$Count_refs_short[i]<- nrow(filter(dat,occ_short==TRUE))
     spp$Count_refs_any[i]  <- nrow(filter(dat,occ_any==TRUE))
   }
-  # Assign to a dataframe named acording to each trait (better to do this before reordering, in case using cbind, although not recommended)
+  # Assign to a dataframe named acording to each trait 
   assign(paste0("spp_ref_",k),spp)
   
   # #(OPTIONAL) Write a single excel file with 2 data sheets (sheet-1 for species, sheet-2 for references):
@@ -310,18 +286,15 @@ for (k in traitnames){ #1st trait column to last trait column
   
 }
 
-# rm(dat,filenames,list,results,colstokeep,i,j,k,NameOutFile, sp_split,taxon,shorttaxon,temporary,Pos,Pos_any,Pos_short,pos_A,Pos_A,pos_T,Pos_T, pos_As, Pos_As,pos_Ts, Pos_Ts)
 rm(dat,filenames,list,colstokeep,i,j,k,NameOutFile, sp_split,taxon,shorttaxon,temporary,Pos,Pos_any,Pos_short,pos_A,Pos_A,pos_T,Pos_T, pos_As, Pos_As,pos_Ts, Pos_Ts)
 
 # listeDF (done NOT ONLY for writing the excel file) a list of data frames of spp for each trait
 listeDF<-list() # 
 for (j in traitnames){ # but this is used somewhere else listeDF below so keep this code
   snom <- paste("spp_ref_", j, sep="")
-  dnom <- get(paste("spp_ref_", j, sep="")) # ?get: Search by name for an object
+  dnom <- get(paste("spp_ref_", j, sep="")) 
   listeDF[[snom]] <-dnom
 }
-# WRITE excel file with one sheet per spp x trait combination (NOT VERY USEFUL)
-write_xlsx (listeDF, path = "spp_Traits_details.xlsx", col_names = TRUE, format_headers = TRUE,use_zip64 = FALSE )
 
 #############################################################################################################
 ### STEP D : COMBINE ALL TRAITS -> SUMMARY TABLE PER SPECIES
@@ -340,26 +313,21 @@ Spp_listRefs_perTrait_shortName  <- select(spp, c(acceptedNameUsage, synonymList
 
 for (i in traitnames){
   snom <- paste("spp_ref_", i, sep="")
-  df <-listeDF[[snom]] # cette listeDF fut creee avant
+  df <-listeDF[[snom]] 
   Spp_totRefs_perTrait[[i]] <- df$Count_refs_full  
   Spp_listRefs_perTrait[[i]] <- df$refs_fullName
   Spp_listRefs_perTrait_shortName[[i]] <- df$refs_shortName
 }
 
-# need to initialize the novel column numeric (surprising?):
+# need to initialize the novel column numeric:
 Spp_totRefs_perTrait$NbTrait <-numeric(nrow(Spp_totRefs_perTrait))
 for (s in 1:nrow(Spp_totRefs_perTrait)){
   f <-length(traitnames)+2
   Spp_totRefs_perTrait$NbTrait[s] <- sum(Spp_totRefs_perTrait[s,3:f]!=0)
 }
-# Optional (next line): ordering species list to place first those with most traits having references:
-# Spp_totRefs_perTrait <-Spp_totRefs_perTrait[order(Spp_totRefs_perTrait$NbTrait,decreasing=TRUE),] 
-# Finally I did not order species before writing excel, since can be done easily in excel (and may not be convenient if other sheets are not in the same order)...
+
 write_xlsx (list(NbRefs_perTrait=Spp_totRefs_perTrait, 
                  ListRef_fullNames=Spp_listRefs_perTrait,
                  ListRef_shortNames=Spp_listRefs_perTrait_shortName,
                  References =data),
             path = "SUMMARY_spp_Traits.xlsx")
-
-# exploration of data
-which(data$referenceIDmax(data$nbT))
