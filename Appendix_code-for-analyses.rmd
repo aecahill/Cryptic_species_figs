@@ -8,9 +8,10 @@ date: "2024-04-15"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+#This code will knit to produce a word doc with output tables of the different models in the paper, with all four datasets in here.
 ```
 
-This is the code used to produce the results in Cahill & Chenuil.
+This is the code used to produce the results in Cahill & Chenuil, and knits to produce the full outputs of the analyses conducted. 
 
 ```{r}
 library(dplyr)
@@ -27,8 +28,6 @@ library(cAIC4)
 library(wesanderson)
 
 survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
-bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-
 survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
 
 ```
@@ -81,15 +80,15 @@ summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-6) Are CSss more common in rocky or soft sediment habitats? (n = 227) What about when only considering shallow-water species? (n = 193)
+6) Are CSss more common in rocky or soft sediment habitats? (n = 227) What about when only considering shallow-water species? (n = 192)
 ```{r}
-surveysed<-filter(surveymorpho, Hsubstrate != "NA") #make matrix where only the cases for rocky or sediment habitat
-surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") 
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
 shallow<-filter(surveymorpho, shallow == "TRUE")
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both, 192 cases remaining
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -101,7 +100,7 @@ summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 summary(glmer(CSss~Sympatric+(1|phylum_class),data=surveymorpho,family=binomial))
 ```
 
-8) Are species in sympatry more likely to have ecological differentiation? (n=978)
+8) Are species in sympatry more likely to have ecological differentiation? (n=147)
 ```{r}
 summary(glmer(Eco_diff~Sympatric+(1|phylum_class),data=survey,family=binomial))
 
@@ -129,7 +128,7 @@ surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 367)
+12) Are CSss more common in particular geographic zones? (n = 368)
 ```{r}
 tropmorpho<-filter(surveymorpho, Trop != "NA") 
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
@@ -161,8 +160,6 @@ outBIC$BestModels
 
 And now with the shallow-water rocky vs soft sed dataset
 ```{r}
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases  with both
-
 mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, CSss))
 mat[1:5]<-lapply(mat[1:5],as.factor)
 outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
@@ -174,13 +171,9 @@ outBIC$BestModels
 # Analyses with species where reproductive isolation is clear based on multiple datatypes (see main text) (starting n = 535)
 
 ```{r}
-survey <- read.csv(file="full_dataset" , header=TRUE ) 
-bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
-
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
 survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
 survey<-filter(survey, RIOK==TRUE) #N = 535
-surveylarv<-filter(surveylarv, RIOK==TRUE) 
 
 ```
 1) Are there more CSss or pseudo-CS overall, considering only cases where morphology was measured? (n = 411)
@@ -193,7 +186,7 @@ chisq.test(cbind(expected,observed))
 
 2) Are there differences across phyla or classes? (n = 411)
 ```{r}
-surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+surveymorpho<-filter(survey, Morpho_diff != "NA") 
 
 drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
 drop1(glm(CSss~phylum_class,data=surveymorpho,family=binomial),test="Chisq")
@@ -228,15 +221,15 @@ summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-6) Are CSss more common in rocky or soft sediment habitats? (n = 190) What about when only considering shallow-water species? (n = 190)
+6) Are CSss more common in rocky or soft sediment habitats? (n = 190) What about when only considering shallow-water species? (n = 157)
 ```{r}
-surveysed<-filter(surveymorpho, Hsubstrate != "NA") #make matrix where only the cases for rocky or sediment habitat
-surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") 
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
-shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -269,15 +262,14 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-11) Is larval type associated with CSss? (n = 246)
+11) Is larval type associated with CSss? (n = 259)
 ```{r}
-surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 312)
+12) Are CSss more common in particular geographic zones? (n = 313)
 ```{r}
 tropmorpho<-filter(surveymorpho, Trop != "NA") 
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
@@ -297,15 +289,12 @@ summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 ```
 
 
-# Analyses with species where the number of CS per article = 1 (see main text) (starting n = 535)
+# Analyses with species where the number of CS per article = 1 (see main text) (starting n = 610)
 
 ```{r}
-survey <- read.csv(file="full_dataset" , header=TRUE ) 
-bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
-
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
 survey<-filter(survey, Nb_CScomplex_inArticle == 1) 
-surveylarv<-filter(surveylarv, Nb_CScomplex_inArticle == 1)
 
 ```
 1) Are there more CSss or pseudo-CS overall, considering only cases where morphology was measured? (n = 395)
@@ -334,7 +323,7 @@ summary(glmer(CSss~yearb+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-4) Is there a relationship between the number of CS in easily-accessible or inaccessible habitats and time? (n = 395)
+4) Is there a relationship between the number of CS in easily-accessible or inaccessible habitats and time? (n = 493)
 
 ```{r}
 surveyaccess<-filter(survey, HDifAccess != "NA")
@@ -353,15 +342,15 @@ summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-6) Are CSss more common in rocky or soft sediment habitats? (n = 171) What about when only considering shallow-water species? (n = 171)
+6) Are CSss more common in rocky or soft sediment habitats? (n = 171) What about when only considering shallow-water species? (n = 153)
 ```{r}
-surveysed<-filter(surveymorpho, Hsubstrate != "NA") #make matrix where only the cases for rocky or sediment habitat
-surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky")
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
-shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -394,15 +383,14 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-11) Is larval type associated with CSss? (n = 261)
+11) Is larval type associated with CSss? (n = 274)
 ```{r}
-surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 294)
+12) Are CSss more common in particular geographic zones? (n = 295)
 ```{r}
 tropmorpho<-filter(surveymorpho, Trop != "NA")
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
@@ -424,15 +412,10 @@ summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
 # Analyses with species where the number of individuals studied for genetics is greater than 20 (see main text) (starting n = 735)
 
 ```{r}
-survey <- read.csv(file="full_dataset" , header=TRUE ) 
-bio<-read.csv2(file="input_BIOLOGY_classes.csv")
-surveylarv<-read.csv("survey_oct11.csv",header=TRUE)
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
 
 survey<-filter(survey, as.numeric(survey$Nig) > 20) 
-
-surveylarv <-as.data.frame(unclass(surveylarv),stringsAsFactors=TRUE)
-surveylarv<-filter(surveylarv, as.numeric(surveylarv$Nig) > 20)
-
 
 ```
 1) Are there more CSss or pseudo-CS overall, considering only cases where morphology was measured? (n = 383)
@@ -445,7 +428,7 @@ chisq.test(cbind(expected,observed))
 
 2) Are there differences across phyla or classes? (n = 383)
 ```{r}
-surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+surveymorpho<-filter(survey, Morpho_diff != "NA") 
 
 drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
 drop1(glm(CSss~phylum_class,data=surveymorpho,family=binomial),test="Chisq")
@@ -480,15 +463,15 @@ summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-6) Are CSss more common in rocky or soft sediment habitats? (n = 160) What about when only considering shallow-water species? (n = 160)
+6) Are CSss more common in rocky or soft sediment habitats? (n = 160) What about when only considering shallow-water species? (n = 138)
 ```{r}
-surveysed<-filter(surveymorpho, Hsubstrate != "NA") #make matrix where only the cases for rocky or sediment habitat
-surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") 
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
 
-shallow<-read.csv("shallow_rock_sed.csv",header=T)
-shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") #and remove the cases with both
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
 
 summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
 
@@ -521,15 +504,14 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 
 ```
 
-11) Is larval type associated with CSss? (n = 236)
+11) Is larval type associated with CSss? (n = 249)
 ```{r}
-surveylarvmorpho<-filter(surveylarv, Morpho_diff != "NA")
-surveylarvmorpho<-filter(surveylarvmorpho, Larv_type != "NA")
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 289)
+12) Are CSss more common in particular geographic zones? (n = 290)
 ```{r}
 tropmorpho<-filter(surveymorpho, Trop != "NA") 
 summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
@@ -537,7 +519,7 @@ summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
 npolmorpho<-filter(surveymorpho, Npol != "NA") 
 summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
 
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") #make matrix where only the cases where morpho was studied is here
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
 summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
 
 spolmorpho<-filter(surveymorpho, Spol != "NA") 
