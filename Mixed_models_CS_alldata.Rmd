@@ -507,7 +507,7 @@ surveyeco<-droplevels(surveymorpho,exclude="Yes (sea surface temperature)")
 
 Ecograph2<-ggplot(data = surveyeco) +
   geom_mosaic(aes(x = product(Sympatric, Eco_diff)), na.rm=TRUE)+
-  labs(x ="In Sympatry", y = "Ecological Differences")+
+  labs(x ="In Sympatry", y = stringr::str_wrap("Ecological Differences", width = 15))+
   theme_bw()+
   theme(legend.title=element_blank())+
   theme(panel.background = element_blank(), 

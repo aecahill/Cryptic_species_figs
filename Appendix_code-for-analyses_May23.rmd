@@ -1,0 +1,532 @@
+---
+title: "Code for analyses"
+output:
+  word_document: default
+  html_document: default
+date: "2024-04-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+#This code will knit to produce a word doc with output tables of the different models in the paper, with all four datasets in here.
+```
+
+This is the code used to produce the results in Cahill & Chenuil, and knits to produce the full outputs of the analyses conducted. The input file needed is 978_species_clean_may17.csv.
+
+```{r}
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(vioplot)
+library(bestglm)
+library(tidyr)
+library(ggmosaic)
+library(lme4)
+library(cowplot)
+library(GLMMselect)
+library(cAIC4)
+library(wesanderson)
+
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
+
+```
+
+
+# Analyses with full dataset (starting n = 978)
+
+1) Are there more CSss or pseudo-CS overall, considering only cases where morphology was measured? (n = 492)
+
+```{r}
+expected<-c((length(na.omit(survey$Morpho_diff)))/2,(length(na.omit(survey$Morpho_diff)))/2)
+observed<-c(length(which(survey$CSss=="TRUE")),length(which(survey$CSss=="FALSE")))
+chisq.test(cbind(expected,observed))
+```
+
+2) Are there differences across phyla or classes? (n = 492)
+```{r}
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+
+drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+
+```
+
+Since phylum_class is significant, we will now use this as a random factor in subsequent models.
+
+3) Is the probability of CSss associated with year of description? (n = 492)
+
+```{r}
+summary(glmer(CSss~yearb+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+4) Is there a relationship between the number of CS in easily-accessible or inaccessible habitats and time? (n = 972)
+
+```{r}
+surveyaccess<-filter(survey, HDifAccess != "NA")
+surveyaccess$Difficult<-surveyaccess$HDifAccess=="Inaccessible"
+surveyaccess$Easy<-surveyaccess$HDifAccess=="Accessible"
+
+summary(glmer(Difficult~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+summary(glmer(Easy~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+
+```
+
+5) Is habitat connectivity (variable HKK) associated with CSss? (n = 492)
+
+```{r}
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+6) Are CSss more common in rocky or soft sediment habitats? (n = 227) What about when only considering shallow-water species? (n = 192)
+```{r}
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") 
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
+
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
+
+
+```
+
+7) Are CSss more common in sympatry or no? (n = 486)
+```{r}
+summary(glmer(CSss~Sympatric+(1|phylum_class),data=surveymorpho,family=binomial))
+```
+
+8) Are species in sympatry more likely to have ecological differentiation? (n=147)
+```{r}
+summary(glmer(Eco_diff~Sympatric+(1|phylum_class),data=survey,family=binomial))
+
+```
+
+9) Are CSss more common in species with ecological differentiation? (n = 107)
+```{r}
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+10) Are biological traits (hard skeleton, fertilization type, presence of external genitalia, image-forming vision) associated with CSss? (n = 464)
+```{r}
+summary(glmer(CSss~hard_skeleton+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~ferti+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~genitals+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+11) Is larval type associated with CSss? (n = 305)
+```{r}
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
+
+summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
+```
+
+12) Are CSss more common in particular geographic zones? (n = 368)
+```{r}
+tropmorpho<-filter(surveymorpho, Trop != "NA") 
+summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
+
+npolmorpho<-filter(surveymorpho, Npol != "NA") 
+summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
+
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
+summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
+
+spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
+summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
+
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
+summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
+
+```
+
+13) What about the bestglm to determine which factors are most important?
+
+First with all data
+```{r}
+mat<-select(surveymorpho, c(HKKv3, phylum_class, Sympatric,CSss))
+mat[1:4]<-lapply(mat[1:4],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
+outBIC$BestModels 
+
+```
+
+And now with the shallow-water rocky vs soft sed dataset
+```{r}
+mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, CSss))
+mat[1:5]<-lapply(mat[1:5],as.factor)
+outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
+outBIC$BestModels 
+
+```
+
+
+# Analyses with species where reproductive isolation is clear based on multiple datatypes (see main text) (starting n = 535)
+
+```{r}
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
+survey<-filter(survey, RIOK==TRUE) #N = 535
+
+```
+1) Are there more CSss or pseudo-CS overall, considering only cases where morphology was measured? (n = 411)
+
+```{r}
+expected<-c((length(na.omit(survey$Morpho_diff)))/2,(length(na.omit(survey$Morpho_diff)))/2)
+observed<-c(length(which(survey$CSss=="TRUE")),length(which(survey$CSss=="FALSE")))
+chisq.test(cbind(expected,observed))
+```
+
+2) Are there differences across phyla or classes? (n = 411)
+```{r}
+surveymorpho<-filter(survey, Morpho_diff != "NA") 
+
+drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+
+```
+
+Since phylum_class is significant, we will now use this as a random factor in subsequent models.
+
+3) Is the probability of CSss associated with year of description? (n = 347)
+
+```{r}
+summary(glmer(CSss~yearb+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+4) Is there a relationship between the number of CS in easily-accessible or inaccessible habitats and time? (n = 450)
+
+```{r}
+surveyaccess<-filter(survey, HDifAccess != "NA")
+surveyaccess$Difficult<-surveyaccess$HDifAccess=="Inaccessible"
+surveyaccess$Easy<-surveyaccess$HDifAccess=="Accessible"
+
+summary(glmer(Difficult~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+summary(glmer(Easy~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+
+```
+
+5) Is habitat connectivity (variable HKK) associated with CSss? (n = 378)
+
+```{r}
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+6) Are CSss more common in rocky or soft sediment habitats? (n = 190) What about when only considering shallow-water species? (n = 157)
+```{r}
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") 
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
+
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
+
+
+```
+
+7) Are CSss more common in sympatry or no? (n = 407)
+```{r}
+summary(glmer(CSss~Sympatric+(1|phylum_class),data=surveymorpho,family=binomial))
+```
+
+8) Are species in sympatry more likely to have ecological differentiation? (n=140)
+```{r}
+summary(glmer(Eco_diff~Sympatric+(1|phylum_class),data=survey,family=binomial))
+
+```
+
+9) Are CSss more common in species with ecological differentiation? (n = 104)
+```{r}
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+10) Are biological traits (hard skeleton, fertilization type, presence of external genitalia, image-forming vision) associated with CSss? (n = 386)
+```{r}
+summary(glmer(CSss~hard_skeleton+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~ferti+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~genitals+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+11) Is larval type associated with CSss? (n = 259)
+```{r}
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
+
+summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
+```
+
+12) Are CSss more common in particular geographic zones? (n = 313)
+```{r}
+tropmorpho<-filter(surveymorpho, Trop != "NA") 
+summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
+
+npolmorpho<-filter(surveymorpho, Npol != "NA") 
+summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
+
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
+summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
+
+spolmorpho<-filter(surveymorpho, Spol != "NA") 
+summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
+
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
+summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
+
+```
+
+
+# Analyses with species where the number of CS per article = 1 (see main text) (starting n = 610)
+
+```{r}
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
+survey<-filter(survey, Nb_CScomplex_inArticle == 1) 
+
+```
+1) Are there more CSss or pseudo-CS overall, considering only cases where morphology was measured? (n = 395)
+
+```{r}
+expected<-c((length(na.omit(survey$Morpho_diff)))/2,(length(na.omit(survey$Morpho_diff)))/2)
+observed<-c(length(which(survey$CSss=="TRUE")),length(which(survey$CSss=="FALSE")))
+chisq.test(cbind(expected,observed))
+```
+
+2) Are there differences across phyla or classes? (n = 395)
+```{r}
+surveymorpho<-filter(survey, Morpho_diff != "NA") #make matrix where only the cases where morpho was studied is here
+
+drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+
+```
+
+Since phylum_class is significant, we will now use this as a random factor in subsequent models.
+
+3) Is the probability of CSss associated with year of description? (n = 324)
+
+```{r}
+summary(glmer(CSss~yearb+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+4) Is there a relationship between the number of CS in easily-accessible or inaccessible habitats and time? (n = 493)
+
+```{r}
+surveyaccess<-filter(survey, HDifAccess != "NA")
+surveyaccess$Difficult<-surveyaccess$HDifAccess=="Inaccessible"
+surveyaccess$Easy<-surveyaccess$HDifAccess=="Accessible"
+
+summary(glmer(Difficult~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+summary(glmer(Easy~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+
+```
+
+5) Is habitat connectivity (variable HKK) associated with CSss? (n = 360)
+
+```{r}
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+6) Are CSss more common in rocky or soft sediment habitats? (n = 171) What about when only considering shallow-water species? (n = 153)
+```{r}
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky")
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
+
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
+
+
+```
+
+7) Are CSss more common in sympatry or no? (n = 390)
+```{r}
+summary(glmer(CSss~Sympatric+(1|phylum_class),data=surveymorpho,family=binomial))
+```
+
+8) Are species in sympatry more likely to have ecological differentiation? (n=125)
+```{r}
+summary(glmer(Eco_diff~Sympatric+(1|phylum_class),data=survey,family=binomial))
+
+```
+
+9) Are CSss more common in species with ecological differentiation? (n = 91)
+```{r}
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+10) Are biological traits (hard skeleton, fertilization type, presence of external genitalia, image-forming vision) associated with CSss? (n = 368)
+```{r}
+summary(glmer(CSss~hard_skeleton+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~ferti+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~genitals+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+11) Is larval type associated with CSss? (n = 274)
+```{r}
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
+
+summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
+```
+
+12) Are CSss more common in particular geographic zones? (n = 295)
+```{r}
+tropmorpho<-filter(surveymorpho, Trop != "NA")
+summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
+
+npolmorpho<-filter(surveymorpho, Npol != "NA")
+summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
+
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
+summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
+
+spolmorpho<-filter(surveymorpho, Spol != "NA") 
+summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
+
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
+summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
+
+```
+
+# Analyses with species where the number of individuals studied for genetics is greater than 20 (see main text) (starting n = 735)
+
+```{r}
+survey <- read.csv(file="978_species_clean_may17.csv" , header=TRUE ) 
+survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
+
+survey<-filter(survey, as.numeric(survey$Nig) > 20) 
+
+```
+1) Are there more CSss or pseudo-CS overall, considering only cases where morphology was measured? (n = 383)
+
+```{r}
+expected<-c((length(na.omit(survey$Morpho_diff)))/2,(length(na.omit(survey$Morpho_diff)))/2)
+observed<-c(length(which(survey$CSss=="TRUE")),length(which(survey$CSss=="FALSE")))
+chisq.test(cbind(expected,observed))
+```
+
+2) Are there differences across phyla or classes? (n = 383)
+```{r}
+surveymorpho<-filter(survey, Morpho_diff != "NA") 
+
+drop1(glm(CSss~phylum_wormsV1,data=surveymorpho,family=binomial),test="Chisq")
+drop1(glm(CSss~phylum_class,data=surveymorpho,family=binomial),test="Chisq")
+
+```
+
+Since phylum_class is significant, we will now use this as a random factor in subsequent models.
+
+3) Is the probability of CSss associated with year of description? (n = 319)
+
+```{r}
+summary(glmer(CSss~yearb+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+4) Is there a relationship between the number of CS in easily-accessible or inaccessible habitats and time? (n = 616)
+
+```{r}
+surveyaccess<-filter(survey, HDifAccess != "NA")
+surveyaccess$Difficult<-surveyaccess$HDifAccess=="Inaccessible"
+surveyaccess$Easy<-surveyaccess$HDifAccess=="Accessible"
+
+summary(glmer(Difficult~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+summary(glmer(Easy~yearb+(1|phylum_class),data=surveyaccess,family=binomial))
+
+```
+
+5) Is habitat connectivity (variable HKK) associated with CSss? (n = 351)
+
+```{r}
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+6) Are CSss more common in rocky or soft sediment habitats? (n = 160) What about when only considering shallow-water species? (n = 138)
+```{r}
+surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
+surveysed<-filter(surveysed, Hsubstrate != "Sediment and Rocky") 
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=surveysed,family=binomial))
+
+shallow<-filter(surveymorpho, shallow == "TRUE")
+shallow<-filter(shallow, Hsubstrate != "Sediment and Rocky") 
+
+summary(glmer(CSss~Hsubstrate+(1|phylum_class),data=shallow,family=binomial))
+
+
+```
+
+7) Are CSss more common in sympatry or no? (n = 379)
+```{r}
+summary(glmer(CSss~Sympatric+(1|phylum_class),data=surveymorpho,family=binomial))
+```
+
+8) Are species in sympatry more likely to have ecological differentiation? (n=114)
+```{r}
+summary(glmer(Eco_diff~Sympatric+(1|phylum_class),data=survey,family=binomial))
+
+```
+
+9) Are CSss more common in species with ecological differentiation? (n = 81)
+```{r}
+summary(glmer(CSss~Eco_diff+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+10) Are biological traits (hard skeleton, fertilization type, presence of external genitalia, image-forming vision) associated with CSss? (n = 361)
+```{r}
+summary(glmer(CSss~hard_skeleton+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~ferti+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~genitals+(1|phylum_class),data=surveymorpho,family=binomial))
+summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
+
+```
+
+11) Is larval type associated with CSss? (n = 249)
+```{r}
+surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
+
+summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
+```
+
+12) Are CSss more common in particular geographic zones? (n = 290)
+```{r}
+tropmorpho<-filter(surveymorpho, Trop != "NA") 
+summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
+
+npolmorpho<-filter(surveymorpho, Npol != "NA") 
+summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
+
+ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
+summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
+
+spolmorpho<-filter(surveymorpho, Spol != "NA") 
+summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
+
+stempmorpho<-filter(surveymorpho, Stemp != "NA") 
+summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
+
+```
+
