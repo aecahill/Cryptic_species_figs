@@ -1,0 +1,71 @@
+---
+title: "Missing CS for paper 3"
+output: html_document
+date: "2024-06-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## This file is to deal with analyses for paper 3.
+They will be in two parts. The first part will be phylogeny, and I want to create a heatmap like in Paper 1. There will be 57 classes on the tree, and 4 columns: number CS in database, number spp in WoRMS, number missing species, number missing bioloigcal species.
+
+I will have the same four variables for a four-panel map figure, based on FAO Marine Regions.
+
+```{r}
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(tidyr)
+library(cowplot)
+library(wesanderson)
+library(ggtree)
+
+
+survey <- read.csv(file="978_species_clean_may17.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
+surveyclass<-filter(survey, class_wormsV1 != "NA")
+tree57data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/tree57.tre")
+classnames<-read.csv("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/classnames.csv",header=T)
+nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+
+```
+
+
+```{r}
+num_CS<-c()
+
+for (i in classnames$Class) {
+  b<-sum(surveyclass$class_wormsV1 == i)
+  num_CS<-rbind(num_CS,b)
+}
+
+num_worms<-c()
+
+for (i in classnames$Class) {
+  b<-sum(nomsp$class == i)
+  num_worms<-rbind(num_worms,b)
+}
+
+# THERE ARE ZEROES HERE THAT SHOULD NOT BE HERE! NEED TO INVESTIGATE AND FIX. Problems with Thecostraca, Copepoda, Nemertea
+
+prop_missing <- c()
+
+for (i in classnames$Class){
+  
+  d<-nrow(filter(nomsp, (class==i)&(ncbi==T))) #total in phylum with NCBI
+  e<-nrow(filter(nomsp, (class==i))) #total in phylum
+  f<-nrow(filter(nomsp, (class==i)&(hasCS==T))) #total CS
+  g<-(f/d)*e #total CS in phylum IF everyone had NCBI
+  h<-g-f  #total MISSING CS, yet to be found
+  j<-h/g  #proportion of MISSING CS
+  
+  prop_missing<-rbind(prop_missing,j)
+}
+
+#Now have hit NaNs for the classes without CS - need to think about this - I may have to remake the tree with just the classes represented in our database???
+
+# Next step is to write code to calculate average NbCS per NS for each class, then add that column and bind them together into the heatmap.
+
+```
+
