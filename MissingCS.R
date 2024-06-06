@@ -11,7 +11,7 @@ setwd("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs")
 ##Part 1: pulling all animal species from OBIS
 
 animalia<-checklist(taxonid=2)   #pulls list of all animals from OBIS
-#write.csv(animalia, "animal_list.csv") #writing so I don't have to pull the data every time
+write.csv(animalia, "animal_list_June2024.csv") #writing so I don't have to pull the data every time
 animalia<-read.csv("animal_list_with_geo.csv") #read back in if needed
 animalspp<-animalia[animalia$taxonRank=="Species",]   #ONLY use those that are ID'd to the species level
 animals<-as.data.frame(cbind(animalspp$scientificName,animalspp$phylum,animalspp$class))  #create table of names and phyla
