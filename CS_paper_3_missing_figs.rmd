@@ -25,47 +25,151 @@ library(ggtree)
 
 survey <- read.csv(file="978_species_clean_may17.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 surveyclass<-filter(survey, class_wormsV1 != "NA")
-tree57data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/tree57.tre")
-classnames<-read.csv("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/classnames.csv",header=T)
-nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data for some comparisons 
+surveyclass2<-filter(surveyclass, acceptedName_wormsV1 !="NA") #824 cases
+
+tree39data<-read.tree("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/39classes.tre")
+classnames<-read.table("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/classnames2024.txt",header=T) # adjust this file so it is only the non-zero classes
+nomsp <-read.csv2(file="file_S2_oct.csv" ,header=T)# need to load all nominal spp data 
 
 ```
 
+```{r}
+# This loop replaces the order names within Hexanauplia so that our database matches the CS output.
+for (i in 1:length(nomsp$order)){
+  if (nomsp$order[i] == "Calanoida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Canuelloida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Cyclopoida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Harpacticoida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Misophrioida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Monstrilloida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Platycopioida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Siphonostomatoida" )
+    nomsp$class[i] <- "Copepoda"
+  else if (nomsp$order[i] == "Cryptophialida" )
+    nomsp$class[i] <- "Thecostraca"
+  else if (nomsp$order[i] == "Dendrogastrida" )
+    nomsp$class[i] <- "Thecostraca"
+  else if (nomsp$order[i] == "Ibliformes" )
+    nomsp$class[i] <- "Thecostraca"
+  else if (nomsp$order[i] == "Laurida" )
+    nomsp$class[i] <- "Thecostraca"
+  else if (nomsp$order[i] == "Lepadiformes" )
+    nomsp$class[i] <- "Thecostraca"
+  else if (nomsp$order[i] == "Lithoglyptida" )
+    nomsp$class[i] <- "Thecostraca"
+  else if (nomsp$order[i] == "Scalpelliformes" )
+    nomsp$class[i] <- "Thecostraca"
+  else if (nomsp$order[i] == "Sessilia" )
+    nomsp$class[i] <- "Thecostraca"
+  
+  }
+```
+
+
+
+I may have to remake the tree with just the classes represented in our database???
+
+This makes sense to me because the classes NOT in our database can't tell us anything about missing CS -- they are just ... missing. No comparison to make. Paper 1 used residuals from a larger model, so expected values weren't zeroes. 
+
+37 classes left where we have CS *assigned to species* in our database (all nemerteans lumped for that count)
+
 
 ```{r}
-num_CS<-c()
 
-for (i in classnames$Class) {
-  b<-sum(surveyclass$class_wormsV1 == i)
-  num_CS<-rbind(num_CS,b)
-}
-
-num_worms<-c()
-
-for (i in classnames$Class) {
-  b<-sum(nomsp$class == i)
-  num_worms<-rbind(num_worms,b)
-}
-
-# THERE ARE ZEROES HERE THAT SHOULD NOT BE HERE! NEED TO INVESTIGATE AND FIX. Problems with Thecostraca, Copepoda, Nemertea
+# THERE ARE ZEROES HERE THAT SHOULD NOT BE HERE!  Problems with Thecostraca, Copepoda, Nemertea
 
 prop_missing <- c()
+num_CS <- c()
+num_worms <- c()
 
 for (i in classnames$Class){
   
-  d<-nrow(filter(nomsp, (class==i)&(ncbi==T))) #total in phylum with NCBI
-  e<-nrow(filter(nomsp, (class==i))) #total in phylum
+  d<-nrow(filter(nomsp, (class==i)&(ncbi==T))) #total in class with NCBI
+  e<-nrow(filter(nomsp, (class==i))) #total in class
   f<-nrow(filter(nomsp, (class==i)&(hasCS==T))) #total CS
   g<-(f/d)*e #total CS in phylum IF everyone had NCBI
   h<-g-f  #total MISSING CS, yet to be found
   j<-h/g  #proportion of MISSING CS
   
+  num_CS<-rbind(num_CS,f)
+  num_worms<-rbind(num_worms,e)
   prop_missing<-rbind(prop_missing,j)
 }
 
-#Now have hit NaNs for the classes without CS - need to think about this - I may have to remake the tree with just the classes represented in our database???
+surveyclass3<-filter(surveyclass2,Nb_CS != "NA") #799 cases remaining here, look into who I've tossed
 
-# Next step is to write code to calculate average NbCS per NS for each class, then add that column and bind them together into the heatmap.
+#tapply(surveyclass3$Nb_CS,surveyclass3$class_wormsV1,mean)
+
+Nb_CS <- c()
+for (i in classnames$Class){
+  k <- filter(surveyclass3,class_wormsV1 == i)
+  m <- mean(k$Nb_CS)
+  p<-m*h
+  Nb_CS<-rbind(Nb_CS,p)
+}
+
+data_heatmap<-cbind(classnames$Class,num_CS,num_worms,prop_missing,Nb_CS)
+
+write.csv(data_heatmap,"data_for_heatmap2.csv")
+```
+
+Now let's make a heatmap
+
+```{r}
+traits39<-read.csv("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/heatmap_CS3_input.csv",header=T)
+
+supp.labs <- c("Number CS", "Number WoRMS","Proportion Missing","Biological missing")
+
+names(supp.labs) <- c("Number CS", "Number WoRMS","Proportion Missing","Biological missing")
+
+heatmap<-ggplot(data = traits39, mapping = aes(x = Variable,
+                                               y = Class_num,
+                                               fill = z_score)) +
+  geom_tile() +
+  scale_fill_gradient2(low = 'blue', mid = 'white', high = 'red')+
+  theme_bw()+
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank(), 
+        panel.background = element_blank(), 
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank(),  
+        plot.background = element_blank())+
+  theme(legend.position="none") +
+  theme(axis.text.x=element_blank(),axis.text.y=element_blank())+
+  geom_hline(yintercept=3.5)+
+  geom_hline(yintercept=7.5)+
+  geom_hline(yintercept=12.5)+
+  geom_hline(yintercept=13.5)+
+  geom_hline(yintercept=18.5)+
+  geom_hline(yintercept=20.5)+
+  geom_hline(yintercept=21.5)+
+  geom_hline(yintercept=28.5)+
+  geom_hline(yintercept=29.5)+
+  geom_hline(yintercept=33.5)+
+  geom_hline(yintercept=34.5)+
+  geom_hline(yintercept=36.5)+
+  facet_grid(~Variable,labeller = labeller(Variable=supp.labs),switch = "x", scales = "free_x", space = "free_x")
+
+
+```
+
+and a tree
+
+```{r}
+tree39<-ggtree(tree39data)+geom_tiplab()
+
+ggarrange(
+    #alldataplot,# First row with line plot
+    # Second row with box and dot plots
+    tree39, heatmap, 
+    ncol = 2) 
 
 ```
 
