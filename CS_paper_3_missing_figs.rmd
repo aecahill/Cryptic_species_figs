@@ -88,6 +88,9 @@ This makes sense to me because the classes NOT in our database can't tell us any
 prop_missing <- c()
 num_CS <- c()
 num_worms <- c()
+Nb_CS <- c()
+surveyclass3<-filter(surveyclass2,Nb_CS != "NA") #799 cases remaining here, look into who I've tossed
+
 
 for (i in classnames$Class){
   
@@ -97,25 +100,28 @@ for (i in classnames$Class){
   g<-(f/d)*e #total CS in phylum IF everyone had NCBI
   h<-g-f  #total MISSING CS, yet to be found
   j<-h/g  #proportion of MISSING CS
-  
-  num_CS<-rbind(num_CS,f)
-  num_worms<-rbind(num_worms,e)
-  prop_missing<-rbind(prop_missing,j)
-}
-
-surveyclass3<-filter(surveyclass2,Nb_CS != "NA") #799 cases remaining here, look into who I've tossed
-
-#tapply(surveyclass3$Nb_CS,surveyclass3$class_wormsV1,mean)
-
-Nb_CS <- c()
-for (i in classnames$Class){
   k <- filter(surveyclass3,class_wormsV1 == i)
   m <- mean(k$Nb_CS)
   p<-m*h
+
+    num_CS<-rbind(num_CS,f)
+  num_worms<-rbind(num_worms,e)
+  prop_missing<-rbind(prop_missing,j)
   Nb_CS<-rbind(Nb_CS,p)
 }
 
 data_heatmap<-cbind(classnames$Class,num_CS,num_worms,prop_missing,Nb_CS)
+
+#tapply(surveyclass3$Nb_CS,surveyclass3$class_wormsV1,mean)
+
+
+#for (i in classnames$Class){
+ # k <- filter(surveyclass3,class_wormsV1 == i)
+ # m <- mean(k$Nb_CS)
+ # p<-m*h
+ # Nb_CS<-rbind(Nb_CS,p)
+#}
+
 
 write.csv(data_heatmap,"data_for_heatmap2.csv")
 ```
