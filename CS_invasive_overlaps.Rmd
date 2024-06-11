@@ -1,0 +1,60 @@
+---
+title: "CS_invasive"
+output: html_document
+date: "2024-06-11"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## CS and invasive species overlap
+
+Trying to figure out the overlap between our CS database and other databases of invasive species
+
+First, read in files
+
+```{r}
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(tidyr)
+library(cowplot)
+library(wesanderson)
+
+
+survey <- read.csv(file="978_species_clean_may17.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
+
+# Load the WoRMS database (Not sure I need this???)
+# This version, for whatever reason, is ONLY ANIMAL SPECIES (from Anne)
+# That is fine; it's what I want anyway
+worms <- read.csv('taxon.csv',header=TRUE) 
+
+wrims<-read.csv(file="WRIMS_taxon.csv"   , header=TRUE )
+
+#Now filter to only animal species
+wrims<-filter(wrims,(kingdom=="Animalia" & taxonRank=="Species")) 
+# 2716 species remaining
+
+#Next, take the species names, compare them, and put into a separate database
+
+overlap<- c() # blank dataframe
+
+matchlist<-wrims$acceptedNameUsage %in% survey$acceptedName_wormsV1  #make vector of cases in wrims that have a match in the CS survey
+
+#now this loop take the values for which there is a match and extracts them from the wrims set to make a dataframe
+for (i in 1:length(matchlist)){
+  if (matchlist[i] == TRUE)
+    overlap<-rbind(overlap,wrims[i,])
+}
+
+write.csv(overlap,"invasive_CS.csv")
+
+write.csv(table(overlap$class),"invasiveCS_class.csv")
+write.csv(table(survey$class_wormsV1),"CS_class.csv")
+write.csv(table(wrims$class),"invasive_class.csv")
+
+
+```
+
+Next step - heat map comparing the relative prevalence in the databases?
