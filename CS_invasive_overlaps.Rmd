@@ -84,3 +84,59 @@ overlaplarge<-read.csv("C:/Users/aecsk/Documents/GitHub/Cryptic_species_figs/hea
 
 ```
 
+Let's check to see how many of the WRIMS species have ncbi data
+```{r}
+nomsp<-read.csv("DATASET_187603_NominalSpecies.csv",sep=";",header=TRUE)
+
+ncbi_all<-filter(nomsp, ncbi == TRUE) # 38153 spp with NCBI data
+  
+matchlistncbi<-wrims$acceptedNameUsage %in% ncbi_all$acceptedNameUsage  #make vector of cases in wrims that have a match in the NCBI database
+# this is 1610 out of 2716 total
+
+wrimsncbi<-c()
+#now this loop take the values for which there is a match and extracts them from the wrims set to make a dataframe
+for (i in 1:length(matchlistncbi)){
+  if (matchlistncbi[i] == TRUE)
+    wrimsncbi<-rbind(wrimsncbi,wrims[i,])
+}
+
+overlapncbi<- c() # blank dataframe
+
+matchlist4<-wrimsncbi$acceptedNameUsage %in% survey$acceptedName_wormsV1  #make vector of cases in wrims that have a match in the CS survey
+
+#now this loop take the values for which there is a match and extracts them from the wrims set to make a dataframe
+for (i in 1:length(matchlist4)){
+  if (matchlist4[i] == TRUE)
+    overlapncbi<-rbind(overlapncbi,wrimsncbi[i,])
+}
+
+
+
+```
+
+```{r}
+overlaptry<-read.table("overlaptry2.txt",header=TRUE)
+ggplot(data = overlaptry, mapping = aes(x = proportionCS,
+                                                 y = proportionWRIMS,
+                                                 size = proportionoverlap))+
+  geom_point()+
+  geom_text(label=overlaptry$Class,nudge_y=0.005)+
+  geom_abline(intercept = 0, slope = 1)+
+  theme_bw()
+
+ggplot(data = overlaptry, mapping = aes(x = proportionCS,
+                                                 y = proportionoverlap))+
+  geom_point()+
+  geom_text(label=overlaptry$Class,nudge_y=0.005)+
+  geom_abline(intercept = 0, slope = 1)+
+  theme_bw()
+
+ggplot(data = overlaptry, mapping = aes(x = proportionWRIMS,
+                                                 y = proportionoverlap))+
+  geom_point()+
+  geom_text(label=overlaptry$Class,nudge_y=0.005)+
+  geom_abline(intercept = 0, slope = 1)+
+  theme_bw()
+
+```
+
