@@ -140,3 +140,76 @@ ggplot(data = overlaptry, mapping = aes(x = proportionWRIMS,
 
 ```
 
+Do the AquaNIS and EASIN databases overlap with WRIMS?
+
+```{r}
+wrims<-read.csv(file="WRIMS_taxon.csv", header=TRUE ) #read back in whole database (not just animals), = 7985 species
+
+easin<-read.csv(file="EASIN_database.csv", header=TRUE )
+#EASIN is everything in Europe, NOT JUST MARINE, = 14318 species
+# ALL taxa (algae, plants, bacteria, etc)
+
+matchlisteasin<-  wrims$acceptedNameUsage %in% easin$Name
+# Did it this way because WRIMS is the smaller database
+# 1506 species in wrims are found in easin
+
+aquanis<-read.csv(file="AquaNIS_database.csv", header=TRUE )
+# AquaNIS is European, marine/coastal freshwater/brackish, = 2261 species
+# All taxa, not just animals
+
+matchlistaquanis<- aquanis$Species  %in% wrims$acceptedNameUsage
+# 1132 species in AquaNIS found in WRIMS 
+
+nemesis<-read.csv(file="nemesis_species_list.csv", header=TRUE )
+# United States database, marine, all taxa, = 657 species
+
+matchlistnemesis<- nemesis$Name  %in% wrims$acceptedNameUsage
+# 297 species in Nemesis found in WRIMS
+# Looks like 578 animal species, and I expect those would be in WRIMS, so many seem to be missing. Can pull these out.
+
+```
+
+I can't figure out how to filter EASIN and AQUANIS to be only animals / how to get better taxonomic info here. So let's keep working with Nemesis only.
+
+Will create csv with only animals from Nemesis.
+
+```{r}
+nemesisanimals<-read.csv(file="nemesis_animals.csv", header=TRUE )
+
+#How many of these are in the survey?
+matchlistnemesisCS<- nemesisanimals$Name  %in% survey$acceptedName_wormsV1
+sum(matchlistnemesisCS)
+#looks like 20 species overlap, or 3.4% of animal list (less than WRIMS total)
+
+#Who are those species?
+
+nemesisCS<-c()
+#now this loop take the values for which there is a match and extracts them from the wrims set to make a dataframe
+for (i in 1:length(matchlistnemesisCS)){
+  if (matchlistnemesisCS[i] == TRUE)
+    nemesisCS<-rbind(nemesisCS,nemesisanimals[i,])
+}
+
+# I think we again have overrepresentation of polychaetes, bryos, tunicates
+
+# Who is missing from WRIMS given the Nemesis list?
+matchlistnemesisanimals<- nemesisanimals$Name  %in% wrims$acceptedNameUsage
+# 293 are matches, out of 578 total, so 285 missing!
+
+missingWRIMS<-c()
+#now this loop take the values for which there is a match and extracts them from the wrims set to make a dataframe
+for (i in 1:length(matchlistnemesisanimals)){
+  if (matchlistnemesisanimals[i] == FALSE)
+    missingWRIMS<-rbind(missingWRIMS,nemesisanimals[i,])
+}
+
+#Now write the file
+write.csv(missingWRIMS,"missingWRIMS_from_nemesis.csv")
+
+```
+
+It looks like properly curating the database will be a real chore.
+The missing species include
+- things wtih "sp." and "sp. A" and "cf", which won't align with WoRMS/WRIMS
+- there's some species that WoRMS has labeled as freshwater?
+- some unaccepted names? I think Anne had to correct those by hand in the survey sheet.
