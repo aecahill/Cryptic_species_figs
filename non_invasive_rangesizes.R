@@ -186,3 +186,9 @@ ggplot(non_invasive2)+
   theme(legend.position="none")+
   My_Theme
 
+
+# Trying to pull list of species that are both NI and CS
+
+NICS<-filter(invasive,hasCS == "TRUE")
+write.csv(NICS,"invasive-and-cryptic.csv")
+table(NICS$class)

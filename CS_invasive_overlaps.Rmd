@@ -213,3 +213,11 @@ The missing species include
 - things wtih "sp." and "sp. A" and "cf", which won't align with WoRMS/WRIMS
 - there's some species that WoRMS has labeled as freshwater?
 - some unaccepted names? I think Anne had to correct those by hand in the survey sheet.
+```{r}
+survey$NI  <- survey$acceptedName_wormsV1 %in% wrims$acceptedNameUsage
+# again this 107 number -- where is 123 coming from???
+
+table(survey$NI,survey$Geo_dif3)
+chisq.test(survey$NI,survey$Geo_dif3)
+```
+
