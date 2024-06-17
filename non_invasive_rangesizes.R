@@ -146,3 +146,116 @@ ggplot(withgeo)+
 survey <- read.csv(file="978_species_clean_may17.csv"   , header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
 survey$NI  <- survey$acceptedName_wormsV1 %in% wrims$acceptedNameUsage
 
+
+# New analyses June 17
+# Need to read in new withgeo file, which has divided the CSNI into four different categories
+
+withgeo2<-read.csv("withgeo.csv",header=TRUE)
+
+ggplot(withgeo2)+
+  aes(x=CSNI,y=range_lat_r100)+
+  geom_jitter(aes(fill=CSNI))+
+  geom_boxplot(width=0.1,alpha=0.5)+ 
+  stat_summary(fun.y=mean, geom="point", size=2, color="red")+
+  # scale_fill_manual(values=c("#00000099","#CCCCCC"))+ labs(fill="CS reported",y=NULL,x=NULL)+
+  #scale_fill_manual(values=c("#00000099","#CCCCCC"))+ 
+  labs(fill=NULL,y=NULL,x=NULL)+
+  theme(legend.position="none")
+
+# Ok, plot looks like it did on Friday. Next steps are to subset things.
+
+# 1) Need to remove all without NCBI data
+
+withgeoNCBI<-filter(withgeo2, ncbi == "TRUE")
+
+ggplot(withgeoNCBI)+
+  aes(x=CSNI,y=range_lat_r100)+
+  geom_jitter(aes(fill=CSNI))+
+  geom_boxplot(width=0.1,alpha=0.5)+ 
+  stat_summary(fun.y=mean, geom="point", size=2, color="red")+
+  # scale_fill_manual(values=c("#00000099","#CCCCCC"))+ labs(fill="CS reported",y=NULL,x=NULL)+
+  #scale_fill_manual(values=c("#00000099","#CCCCCC"))+ 
+  labs(fill=NULL,y=NULL,x=NULL)+
+  theme(legend.position="none")
+
+#ANOVA results - let's do this with type III SS (unbalanced design)
+#summary(aov(withgeoNCBI$range_lat_r100~withgeoNCBI$hasCS*withgeoNCBI$NI))
+#summary(aov(withgeoNCBI$range_lat_r100~withgeoNCBI$NI*withgeoNCBI$hasCS))
+
+m1 <- lm(range_lat_r100 ~ hasCS * NI, data = withgeoNCBI)
+Anova(m1, type = "III")
+
+# And what about glm? (I think this is what we want)
+summary(glm(range_lat_r100 ~ hasCS * NI, data = withgeoNCBI))
+
+# Results are qualitively the same - I think this is because there's nothing funky here (no random factors, nothing nested)
+
+# Let's do some stats for the latitude
+tapply(withgeoNCBI$range_lat_r100,withgeoNCBI$CSNI,mean)
+tapply(withgeoNCBI$range_lat_r100,withgeoNCBI$CSNI,sd)
+table(withgeoNCBI$CSNI) #sample sizes
+
+# 2) Need to remove all classes that are not in category D
+
+# First I do have a list of both CSNI in a dataframe
+NICS<-filter(invasive,hasCS == "TRUE")
+NICS<-droplevels(NICS) #removed unused levels
+
+classesCSNI<-levels(NICS$class) #create vectors of classes
+
+#ok, now filter whole dataset (withgeo2) to only those classes
+
+withgeoclass<-filter(withgeo2, class %in% classesCSNI)
+# Interestingly this gives a larger sample size (12305) than tossing the non-NCBI (10452)
+
+ggplot(withgeoclass)+
+  aes(x=CSNI,y=range_lat_r100)+
+  geom_jitter(aes(fill=CSNI))+
+  geom_boxplot(width=0.1,alpha=0.5)+ 
+  stat_summary(fun.y=mean, geom="point", size=2, color="red")+
+  # scale_fill_manual(values=c("#00000099","#CCCCCC"))+ labs(fill="CS reported",y=NULL,x=NULL)+
+  #scale_fill_manual(values=c("#00000099","#CCCCCC"))+ 
+  labs(fill=NULL,y=NULL,x=NULL)+
+  theme(legend.position="none")
+
+m2 <- lm(range_lat_r100 ~ hasCS * NI, data = withgeoclass)
+Anova(m2, type = "III")
+
+# And what about glm? (I think this is what we want)
+summary(glm(range_lat_r100 ~ hasCS * NI, data = withgeoclass))
+
+# Results are qualitively the same - I think this is because there's nothing funky here (no random factors, nothing nested)
+
+# Let's do some stats for the latitude
+tapply(withgeoclass$range_lat_r100,withgeoclass$CSNI,mean)
+tapply(withgeoclass$range_lat_r100,withgeoclass$CSNI,sd)
+table(withgeoclass$CSNI) #sample sizes
+
+# Not typing out the code yet, but in both cases, longitude does not have a significant interaction
+
+# Alright, what if I subset both factors at once?
+
+withgeoclassncbi<-filter(withgeoclass, ncbi == "TRUE") #9461 species remaining
+
+ggplot(withgeoclassncbi)+
+  aes(x=CSNI,y=range_lat_r100)+
+  geom_jitter(aes(fill=CSNI))+
+  geom_boxplot(width=0.1,alpha=0.5)+ 
+  stat_summary(fun.y=mean, geom="point", size=2, color="red")+
+  # scale_fill_manual(values=c("#00000099","#CCCCCC"))+ labs(fill="CS reported",y=NULL,x=NULL)+
+  #scale_fill_manual(values=c("#00000099","#CCCCCC"))+ 
+  labs(fill=NULL,y=NULL,x=NULL)+
+  theme(legend.position="none")
+
+m3 <- lm(range_lat_r100 ~ hasCS * NI, data = withgeoclassncbi)
+Anova(m3, type = "III")
+
+# And what about glm? (I think this is what we want)
+summary(glm(range_lat_r100 ~ hasCS * NI, data = withgeoclassncbi))
+
+# P-value on interaction term is 0.0515
+
+# Let's do some stats for the latitude
+tapply(withgeoclassncbi$range_lat_r100,withgeoclassncbi$CSNI,mean)
+tapply(withgeoclassncbi$range_lat_r100,withgeoclassncbi$CSNI,sd)
+table(withgeoclassncbi$CSNI) #sample sizes
