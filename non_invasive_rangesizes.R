@@ -259,3 +259,14 @@ summary(glm(range_lat_r100 ~ hasCS * NI, data = withgeoclassncbi))
 tapply(withgeoclassncbi$range_lat_r100,withgeoclassncbi$CSNI,mean)
 tapply(withgeoclassncbi$range_lat_r100,withgeoclassncbi$CSNI,sd)
 table(withgeoclassncbi$CSNI) #sample sizes
+
+
+# ok, putting the range sizes and geographic information together
+
+#read in CS information
+survey <- read.csv(file="978_species_clean_may17.csv", header=TRUE ) #Adjusted Nov 15 2023 to fix errors in duplicated species
+
+#Get NI information into the survey data
+survey$NI  <- survey$acceptedName_wormsV1 %in% wrims$acceptedNameUsage
+
+# now add in range sizes
