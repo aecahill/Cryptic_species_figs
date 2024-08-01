@@ -402,7 +402,7 @@ palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
 alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
-  xlab("Connectivity")+
+  xlab("Habitat Extent")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
   annotate("text", x = 1, y = 0.1, label = "1", size = 4.5,color="white")+
@@ -812,7 +812,7 @@ palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
 sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=HKK,y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
-  xlab("Connectivity")+
+  xlab("Habitat Extent")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+ 
   annotate("text", x = 1, y = 0.05, label = "6", size = 3.5,color="white")+
@@ -859,7 +859,7 @@ HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "100"] <- "H100"
 rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=HKK,y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
-  xlab("Connectivity")+
+  xlab("Habitat Extent")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
   annotate("text", x = 1, y = 0.05, label = "6", size = 3.5,color="white")+
