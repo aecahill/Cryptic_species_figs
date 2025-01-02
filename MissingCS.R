@@ -691,3 +691,80 @@ oce<-ggplot(as.data.frame(MissingPerOcean),aes(x=as.character(Ocean),y=as.numeri
         plot.background = element_blank())
 
 plot_grid(oce,missingoce,ncol=2)
+
+# Jan 2 2025 edits
+
+# First for classes
+
+largeclasses<-read.csv("largeclasses.csv",header=TRUE)
+ggplot(largeclasses,aes(x=V1,y=as.numeric(V4)))+
+  geom_bar(stat="identity")+
+  ylab("Proportion CS missing")+
+  xlab("Class")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+# Now for the pilot Spalding Realm data
+
+obistry<-read.csv("pilot_OBIS.csv",header=FALSE)
+colnames(obistry)<-c("species",MROW$preferredGazetteerName)
+
+# remove NA cols
+
+obistry<-cbind(obistry[,1:3],obistry[,6:14])
+
+# add both CS and NCBI columns
+
+obistry$hascs<-obistry$species %in% survey$acceptedName_wormsV1
+
+specieswithncbi<-filter(nomsp,ncbi==TRUE)
+obistry$ncbi<-obistry$species %in% specieswithncbi$scientificName
+
+missingnums<-c()
+missingrealm<-c()
+
+#Must be a better way to do this!
+for (i in c(2:12)){
+  d<-nrow(filter(obistry, (obistry[,i]==T)&(ncbi==T))) #total in ocean with NCBI
+  e<-nrow(filter(obistry, (obistry[,i]==T))) #total in ocean
+  f<-nrow(filter(obistry, (obistry[,i]==T)&(hascs==T))) #total CS
+  g<-(f/d)*e #total in ocean IF everyone had NCBI
+  h<-g-f  #total MISSING CS
+  j<-h/g   # proportion missing CS -- compared to total CS already found
+  
+  missingnums<-cbind(e,f,g,h,j)
+  missingrealm<-rbind(missingrealm,missingnums)
+}
+
+missingrealm<-cbind(missingrealm,c(colnames(obistry[,2:12])))
+
+colnames(missingrealm)<-c("Total_ocean","Total_CS","CS_expected","Missing","Proportion_Missing","Realm")
+rownames(missingrealm)<-c(colnames(obistry[,2:12]))
+
+missingrealmgraph<-ggplot(as.data.frame(missingrealm),aes(x=as.character(Realm),y=as.numeric(Proportion_Missing)))+
+  geom_bar(stat="identity")+
+  ylab("Proportion CS missing")+
+  xlab("Realm")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+realmgraph<-ggplot(as.data.frame(missingrealm),aes(x=as.character(Realm),y=as.numeric(Total_CS)))+
+  geom_bar(stat="identity")+
+  ylab("Total CS Found")+
+  xlab("Realm")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+
+plot_grid(realmgraph,missingrealmgraph,ncol=2)
