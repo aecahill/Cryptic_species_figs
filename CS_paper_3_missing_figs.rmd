@@ -179,3 +179,18 @@ ggarrange(
 
 ```
 
+Note from Jan 2 to make a barplot of missing classes - gode from MissingCS.R file
+```{r}
+largeclasses<-read.csv("largeclasses.csv",header=TRUE)
+ggplot(largeclasses,aes(x=V1,y=as.numeric(V4)))+
+  geom_bar(stat="identity")+
+  ylab("Proportion CS missing")+
+  xlab("Class")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(panel.background = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_blank())
+```
+

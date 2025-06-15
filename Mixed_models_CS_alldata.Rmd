@@ -252,6 +252,8 @@ Significant! More likely to have CSss in sediment than on rocky shores.
 Fig 1: ss vs sl by major class. I want this to be a barplot with Proportion CSss on the y and major classes on the x, with a horizontal dashed line for the overall proportion.
 
 ```{r}
+#Note Jule 15 2025 -- had to edit this figure to only use the large classes, not sure why. But it should work now.
+# Also: I'd like to figure out how to add the phylopics within ggplot for a nicer figure
 #First, reduce the dataset to only large classes
 largeclass<-c()
 class_string<-c("Mollusca_Gastropoda",
@@ -279,11 +281,13 @@ for (i in 1:length(surveymorpho$NameBeforeCor)) {
 }
 
 largeclasstable<-as.data.frame(cbind(surveymorpho,largeclass))
-largeclasstable<-largeclasstable[!is.na(largeclasstable$largeclass),]
+largeclasstable2<-largeclasstable[!is.na(largeclasstable$largeclass),]
+largeclasstable3<-droplevels(largeclasstable2)
+#largeclasstable2<-na.omit(largeclasstable,cols="largeclass")
 
 #Now, we need the proportion of CSss in each large class
 
-classtable<-table(largeclasstable$phylum_class,largeclasstable$CSss)
+classtable<-table(largeclasstable3$phylum_class,largeclasstable3$CSss)
 percent_ss<-c()
 
 for (i in 1:length(classtable[,2])) {
@@ -293,6 +297,7 @@ for (i in 1:length(classtable[,2])) {
 
 classtable<-as.data.frame(cbind(rownames(classtable),classtable,percent_ss))
 colnames(classtable)<-c("Class","SL","SS","Percent_SS")
+
 
 ggplot(classtable,aes(x=Class,y=as.numeric(Percent_SS)))+
   geom_bar(stat="identity")+
