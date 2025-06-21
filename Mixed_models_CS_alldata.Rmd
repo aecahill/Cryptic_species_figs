@@ -304,6 +304,7 @@ ggplot(classtable,aes(x=Class,y=as.numeric(Percent_SS)))+
   geom_hline(yintercept=0.659,linetype=2)+
   ylab("Proportion CS sensu stricto")+
   xlab("Phylum and Class")+
+  ylim(0,1)+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
   theme(panel.background = element_blank(), 
