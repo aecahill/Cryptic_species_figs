@@ -304,7 +304,7 @@ ggplot(classtable,aes(x=Class,y=as.numeric(Percent_SS)))+
   geom_hline(yintercept=0.659,linetype=2)+
   ylab("Proportion CS sensu stricto")+
   xlab("Phylum and Class")+
-  ylim(0,1)+
+  ylim(0,1.05)+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
   theme(panel.background = element_blank(), 
@@ -402,13 +402,14 @@ HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "H025"
 HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "H100"
 HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "H1000"
 
-palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
+palwes<-c("lightgrey","darkgrey","black")
 
 
 alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
   xlab("Habitat Extent")+
+  labs(fill = "Differentiation type")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
   annotate("text", x = 1, y = 0.1, label = "1", size = 4.5,color="white")+
@@ -417,12 +418,12 @@ alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,
   annotate("text", x = 4, y = 0.1, label = "37", size = 4.5,color="white")+
   annotate("text", x = 5, y = 0.1, label = "22", size = 4.5,color="white")+
   annotate("text", x = 6, y = 0.1, label = "11", size = 4.5,color="white")+
-  annotate("text", x = 1, y = 0.9, label = "4", size = 4.5,color="white")+
-  annotate("text", x = 2, y = 0.9, label = "37", size = 4.5,color="white")+
-  annotate("text", x = 3, y = 0.9, label = "49", size = 4.5,color="white")+
-  annotate("text", x = 4, y = 0.9, label = "49", size = 4.5,color="white")+
-  annotate("text", x = 5, y = 0.9, label = "9", size = 4.5,color="white")+
-  annotate("text", x = 6, y = 0.9, label = "11", size = 4.5,color="white")+
+  annotate("text", x = 1, y = 0.9, label = "4", size = 4.5)+
+  annotate("text", x = 2, y = 0.9, label = "37", size = 4.5)+
+  annotate("text", x = 3, y = 0.9, label = "49", size = 4.5)+
+  annotate("text", x = 4, y = 0.9, label = "49", size = 4.5)+
+  annotate("text", x = 5, y = 0.9, label = "9", size = 4.5)+
+  annotate("text", x = 6, y = 0.9, label = "11", size = 4.5)+
   annotate("text", x = 2, y = 0.4, label = "33", size = 4.5)+
   annotate("text", x = 3, y = 0.45, label = "57", size = 4.5)+
   annotate("text", x = 4, y = 0.45, label = "33", size = 4.5)+
@@ -431,7 +432,8 @@ alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,
   theme(panel.background = element_blank(), 
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        plot.background = element_blank())
+        plot.background = element_blank(),
+        legend.title = element_text(face = "bold"))
 
 
 #plot_grid(cats2,cats3,labels=c("A","B"),ncol=1)
@@ -812,7 +814,7 @@ HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "25"] <- "H025"
 HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "100"] <- "H100"
 
 
-palwes<-c("#F21A00","#EBCC2A","#3B9AB2")
+palwes<-c("lightgrey","darkgrey","black")
 
 
 sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=HKK,y=Percent,fill=Diff_type,))+
@@ -825,10 +827,10 @@ sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=HKK,y=Percent,fill=Diff_type,)
   annotate("text", x = 2, y = 0.05, label = "2", size = 3.5,color="white")+
   annotate("text", x = 3, y = 0.05, label = "21", size = 3.5,color="white")+
   annotate("text", x = 4, y = 0.05, label = "13", size = 3.5,color="white")+
-  annotate("text", x = 1, y = 0.95, label = "8", size = 3.5,color="white")+
-  annotate("text", x = 2, y = 0.95, label = "6", size = 3.5,color="white")+
-  annotate("text", x = 3, y = 0.95, label = "9", size = 3.5,color="white")+
-  annotate("text", x = 4, y = 0.95, label = "2", size = 3.5,color="white")+
+  annotate("text", x = 1, y = 0.95, label = "8", size = 3.5)+
+  annotate("text", x = 2, y = 0.95, label = "6", size = 3.5)+
+  annotate("text", x = 3, y = 0.95, label = "9", size = 3.5)+
+  annotate("text", x = 4, y = 0.95, label = "2", size = 3.5)+
   annotate("text", x = 1, y = 0.45, label = "9", size = 3.5)+
   annotate("text", x = 2, y = 0.45, label = "13", size = 3.5)+
   annotate("text", x = 3, y = 0.6, label = "10", size = 3.5)+
@@ -872,9 +874,9 @@ rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=HKK,y=Percent,fill=Diff_ty
   annotate("text", x = 2, y = 0.05, label = "4", size = 3.5,color="white")+
   annotate("text", x = 3, y = 0.05, label = "6", size = 3.5,color="white")+
   annotate("text", x = 4, y = 0.25, label = "1", size = 3.5,color="white")+
-  annotate("text", x = 1, y = 0.95, label = "21", size = 3.5,color="white")+
-  annotate("text", x = 2, y = 0.95, label = "4", size = 3.5,color="white")+
-  annotate("text", x = 3, y = 0.95, label = "18", size = 3.5,color="white")+
+  annotate("text", x = 1, y = 0.95, label = "21", size = 3.5)+
+  annotate("text", x = 2, y = 0.95, label = "4", size = 3.5)+
+  annotate("text", x = 3, y = 0.95, label = "18", size = 3.5)+
   annotate("text", x = 1, y = 0.4, label = "16", size = 3.5)+
   annotate("text", x = 2, y = 0.4, label = "9", size = 3.5)+
   annotate("text", x = 3, y = 0.4, label = "10", size = 3.5)+
