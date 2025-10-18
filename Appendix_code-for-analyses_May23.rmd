@@ -128,26 +128,7 @@ surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 368)
-```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") 
-summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
-
-npolmorpho<-filter(surveymorpho, Npol != "NA") 
-summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
-
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
-summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
-
-spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
-summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
-
-stempmorpho<-filter(surveymorpho, Stemp != "NA") 
-summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
-
-```
-
-13) What about the bestglm to determine which factors are most important?
+12) What about the bestglm to determine which factors are most important?
 
 First with all data
 ```{r}
@@ -155,15 +136,20 @@ mat<-select(surveymorpho, c(HKKv3, phylum_class, Sympatric,CSss))
 mat[1:4]<-lapply(mat[1:4],as.factor)
 outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
 outBIC$BestModels 
+glm_mat<-glm(CSss~HKKv3+Sympatric, mat,family="binomial")
+drop1(glm_mat,test="Chisq")
 
 ```
 
 And now with the shallow-water rocky vs soft sed dataset
 ```{r}
-mat<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, CSss))
-mat[1:5]<-lapply(mat[1:5],as.factor)
-outBIC<-bestglm(mat,IC="BIC", family=binomial,TopModels=10)  
+matshallow<-select(shallow, c(Hsubstrate, HKKv3, phylum_class, Sympatric, CSss))
+matshallow[1:5]<-lapply(matshallow[1:5],as.factor)
+outBIC<-bestglm(matshallow,IC="BIC", family=binomial,TopModels=10)  
 outBIC$BestModels 
+glm_matshallow<-glm(CSss~HKKv3+Sympatric+Hsubstrate, matshallow,family="binomial")
+drop1(glm_matshallow,test="Chisq")
+
 
 ```
 
@@ -269,25 +255,6 @@ surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 313)
-```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") 
-summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
-
-npolmorpho<-filter(surveymorpho, Npol != "NA") 
-summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
-
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
-summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
-
-spolmorpho<-filter(surveymorpho, Spol != "NA") 
-summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
-
-stempmorpho<-filter(surveymorpho, Stemp != "NA") 
-summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
-
-```
-
 
 # Analyses with species where the number of CS per article = 1 (see main text) (starting n = 610)
 
@@ -390,24 +357,6 @@ surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 295)
-```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA")
-summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
-
-npolmorpho<-filter(surveymorpho, Npol != "NA")
-summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
-
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
-summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
-
-spolmorpho<-filter(surveymorpho, Spol != "NA") 
-summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
-
-stempmorpho<-filter(surveymorpho, Stemp != "NA") 
-summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
-
-```
 
 # Analyses with species where the number of individuals studied for genetics is greater than 20 (see main text) (starting n = 735)
 
@@ -509,24 +458,5 @@ summary(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
-```
-
-12) Are CSss more common in particular geographic zones? (n = 290)
-```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") 
-summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
-
-npolmorpho<-filter(surveymorpho, Npol != "NA") 
-summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
-
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
-summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
-
-spolmorpho<-filter(surveymorpho, Spol != "NA") 
-summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
-
-stempmorpho<-filter(surveymorpho, Stemp != "NA") 
-summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
-
 ```
 
