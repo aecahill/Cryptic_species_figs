@@ -298,7 +298,6 @@ for (i in 1:length(classtable[,2])) {
 classtable<-as.data.frame(cbind(rownames(classtable),classtable,percent_ss))
 colnames(classtable)<-c("Class","SL","SS","Percent_SS")
 
-
 ggplot(classtable,aes(x=Class,y=as.numeric(Percent_SS)))+
   geom_bar(stat="identity")+
   geom_hline(yintercept=0.659,linetype=2)+

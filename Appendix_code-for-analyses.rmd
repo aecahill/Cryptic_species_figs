@@ -128,26 +128,7 @@ surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 summary(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 ```
 
-12) Are CSss more common in particular geographic zones? (n = 368)
-```{r}
-tropmorpho<-filter(surveymorpho, Trop != "NA") 
-summary(glmer(CSss~Trop+(1|phylum_class),data=tropmorpho,family=binomial))
-
-npolmorpho<-filter(surveymorpho, Npol != "NA") 
-summary(glmer(CSss~Npol+(1|phylum_class),data=npolmorpho,family=binomial))
-
-ntempmorpho<-filter(surveymorpho, Ntemp != "NA") 
-summary(glmer(CSss~Ntemp+(1|phylum_class),data=ntempmorpho,family=binomial))
-
-spolmorpho<-filter(surveymorpho, Spol != "NA") #make matrix where only the cases where morpho was studied is here
-summary(glmer(CSss~Spol+(1|phylum_class),data=spolmorpho,family=binomial))
-
-stempmorpho<-filter(surveymorpho, Stemp != "NA") 
-summary(glmer(CSss~Stemp+(1|phylum_class),data=stempmorpho,family=binomial))
-
-```
-
-13) What about the bestglm to determine which factors are most important?
+12) What about the bestglm to determine which factors are most important?
 
 First with all data
 ```{r}
