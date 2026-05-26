@@ -16,8 +16,8 @@ histgen<-ggplot(surveymorpho, aes(x=Nig)) +
   ylim(0,100)+
   geom_segment(aes(x = 144, y = 99, xend = 144, yend = 0),
                linetype = "dashed" ,color="darkgrey",size=0.75)+
-  xlab("Number of individuals for genetics")+
-  ylab("Number of species")+
+  xlab("Individuals Used for Genetics")+
+  ylab("Number of Species")+
   theme_bw()+
   theme(panel.grid.minor=element_blank())
 
@@ -28,12 +28,12 @@ histmorph<-ggplot(surveymorpho, aes(x=Nim)) +
   ylim(0,100)+
   geom_segment(aes(x = 183, y = 99, xend = 183, yend = 0),
                            linetype = "dashed" ,color="darkgrey",size=0.75)+
-  xlab("Number of individuals for morphology")+
-  ylab("Number of species")+
+  xlab("Individuals Used for Morphology")+
+  ylab("Number of Species")+
   theme_bw()+
   theme(panel.grid.minor=element_blank())
 
-plot_grid(histgen,histmorph,nrow=2)
+plot_grid(histgen,histmorph,labels=c("A","B"),nrow=2)
 
 #Now do barplot by larval type
 
@@ -82,7 +82,7 @@ ggplot(surveyhab,aes(x=phylum_wormsV1,fill=CSss))+
   theme(axis.text.x=element_text(angle = 45, hjust = 1))+
   facet_wrap(~ HKKv3,ncol=1)
 
-plot_grid(hkk,larv_type,nrow=2)
+plot_grid(hkk,larv_type,labels=c("A","B"),nrow=2)
 
 
 # What about planktonic and benthic

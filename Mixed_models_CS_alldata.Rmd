@@ -394,17 +394,18 @@ Hkk_count3
 HKKtable2<-pivot_longer(as.data.frame(HKKtable), cols=1:6, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
 HKKtable2$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Statistical","Statistical","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
-HKKtable2["HKK"][HKKtable2["HKK"] == "1"] <- "H001"
-HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "H005"
-HKKtable2["HKK"][HKKtable2["HKK"] == "10"] <- "H010"
-HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "H025"
-HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "H100"
-HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "H1000"
+HKKtable2["HKK"][HKKtable2["HKK"] == "1"] <- "1"
+HKKtable2["HKK"][HKKtable2["HKK"] == "5"] <- "5"
+HKKtable2["HKK"][HKKtable2["HKK"] == "10"] <- "10"
+HKKtable2["HKK"][HKKtable2["HKK"] == "25"] <- "25"
+HKKtable2["HKK"][HKKtable2["HKK"] == "100"] <- "100"
+HKKtable2["HKK"][HKKtable2["HKK"] == "1000"] <- "1000"
+HKKtable2$extent<-factor(HKKtable2$HKK,levels=c("1","5","10","25","100","1000"))
 
 palwes<-c("black","darkgrey","lightgrey")
 
 
-alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=HKK,y=Percent,fill=Diff_type,))+
+alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=as.factor(extent),y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
   xlab("Habitat Extent")+
@@ -807,16 +808,16 @@ Hkk_countsed
 HKKtable2sed<-pivot_longer(as.data.frame(HKKtablesed), cols=1:4, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
 HKKtable2sed$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "5"] <- "H005"
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "10"] <- "H010"
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "25"] <- "H025"
-HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "100"] <- "H100"
-
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "5"] <- "5"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "10"] <- "10"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "25"] <- "25"
+HKKtable2sed["HKK"][HKKtable2sed["HKK"] == "100"] <- "100"
+HKKtable2sed$extent<-factor(HKKtable2sed$HKK,levels=c("5","10","25","100"))
 
 #palwes<-c("black","darkgrey","lightgrey")
 
 
-sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=HKK,y=Percent,fill=Diff_type,))+
+sedplot<-ggplot(as.data.frame(HKKtable2sed),aes(x=as.factor(extent),y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
   xlab("Habitat Extent")+
@@ -857,13 +858,14 @@ Hkk_countrocky
 HKKtable2rocky<-pivot_longer(as.data.frame(HKKtablerocky), cols=1:4, names_to = "HKK",
                         values_to = "Percent", values_drop_na = FALSE)
 HKKtable2rocky$Diff_type<-c("Statistical","Statistical","Statistical","Statistical","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Pseudo-CS (Diagnostic)","Undifferentiated","Undifferentiated","Undifferentiated","Undifferentiated")
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "5"] <- "H005"
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "10"] <- "H010"
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "25"] <- "H025"
-HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "100"] <- "H100"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "5"] <- "5"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "10"] <- "10"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "25"] <- "25"
+HKKtable2rocky["HKK"][HKKtable2rocky["HKK"] == "100"] <- "100"
+HKKtable2rocky$extent<-factor(HKKtable2rocky$HKK,levels=c("5","10","25","100"))
 
 
-rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=HKK,y=Percent,fill=Diff_type,))+
+rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=as.factor(extent),y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
   xlab("Habitat Extent")+
