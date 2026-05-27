@@ -9,12 +9,41 @@ survey <-as.data.frame(unclass(survey),stringsAsFactors=TRUE)
 surveymorpho<-filter(survey, Morpho_diff != "NA") 
 
 #Histogram to compare number of individuals for genetics and morphology
+surveymorpho$logNig<-log10(surveymorpho$Nig)
+surveymorpho$logNim<-log10(surveymorpho$Nim)
+
+histgenlog<-ggplot(surveymorpho, aes(x=logNig)) + 
+  geom_histogram(binwidth = 0.1)+
+  xlim(-0.1,4)+
+  ylim(0,50)+
+  geom_segment(aes(x = 1.731, y = 49, xend = 1.731, yend = 0),
+               linetype = "dashed" ,color="darkgrey",size=0.75)+
+  xlab("Log (Individuals Used for Genetics)")+
+  ylab("Number of Species")+
+  theme_bw()+
+  theme(panel.grid.minor=element_blank())
+
+
+histmorphlog<-ggplot(surveymorpho, aes(x=logNim)) + 
+  geom_histogram(binwidth = 0.1)+
+  xlim(-0.1,4)+
+  ylim(0,50)+
+  geom_segment(aes(x = 1.734, y = 49, xend = 1.734, yend = 0),
+                           linetype = "dashed" ,color="darkgrey",size=0.75)+
+  xlab("Log (Individuals Used for Morphology)")+
+  ylab("Number of Species")+
+  theme_bw()+
+  theme(panel.grid.minor=element_blank())
+
+plot_grid(histgenlog,histmorphlog,labels=c("A","B"),nrow=2)
+
+#trying with log scale 
 
 histgen<-ggplot(surveymorpho, aes(x=Nig)) + 
-  geom_histogram(binwidth=20)+
-  xlim(0,6300)+
-  ylim(0,100)+
-  geom_segment(aes(x = 144, y = 99, xend = 144, yend = 0),
+  geom_histogram(binwidth = 0.1)+
+  scale_x_log10(limits=c(-.1,10000))+
+  ylim(0,40)+
+  geom_segment(aes(x = 144.19, y = 39, xend = 144.19, yend = 0),
                linetype = "dashed" ,color="darkgrey",size=0.75)+
   xlab("Individuals Used for Genetics")+
   ylab("Number of Species")+
@@ -23,17 +52,18 @@ histgen<-ggplot(surveymorpho, aes(x=Nig)) +
 
 
 histmorph<-ggplot(surveymorpho, aes(x=Nim)) + 
-  geom_histogram(binwidth=20)+
-  xlim(0,6300)+
-  ylim(0,100)+
-  geom_segment(aes(x = 183, y = 99, xend = 183, yend = 0),
-                           linetype = "dashed" ,color="darkgrey",size=0.75)+
+  geom_histogram(binwidth = 0.1)+
+  scale_x_log10(limits=c(-.1,10000))+
+  ylim(0,40)+
+  geom_segment(aes(x = 183.48, y = 39, xend = 183.48, yend = 0),
+               linetype = "dashed" ,color="darkgrey",size=0.75)+
   xlab("Individuals Used for Morphology")+
   ylab("Number of Species")+
   theme_bw()+
   theme(panel.grid.minor=element_blank())
 
 plot_grid(histgen,histmorph,labels=c("A","B"),nrow=2)
+
 
 #Now do barplot by larval type
 
@@ -68,7 +98,7 @@ hkk<-ggplot(surveymorpho,aes(x=phylum_wormsV1,fill=as.factor(HKKv3)))+
   geom_bar()+
   scale_fill_manual(values=rev(wes_palette("Zissou1", n = 6, type="continuous"))) +
   ylab("Number of Species")+
-  labs(fill = "Habitat Extent")+
+  labs(fill = "Extent Index")+
   theme_bw()+
   theme(axis.title.x = element_blank())+
   theme(panel.grid.minor=element_blank(), panel.grid.major=element_blank())+

@@ -408,7 +408,7 @@ palwes<-c("black","darkgrey","lightgrey")
 alldataplot<-ggplot(as.data.frame(HKKtable2),aes(x=as.factor(extent),y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
-  xlab("Habitat Extent")+
+  xlab("Extent Index")+
   labs(fill = "Differentiation type")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
@@ -868,7 +868,7 @@ HKKtable2rocky$extent<-factor(HKKtable2rocky$HKK,levels=c("5","10","25","100"))
 rockyplot<-ggplot(as.data.frame(HKKtable2rocky),aes(x=as.factor(extent),y=Percent,fill=Diff_type,))+
   geom_bar(stat="identity")+
   scale_fill_manual(values=palwes)+
-  xlab("Habitat Extent")+
+  xlab("Extent Index")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))+
   annotate("text", x = 1, y = 0.05, label = "6", size = 3.5)+
