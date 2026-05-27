@@ -48,7 +48,8 @@ histgen<-ggplot(surveymorpho, aes(x=Nig)) +
   xlab("Individuals Used for Genetics")+
   ylab("Number of Species")+
   theme_bw()+
-  theme(panel.grid.minor=element_blank())
+  theme(panel.grid.minor=element_blank(),axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
 
 
 histmorph<-ggplot(surveymorpho, aes(x=Nim)) + 
