@@ -33,18 +33,18 @@ fertimod<-(glmer(CSss~ferti+(1|phylum_class),data=surveymorpho,family=binomial))
 genimod<-(glmer(CSss~genitals+(1|phylum_class),data=surveymorpho,family=binomial))
 visionmod<-(glmer(CSss~image+(1|phylum_class),data=surveymorpho,family=binomial))
 
-log_ci <- confint(skelemod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
-log_ci <- confint(fertimod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
-log_ci <- confint(genimod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
-log_ci <- confint(visionmod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
+log_ci_skel <- confint(skelemod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
+log_ci_ferti <- confint(fertimod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
+log_ci_geni <- confint(genimod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
+log_ci_vision <- confint(visionmod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
 
-odds_table_skele <- exp(cbind(OR = fixef(skelemod), log_ci))
-odds_table_ferti <- exp(cbind(OR = fixef(fertimod), log_ci))
-odds_table_geni <- exp(cbind(OR = fixef(genimod), log_ci))
-odds_table_vision <- exp(cbind(OR = fixef(visionmod), log_ci))
+odds_table_skele <- exp(cbind(OR = fixef(skelemod), log_ci_skel))
+odds_table_ferti <- exp(cbind(OR = fixef(fertimod), log_ci_ferti))
+odds_table_geni <- exp(cbind(OR = fixef(genimod), log_ci_geni))
+odds_table_vision <- exp(cbind(OR = fixef(visionmod), log_ci_vision))
 
 skeleton<-odds_table_skele[2,]
-fertilization<-odds_table_ferti[2,]
+fertilization<-odds_table_ferti[2,]  # THIS IS ALSO A PROBLEM
 genitalia<-odds_table_geni[2,]
 vision<-odds_table_vision[2,]
 
@@ -71,7 +71,7 @@ surveylarvmorpho<-filter(surveymorpho, Larv_type != "NA")
 larvmod<-(glmer(CSss~Larv_type+(1|phylum_class),data=surveylarvmorpho,family=binomial))
 log_ci <- confint(larvmod, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
 odds_table_larv <- exp(cbind(OR = fixef(larvmod), log_ci))
-larva<-odds_table_larv[2,]
+#larva<-odds_table_larv[2,]
 
 # Sediment type (note - diff dataset)
 surveysed<-filter(surveymorpho, Hsubstrate != "NA") 
@@ -96,3 +96,23 @@ p +
   labs(x="Log Odds Ratio", y="")
 
 
+
+# Reassigning HKK to be categorical
+
+surveymorpho$HKKv3[surveymorpho$HKKv3==1] <- "cave"
+surveymorpho$HKKv3[surveymorpho$HKKv3==5] <- "intertidal"
+surveymorpho$HKKv3[surveymorpho$HKKv3==10] <- "estuaries"
+surveymorpho$HKKv3[surveymorpho$HKKv3==25] <- "coastal"
+surveymorpho$HKKv3[surveymorpho$HKKv3==100] <- "deep_sea"
+surveymorpho$HKKv3[surveymorpho$HKKv3==1000] <- "pelagic"
+
+#Trying the model again
+summary(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+
+HKKmod2<-(glmer(CSss~HKKv3+(1|phylum_class),data=surveymorpho,family=binomial))
+log_ci <- confint(HKKmod2, parm = "beta_", method = "Wald") # "beta_" selects only fixed effects
+odds_table_HKK2 <- exp(cbind(OR = fixef(HKKmod2), log_ci))
+
+
+# Does this need its own figure? I sort of think so - maybe it replaces part of the current fig?
+# In fact, HKK, Fertilization, and Larval Type all have multiple categories and this might need to be shown?
